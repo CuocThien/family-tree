@@ -13,6 +13,145 @@ Implement storage strategies for media file management. Support multiple storage
 
 ---
 
+## Prerequisites
+
+### Docker Infrastructure Setup
+
+Before implementing storage strategies, set up Docker containers for storage backends:
+
+#### 1. Docker Compose Configuration
+
+**File:** `docker-compose.storage.yml`
+
+```yaml
+version: '3.8'
+
+services:
+  # MongoDB for GridFS storage strategy
+  mongodb:
+    image: mongo:7.0
+    container_name: family-tree-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: familytree
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - storage-network
+
+  # MinIO for S3-compatible storage strategy
+  minio:
+    image: minio/minio:latest
+    container_name: family-tree-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - storage-network
+
+  # MinIO Client for bucket initialization
+  minio-init:
+    image: minio/mc:latest
+    container_name: family-tree-minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 5;
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin123;
+      /usr/bin/mc mb myminio/family-tree --ignore-existing;
+      /usr/bin/mc policy set public myminio/family-tree;
+      exit 0;
+      "
+    networks:
+      - storage-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  minio_data:
+    driver: local
+
+networks:
+  storage-network:
+    driver: bridge
+```
+
+#### 2. Environment Variables
+
+**File:** `.env.storage.example`
+
+```bash
+# MongoDB Configuration (for GridFS)
+MONGODB_URI=mongodb://admin:password@localhost:27017/familytree?authSource=admin
+
+# MinIO/S3 Configuration (for S3StorageStrategy)
+S3_ENDPOINT=http://localhost:9000
+S3_REGION=us-east-1
+S3_BUCKET=family-tree
+S3_ACCESS_KEY_ID=minioadmin
+S3_SECRET_ACCESS_KEY=minioadmin123
+
+# Local Storage Configuration
+LOCAL_STORAGE_PATH=./uploads
+LOCAL_STORAGE_BASE_URL=/api/files
+
+# File Signing Secret (for signed URLs)
+FILE_SIGNING_SECRET=your-super-secret-key-change-this-in-production
+
+# Cloudinary Configuration (optional - for CloudinaryStorageStrategy)
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+#### 3. Setup Commands
+
+```bash
+# Start storage services
+docker-compose -f docker-compose.storage.yml up -d
+
+# View logs
+docker-compose -f docker-compose.storage.yml logs -f
+
+# Stop services
+docker-compose -f docker-compose.storage.yml down
+
+# Remove volumes (WARNING: deletes all data)
+docker-compose -f docker-compose.storage.yml down -v
+```
+
+#### 4. Verify Services
+
+```bash
+# Check MongoDB connection
+mongosh "mongodb://admin:password@localhost:27017/familytree?authSource=admin"
+
+# Check MinIO console
+open http://localhost:9001
+# Username: minioadmin
+# Password: minioadmin123
+
+# Check MinIO API
+curl http://localhost:9000
+```
+
+---
+
 ## Requirements
 
 ### Functional Requirements
@@ -786,6 +925,14 @@ export class StorageStrategyRegistry {
 
 ## Acceptance Criteria
 
+### Infrastructure
+- [ ] Docker Compose configuration created
+- [ ] Environment variables template created
+- [ ] MongoDB container running and accessible
+- [ ] MinIO container running and accessible
+- [ ] Services verified healthy
+
+### Implementation
 - [ ] IStorageStrategy interface defined
 - [ ] LocalStorageStrategy implemented
 - [ ] GridFSStorageStrategy implemented

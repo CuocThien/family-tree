@@ -89,8 +89,6 @@ Commit with conventional commits format:
 ```bash
 git add .
 git commit -m "feat: descriptive message
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 ### Step 6: Create Pull Request
@@ -98,6 +96,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 Push and create PR:
 ```bash
 git push -u origin <branch-name>
+#pr title convention is short but meaningful and format with: `Task xx: <description>`
 gh pr create --title "<pr title>" --body "<pr body>"
 ```
 
