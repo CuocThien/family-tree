@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import crypto from 'crypto';
-import { getContainer } from '@/lib/di';
+import { container } from '@/lib/di';
 
 const requestSchema = z.object({
   email: z.string().email(),
@@ -19,17 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email } = requestSchema.parse(body);
 
-    const container = getContainer();
-    const userRepository = container.userRepository;
-
-    if (!userRepository) {
-      return NextResponse.json(
-        { error: 'Internal server error' },
-        { status: 500 }
-      );
-    }
-
-    const user = await userRepository.findByEmail(email.toLowerCase());
+    const user = await container.userRepository.findByEmail(email.toLowerCase());
 
     // Always return success to prevent email enumeration
     if (!user) {
@@ -47,16 +37,13 @@ export async function POST(request: NextRequest) {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
     // Update user with reset token
-    await (userRepository as any).update(user._id, {
+    await (container.userRepository as any).update(user._id, {
       resetPasswordToken: resetTokenHash,
       resetPasswordExpiry: resetTokenExpiry,
     });
 
     // Send reset email
-    const emailService = container.emailService;
-    if (emailService) {
-      await emailService.sendPasswordResetEmail(email, resetToken);
-    }
+    await container.emailService.sendPasswordResetEmail(email, resetToken);
 
     return NextResponse.json({
       message: 'If an account exists, a reset email will be sent'

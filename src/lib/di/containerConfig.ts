@@ -28,6 +28,7 @@ import { AuthService } from '@/services/auth/AuthService';
 import { MediaService } from '@/services/media/MediaService';
 import { PermissionService } from '@/services/permission/PermissionService';
 import { EmailService } from '@/services/email/EmailService';
+import { CollaborationService } from '@/services/collaboration/CollaborationService';
 
 // ==================
 // Strategies
@@ -224,6 +225,12 @@ export function configureContainer(): Container {
       c.resolve(SERVICES.UserRepository),
       c.resolve(SERVICES.EmailService)
     ),
+    lifecycle: 'singleton',
+  });
+
+  container.register({
+    identifier: SERVICES.CollaborationService,
+    factory: () => new CollaborationService(),
     lifecycle: 'singleton',
   });
 

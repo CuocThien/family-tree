@@ -5,9 +5,6 @@
  * This file is required by NextAuth.js for App Router.
  */
 
-import NextAuth from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { handlers } from '@/lib/auth';
 
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export const { GET, POST} = handlers;

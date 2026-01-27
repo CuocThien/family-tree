@@ -8,6 +8,19 @@
 import { configureContainer } from './containerConfig';
 import { Container } from './Container';
 import { SERVICES } from './types';
+import type { IPersonService } from '@/services/person/IPersonService';
+import type { ITreeService } from '@/services/tree/ITreeService';
+import type { IRelationshipService } from '@/services/relationship/IRelationshipService';
+import type { IAuthService } from '@/services/auth/IAuthService';
+import type { IMediaService } from '@/services/media/IMediaService';
+import type { IPermissionService } from '@/services/permission/IPermissionService';
+import type { IEmailService } from '@/services/email/IEmailService';
+import type { ICollaborationService } from '@/services/collaboration/ICollaborationService';
+import type { IUserRepository } from '@/repositories/interfaces/IUserRepository';
+import type { IAuditLogRepository } from '@/repositories/interfaces/IAuditLogRepository';
+import type { VisualizationStrategyRegistry } from '@/strategies/visualization/VisualizationStrategyRegistry';
+import type { IStorageStrategy } from '@/strategies/storage/IStorageStrategy';
+import type { StorageStrategyRegistry } from '@/strategies/storage/StorageStrategyRegistry';
 
 /**
  * Singleton container instance.
@@ -41,34 +54,43 @@ export function resetContainer(): void {
  * Provides property-based access to frequently used services.
  */
 export const container = {
-  get personService() {
-    return getContainer().resolve(SERVICES.PersonService);
+  get personService(): IPersonService {
+    return getContainer().resolve(SERVICES.PersonService) as IPersonService;
   },
-  get treeService() {
-    return getContainer().resolve(SERVICES.TreeService);
+  get treeService(): ITreeService {
+    return getContainer().resolve(SERVICES.TreeService) as ITreeService;
   },
-  get relationshipService() {
-    return getContainer().resolve(SERVICES.RelationshipService);
+  get relationshipService(): IRelationshipService {
+    return getContainer().resolve(SERVICES.RelationshipService) as IRelationshipService;
   },
-  get authService() {
-    return getContainer().resolve(SERVICES.AuthService);
+  get authService(): IAuthService {
+    return getContainer().resolve(SERVICES.AuthService) as IAuthService;
   },
-  get mediaService() {
-    return getContainer().resolve(SERVICES.MediaService);
+  get mediaService(): IMediaService {
+    return getContainer().resolve(SERVICES.MediaService) as IMediaService;
   },
-  get permissionService() {
-    return getContainer().resolve(SERVICES.PermissionService);
+  get permissionService(): IPermissionService {
+    return getContainer().resolve(SERVICES.PermissionService) as IPermissionService;
   },
-  get emailService() {
-    return getContainer().resolve(SERVICES.EmailService);
+  get emailService(): IEmailService {
+    return getContainer().resolve(SERVICES.EmailService) as IEmailService;
   },
-  get visualizationStrategies() {
-    return getContainer().resolve(SERVICES.VisualizationStrategyRegistry);
+  get userRepository(): IUserRepository {
+    return getContainer().resolve(SERVICES.UserRepository) as IUserRepository;
   },
-  get storageStrategy() {
-    return getContainer().resolve(SERVICES.StorageStrategy);
+  get auditLogService(): IAuditLogRepository {
+    return getContainer().resolve(SERVICES.AuditLogRepository) as IAuditLogRepository;
   },
-  get storageRegistry() {
-    return getContainer().resolve(SERVICES.StorageStrategyRegistry);
+  get collaborationService(): ICollaborationService {
+    return getContainer().resolve(SERVICES.CollaborationService) as ICollaborationService;
+  },
+  get visualizationStrategies(): VisualizationStrategyRegistry {
+    return getContainer().resolve(SERVICES.VisualizationStrategyRegistry) as VisualizationStrategyRegistry;
+  },
+  get storageStrategy(): IStorageStrategy {
+    return getContainer().resolve(SERVICES.StorageStrategy) as IStorageStrategy;
+  },
+  get storageRegistry(): StorageStrategyRegistry {
+    return getContainer().resolve(SERVICES.StorageStrategyRegistry) as StorageStrategyRegistry;
   },
 };
