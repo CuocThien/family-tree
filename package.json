@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.1",
     "@aws-sdk/client-s3": "^3.975.0",
     "@aws-sdk/s3-request-presigner": "^3.975.0",
     "@hookform/resolvers": "^3.3.0",
@@ -19,11 +20,12 @@
     "class-variance-authority": "^0.7.0",
     "cloudinary": "^2.9.0",
     "clsx": "^2.0.0",
+    "lru-cache": "^11.2.5",
     "lucide-react": "^0.468.0",
     "mongodb": "^7.0.0",
     "mongoose": "^8.0.0",
     "next": "16.1.4",
-    "next-auth": "^4.24.0",
+    "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.49.0",
