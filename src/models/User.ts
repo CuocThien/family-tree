@@ -7,11 +7,16 @@ export interface IUserProfileDocument {
 
 export interface IUserDocument extends Document {
   email: string;
-  password: string;
+  password: string | null;
   profile: IUserProfileDocument;
   trees: mongoose.Types.ObjectId[];
   role: 'user' | 'admin';
   isVerified: boolean;
+  oauthProviders?: string[];
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpiry?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,11 +28,16 @@ const UserProfileSchema = new Schema<IUserProfileDocument>({
 
 const UserSchema = new Schema<IUserDocument>({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password: { type: String, required: true, select: false },
+  password: { type: String, required: false, select: false },
   profile: { type: UserProfileSchema, required: true },
   trees: [{ type: Schema.Types.ObjectId, ref: 'FamilyTree' }],
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   isVerified: { type: Boolean, default: false },
+  oauthProviders: [{ type: String }],
+  verificationToken: { type: String, select: false },
+  verificationTokenExpiry: { type: Date, select: false },
+  resetPasswordToken: { type: String, select: false },
+  resetPasswordExpiry: { type: Date, select: false },
 }, { timestamps: true });
 
 export const UserModel: Model<IUserDocument> =
