@@ -31,4 +31,7 @@ export interface IPersonRepository {
   // Existence Checks
   exists(id: string): Promise<boolean>;
   existsInTree(id: string, treeId: string): Promise<boolean>;
+
+  // Bulk Operations
+  deleteByTreeId(treeId: string): Promise<number>;
 }

@@ -13,7 +13,7 @@ export interface IRelationshipRepository {
   findByPersonIdAndType(personId: string, type: RelationshipType): Promise<IRelationship[]>;
 
   // Relationship Queries
-  findBetweenPersons(personId1: string, personId2: string): Promise<IRelationship | null>;
+  findBetweenPersons(fromPersonId: string, toPersonId: string): Promise<IRelationship | null>;
   findParents(personId: string): Promise<IRelationship[]>;
   findChildren(personId: string): Promise<IRelationship[]>;
   findSpouses(personId: string): Promise<IRelationship[]>;
