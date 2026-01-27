@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { getContainer } from '@/lib/di';
+import { container } from '@/lib/di';
 
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get('token');
@@ -20,17 +20,8 @@ export async function GET(request: NextRequest) {
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-  const container = getContainer();
-  const userRepository = container.userRepository;
-
-  if (!userRepository) {
-    return NextResponse.redirect(
-      new URL('/login?error=server-error', request.url)
-    );
-  }
-
   // Find user by verification token
-  const users = await (userRepository as any).model?.find({
+  const users = await (container.userRepository as any).model?.find({
     verificationToken: tokenHash,
   });
 
@@ -53,7 +44,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Verify user email
-  await (userRepository as any).update(user._id, {
+  await (container.userRepository as any).update(user._id, {
     isVerified: true,
     verificationToken: null,
     verificationTokenExpiry: null,

@@ -3,20 +3,21 @@
  *
  * Main authentication configuration for the Family Tree application.
  * Supports credentials (email/password), Google OAuth, and Facebook OAuth.
+ *
+ * This is for NextAuth v5 (auth.ts).
  */
 
-import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import Facebook from 'next-auth/providers/facebook';
 import bcrypt from 'bcryptjs';
 import { container } from '@/lib/di';
-import { getContainer } from '@/lib/di/instance';
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     // Credentials Provider (Email/Password)
-    CredentialsProvider({
+    Credentials({
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -27,14 +28,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Email and password required');
         }
 
-        const di = getContainer();
-        const userRepository = di.userRepository;
-
-        if (!userRepository) {
-          throw new Error('User repository not available');
-        }
-
-        const user = await userRepository.findByEmailWithPassword(credentials.email.toLowerCase());
+        const user = await container.userRepository.findByEmailWithPassword(credentials.email.toLowerCase());
 
         if (!user) {
           throw new Error('Invalid email or password');
@@ -69,7 +63,7 @@ export const authOptions: NextAuthOptions = {
     }),
 
     // Google OAuth Provider
-    GoogleProvider({
+    Google({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
       profile(profile) {
@@ -78,13 +72,13 @@ export const authOptions: NextAuthOptions = {
           name: profile.name,
           email: profile.email,
           image: profile.picture,
-          isVerified: profile.email_verified,
+          emailVerified: profile.email_verified,
         };
       },
     }),
 
     // Facebook OAuth Provider
-    FacebookProvider({
+    Facebook({
       clientId: process.env.FACEBOOK_CLIENT_ID || '',
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET || '',
       profile(profile) {
@@ -101,11 +95,6 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
-  },
-
-  jwt: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 
   pages: {
@@ -117,7 +106,7 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user, account, trigger, session }) {
+    async jwt({ token, user, account }) {
       // Initial sign in
       if (user) {
         token.id = user.id;
@@ -125,12 +114,6 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.picture = user.image;
         token.isVerified = (user as any).isVerified;
-      }
-
-      // Handle session update
-      if (trigger === 'update' && session) {
-        token.name = session.name;
-        token.picture = session.image;
       }
 
       // Add OAuth provider info
@@ -151,7 +134,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // Handle OAuth account linking could be done here
       // For now, we'll allow all sign ins
       return true;
@@ -172,9 +155,8 @@ export const authOptions: NextAuthOptions = {
 
       if (isNewUser) {
         // Send welcome email
-        const emailService = container.emailService;
-        if (emailService && user.email) {
-          await emailService.sendWelcomeEmail(user.email, user.name || 'User');
+        if (user.email) {
+          await container.emailService.sendWelcomeEmail(user.email, user.name || 'User');
         }
       }
     },
@@ -186,4 +168,4 @@ export const authOptions: NextAuthOptions = {
   },
 
   debug: process.env.NODE_ENV === 'development',
-};
+});
