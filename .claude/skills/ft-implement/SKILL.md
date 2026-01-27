@@ -1,0 +1,152 @@
+---
+name: ft-implement
+description: Execute complete implementation phase from plan document to PR. Use when user invokes the implement command with a plan file path - handles Git branch creation with naming conventions, task implementation from plan, code and architecture review, test case creation and execution, and pull request creation and merge to main. This is a workflow skill that manages the entire implementation lifecycle.
+---
+
+# Implement
+
+Complete implementation workflow that reads a plan document and executes all tasks through to a merged PR.
+
+## Input
+
+User invokes via `/ft-implement <path-to-plan-file>` where the plan file contains:
+- Task descriptions and requirements
+- Implementation details
+- Acceptance criteria
+
+## Workflow
+
+### Step 1: Parse Plan and Create Branch
+
+Read the plan file to understand requirements. Extract task type (feature, fix, refactor, etc.) and create an appropriate branch:
+
+```bash
+# Branch naming conventions (see references/branch-conventions.md):
+feature/  - New features
+fix/      - Bug fixes
+refactor/ - Code refactoring
+test/     - Test additions
+docs/     - Documentation updates
+```
+
+Create branch:
+```bash
+git checkout -b <type>/<short-description>
+```
+
+### Step 2: Implement Tasks
+
+Follow the plan systematically:
+1. Read and understand each requirement
+2. Implement code changes following project standards
+3. Ensure all SOLID principles are met
+4. Update types, services, and components as needed
+
+**Important:**
+- Use TodoWrite to track all tasks
+- Mark tasks in_progress before starting
+- Mark tasks completed immediately after finishing
+- Only ONE task in_progress at a time
+
+### Step 3: Code and Architecture Review
+
+After implementation, perform review:
+
+**Code Review Checklist:**
+- [ ] Type hints included
+- [ ] Error handling at boundaries
+- [ ] No security vulnerabilities (XSS, SQL injection, etc.)
+- [ ] Follows project naming conventions
+- [ ] No over-engineering
+
+**Architecture Review Checklist:**
+- [ ] Single Responsibility - each class has one reason to change
+- [ ] Open/Closed - open for extension, closed for modification
+- [ ] Liskov Substitution - derived classes substitutable
+- [ ] Interface Segregation - focused interfaces
+- [ ] Dependency Inversion - depend on abstractions
+
+Use the code-reviewer skill for comprehensive review.
+
+### Step 4: Write and Run Tests
+
+Create appropriate test coverage:
+
+- **Unit tests**: `src/services/**/*.test.ts`
+- **Integration tests**: `tests/integration/`
+- **E2E tests**: `tests/e2e/` (for user flows)
+
+Run tests:
+```bash
+npm test
+```
+
+Ensure all tests pass before proceeding.
+
+### Step 5: Commit Changes
+
+Commit with conventional commits format:
+```bash
+git add .
+git commit -m "feat: descriptive message
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+```
+
+### Step 6: Create Pull Request
+
+Push and create PR:
+```bash
+git push -u origin <branch-name>
+gh pr create --title "<pr title>" --body "<pr body>"
+```
+
+PR body template:
+```markdown
+## Summary
+- Brief description of changes
+
+## Test plan
+- [ ] Tests added and passing
+- [ ] Manual testing completed
+
+## Checklist
+- [ ] Code follows project standards
+- [ ] SOLID principles verified
+- [ ] Security review passed
+```
+
+### Step 7: Final Review and Merge
+
+1. Review the PR one final time
+2. Ensure all checks pass
+3. Merge to main via:
+```bash
+gh pr merge --merge
+```
+
+### Step 8: Cleanup
+
+Return to main branch and delete feature branch:
+```bash
+git checkout main
+git pull
+git branch -d <branch-name>
+```
+
+## Resources
+
+### references/branch-conventions.md
+Git branch naming conventions for different task types. Reference this when creating branches.
+
+## Order of Operations
+
+1. Parse plan file
+2. Create git branch
+3. Implement tasks (with TodoWrite tracking)
+4. Code and architecture review
+5. Write and run tests
+6. Commit changes
+7. Create PR
+8. Merge PR
+9. Cleanup
