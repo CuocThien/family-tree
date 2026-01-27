@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Person Profile Overview - AncestryTree</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Google Fonts: Work Sans and Source Serif 4 for that "heritage" feel -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&amp;family=Source+Serif+4:wght@600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"],
+                        "heritage": ["Source Serif 4", "serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        .serif-heading {
+            font-family: 'Source Serif 4', serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0d191b] dark:text-white min-h-screen">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- Navigation Bar -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f1f3] dark:border-b-gray-800 px-6 md:px-40 py-3 bg-white dark:bg-background-dark">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-4 text-primary">
+                        <div class="size-6">
+                            <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h2
+                            class="text-[#0d191b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] serif-heading">
+                            AncestryTree</h2>
+                    </div>
+                    <nav class="hidden md:flex items-center gap-9">
+                        <a class="text-[#0d191b] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="#">Family Tree</a>
+                        <a class="text-[#0d191b] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="#">Search</a>
+                        <a class="text-[#0d191b] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="#">DNA</a>
+                        <a class="text-[#0d191b] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="#">Help</a>
+                    </nav>
+                </div>
+                <div class="flex flex-1 justify-end gap-4 md:gap-8 items-center">
+                    <label class="hidden lg:flex flex-col min-w-40 !h-10 max-w-64">
+                        <div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+                            <div
+                                class="text-[#4c8d9a] flex border-none bg-[#e7f1f3] dark:bg-gray-800 items-center justify-center pl-4 rounded-l-xl">
+                                <span class="material-symbols-outlined text-xl">search</span>
+                            </div>
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 border-none bg-[#e7f1f3] dark:bg-gray-800 focus:ring-0 h-full placeholder:text-[#4c8d9a] px-4 rounded-r-xl text-base"
+                                placeholder="Find ancestors..." value="" />
+                        </div>
+                    </label>
+                    <div class="flex gap-2">
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#e7f1f3] dark:bg-gray-800 text-[#0d191b] dark:text-white hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#e7f1f3] dark:bg-gray-800 text-[#0d191b] dark:text-white hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined">settings</span>
+                        </button>
+                    </div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary"
+                        data-alt="User profile avatar"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAAhMAqUxghSpi4wSwJCQsiivMuNuPZo7vB-LbMjoyLziGfAQiPNE2Y26EtAzoOii9ecHn-bmo9eYGfeZ3x_ndC-Hu6QqTQ3TSqxDRFXsGVV2Gizk3Fler3s3adwr7fJKB_XSudW_9XzjkBSqapETbSA-YjhT_RumDc5nsWtww2Iht4ssNP3sSu0NZKfcGkuUdeBgE7Oyzrs6zIh1Y9RqPsbcAC9ScAvSYZNYXyn0im6zSUqPIW77nLmGF3dpcLvlFsX3ZyFWO-57A");'>
+                    </div>
+                </div>
+            </header>
+            <!-- Main Content Wrapper -->
+            <main class="flex-1 flex justify-center py-5 md:py-10">
+                <div class="layout-content-container flex flex-col max-w-[1024px] flex-1 px-4 md:px-0">
+                    <!-- Breadcrumbs -->
+                    <div class="flex flex-wrap gap-2 py-2 mb-4">
+                        <a class="text-primary text-sm font-medium leading-normal hover:underline" href="#">Main
+                            Tree</a>
+                        <span class="text-[#4c8d9a] text-sm font-medium">/</span>
+                        <a class="text-primary text-sm font-medium leading-normal hover:underline" href="#">Smith
+                            Family</a>
+                        <span class="text-[#4c8d9a] text-sm font-medium">/</span>
+                        <span class="text-[#0d191b] dark:text-gray-400 text-sm font-medium">William Harrison
+                            Smith</span>
+                    </div>
+                    <!-- Profile Header -->
+                    <div
+                        class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-[#e7f1f3] dark:border-gray-800 p-6 md:p-8 mb-6">
+                        <div class="flex flex-col md:flex-row gap-6 items-center md:items-start">
+                            <div class="relative group">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl size-32 md:size-48 shadow-lg ring-4 ring-white dark:ring-gray-800"
+                                    data-alt="Historical portrait of William Harrison Smith"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7r6AfQoT-4P44SnccLX1xOOUlONgHCADY0UYFt2YaD3AyYPcKMZcV16e-ScTYziO0pTH-fr5eBHp02wU1fbZchCvtzgdEvJGlGeHRe9wFslWR-eHM7hCyZtK_XqhGIS1PnKascCTuyKZ7GkHcf2CJiAQy0dhK3g0_6nre3WS3TzDHNTTrolQO7AYqxBYjr0QSoyvYuPPO8eLxLVNSaFUWg4idNCAvMjWuluqA8cDHvqDqVrYnX4mDAV92QLxPGVIY7bUoUXaB41I");'>
+                                </div>
+                                <button
+                                    class="absolute -bottom-2 -right-2 bg-primary text-white p-2 rounded-full shadow-md hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-sm">photo_camera</span>
+                                </button>
+                            </div>
+                            <div class="flex flex-col flex-1 text-center md:text-left">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div>
+                                        <h1
+                                            class="text-[#0d191b] dark:text-white text-3xl md:text-4xl font-bold leading-tight serif-heading">
+                                            William Harrison Smith</h1>
+                                        <p class="text-primary text-lg font-semibold mt-1">1892 — 1954</p>
+                                        <p
+                                            class="text-[#4c8d9a] text-base mt-1 flex items-center justify-center md:justify-start gap-1">
+                                            <span class="material-symbols-outlined text-lg">location_on</span>
+                                            Born: London, UK • Died: New York, USA
+                                        </p>
+                                    </div>
+                                    <div class="flex gap-3 justify-center">
+                                        <button
+                                            class="flex items-center gap-2 px-5 py-2.5 bg-[#e7f1f3] dark:bg-gray-800 text-[#0d191b] dark:text-white rounded-xl font-bold text-sm transition-all hover:bg-[#d0e5e9]">
+                                            <span class="material-symbols-outlined text-lg">edit</span>
+                                            Edit Profile
+                                        </button>
+                                        <button
+                                            class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-sm transition-all hover:opacity-90 shadow-md">
+                                            <span class="material-symbols-outlined text-lg">add_a_photo</span>
+                                            Add Media
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mt-6 flex flex-wrap gap-4 justify-center md:justify-start">
+                                    <div
+                                        class="bg-background-light dark:bg-gray-800 px-4 py-2 rounded-lg border border-[#e7f1f3] dark:border-gray-700">
+                                        <p class="text-[10px] uppercase tracking-wider text-[#4c8d9a] font-bold">
+                                            Relationships</p>
+                                        <p class="text-sm font-bold dark:text-gray-200">12 Connected</p>
+                                    </div>
+                                    <div
+                                        class="bg-background-light dark:bg-gray-800 px-4 py-2 rounded-lg border border-[#e7f1f3] dark:border-gray-700">
+                                        <p class="text-[10px] uppercase tracking-wider text-[#4c8d9a] font-bold">Records
+                                        </p>
+                                        <p class="text-sm font-bold dark:text-gray-200">8 Documents</p>
+                                    </div>
+                                    <div
+                                        class="bg-background-light dark:bg-gray-800 px-4 py-2 rounded-lg border border-[#e7f1f3] dark:border-gray-700">
+                                        <p class="text-[10px] uppercase tracking-wider text-[#4c8d9a] font-bold">DNA
+                                            Match</p>
+                                        <p class="text-sm font-bold dark:text-gray-200">2nd Cousin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabs Navigation -->
+                    <div class="mb-8">
+                        <div class="flex border-b border-[#cfe3e7] dark:border-gray-800 px-4 gap-8">
+                            <a class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-[#0d191b] dark:text-white pb-[13px] pt-4"
+                                href="#">
+                                <p class="text-sm font-bold tracking-[0.015em]">Overview</p>
+                            </a>
+                            <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4c8d9a] pb-[13px] pt-4 hover:text-primary transition-colors"
+                                href="#">
+                                <p class="text-sm font-bold tracking-[0.015em]">Relationships</p>
+                            </a>
+                            <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4c8d9a] pb-[13px] pt-4 hover:text-primary transition-colors"
+                                href="#">
+                                <p class="text-sm font-bold tracking-[0.015em]">Media</p>
+                            </a>
+                            <a class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#4c8d9a] pb-[13px] pt-4 hover:text-primary transition-colors"
+                                href="#">
+                                <p class="text-sm font-bold tracking-[0.015em]">Life Events</p>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Tab Content: Overview -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Left Column: Biography & Life Story -->
+                        <div class="lg:col-span-2 space-y-8">
+                            <section>
+                                <h2 class="text-[#0d191b] dark:text-white text-2xl font-bold serif-heading mb-4">
+                                    Biography</h2>
+                                <div
+                                    class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-[#e7f1f3] dark:border-gray-800 leading-relaxed text-[#4c8d9a] dark:text-gray-300">
+                                    <p class="mb-4">
+                                        William Harrison Smith was born in the heart of London during the final decade
+                                        of the Victorian era. The son of a local blacksmith, he grew up with a keen
+                                        interest in mechanical engineering, which eventually led him to enlist as a
+                                        technician during the First World War.
+                                    </p>
+                                    <p class="mb-4">
+                                        After the war, William sought new opportunities across the Atlantic. He
+                                        emigrated to New York in 1922, arriving via Ellis Island with only a small trunk
+                                        and his drafting tools. It was here that he met Sarah Jenkins, whom he married
+                                        in 1925 at St. Patrick's Cathedral.
+                                    </p>
+                                    <p>
+                                        William spent three decades working for the New York Port Authority,
+                                        contributing to the expansion of the city's infrastructure. He was known among
+                                        his peers for his meticulous attention to detail and his collection of
+                                        hand-drawn mechanical schematics, many of which are preserved in the family
+                                        archives today.
+                                    </p>
+                                </div>
+                            </section>
+                            <section>
+                                <h2 class="text-[#0d191b] dark:text-white text-2xl font-bold serif-heading mb-4">Life
+                                    Events Timeline</h2>
+                                <div class="space-y-4">
+                                    <!-- Birth Event -->
+                                    <div
+                                        class="flex gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-[#e7f1f3] dark:border-gray-800">
+                                        <div class="flex flex-col items-center">
+                                            <div
+                                                class="size-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                                                <span class="material-symbols-outlined">child_care</span>
+                                            </div>
+                                            <div class="w-0.5 h-full bg-[#e7f1f3] dark:bg-gray-800 mt-2"></div>
+                                        </div>
+                                        <div class="pb-2">
+                                            <p class="text-sm font-bold text-[#0d191b] dark:text-white">Birth</p>
+                                            <p class="text-xs text-primary font-bold">14 May 1892</p>
+                                            <p class="text-sm text-[#4c8d9a] mt-1">Chelsea, London, United Kingdom</p>
+                                        </div>
+                                    </div>
+                                    <!-- Marriage Event -->
+                                    <div
+                                        class="flex gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-[#e7f1f3] dark:border-gray-800">
+                                        <div class="flex flex-col items-center">
+                                            <div
+                                                class="size-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                                                <span class="material-symbols-outlined">favorite</span>
+                                            </div>
+                                            <div class="w-0.5 h-full bg-[#e7f1f3] dark:bg-gray-800 mt-2"></div>
+                                        </div>
+                                        <div class="pb-2">
+                                            <p class="text-sm font-bold text-[#0d191b] dark:text-white">Marriage to
+                                                Sarah Jenkins</p>
+                                            <p class="text-xs text-primary font-bold">02 June 1925</p>
+                                            <p class="text-sm text-[#4c8d9a] mt-1">Manhattan, New York, USA</p>
+                                        </div>
+                                    </div>
+                                    <!-- Death Event -->
+                                    <div
+                                        class="flex gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-[#e7f1f3] dark:border-gray-800">
+                                        <div class="flex flex-col items-center">
+                                            <div
+                                                class="size-10 rounded-full bg-primary/20 text-primary flex items-center justify-center">
+                                                <span class="material-symbols-outlined">deceased</span>
+                                            </div>
+                                        </div>
+                                        <div class="pb-2">
+                                            <p class="text-sm font-bold text-[#0d191b] dark:text-white">Death</p>
+                                            <p class="text-xs text-primary font-bold">11 November 1954</p>
+                                            <p class="text-sm text-[#4c8d9a] mt-1">Brooklyn, New York, USA</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <!-- Right Column: Key Facts & Map -->
+                        <div class="space-y-8">
+                            <section>
+                                <h2 class="text-[#0d191b] dark:text-white text-xl font-bold serif-heading mb-4">Key
+                                    Facts</h2>
+                                <div
+                                    class="bg-white dark:bg-gray-900 rounded-xl border border-[#e7f1f3] dark:border-gray-800 overflow-hidden">
+                                    <table class="w-full text-sm">
+                                        <tbody>
+                                            <tr class="border-b border-[#e7f1f3] dark:border-gray-800">
+                                                <td class="p-4 text-[#4c8d9a] font-medium">Gender</td>
+                                                <td class="p-4 text-[#0d191b] dark:text-gray-200 font-bold">Male</td>
+                                            </tr>
+                                            <tr class="border-b border-[#e7f1f3] dark:border-gray-800">
+                                                <td class="p-4 text-[#4c8d9a] font-medium">Nationality</td>
+                                                <td class="p-4 text-[#0d191b] dark:text-gray-200 font-bold">British /
+                                                    American</td>
+                                            </tr>
+                                            <tr class="border-b border-[#e7f1f3] dark:border-gray-800">
+                                                <td class="p-4 text-[#4c8d9a] font-medium">Occupation</td>
+                                                <td class="p-4 text-[#0d191b] dark:text-gray-200 font-bold">Civil
+                                                    Engineer</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-4 text-[#4c8d9a] font-medium">Religion</td>
+                                                <td class="p-4 text-[#0d191b] dark:text-gray-200 font-bold">Anglican
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                            <section>
+                                <h2 class="text-[#0d191b] dark:text-white text-xl font-bold serif-heading mb-4">
+                                    Locations</h2>
+                                <div
+                                    class="bg-white dark:bg-gray-900 p-3 rounded-xl border border-[#e7f1f3] dark:border-gray-800 shadow-sm">
+                                    <div class="w-full aspect-video rounded-lg bg-gray-200 dark:bg-gray-800 bg-cover bg-center mb-3 overflow-hidden relative"
+                                        data-alt="Stylized vintage map of New York and London migration path"
+                                        data-location="New York City" style="">
+                                        <!-- Placeholder for map UI -->
+                                        <div class="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-4xl text-primary">map</span>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex items-start gap-3">
+                                            <span class="material-symbols-outlined text-primary text-xl">home</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-[#0d191b] dark:text-white">Primary
+                                                    Residence</p>
+                                                <p class="text-xs text-[#4c8d9a]">Brooklyn, New York (1922-1954)</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <span
+                                                class="material-symbols-outlined text-primary text-xl">flight_takeoff</span>
+                                            <div>
+                                                <p class="text-xs font-bold text-[#0d191b] dark:text-white">Migration
+                                                </p>
+                                                <p class="text-xs text-[#4c8d9a]">London to New York via SS Olympic</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section>
+                                <div
+                                    class="bg-primary/5 dark:bg-primary/10 p-6 rounded-xl border border-dashed border-primary/30 text-center">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-3xl mb-2">auto_awesome</span>
+                                    <h3 class="text-sm font-bold text-[#0d191b] dark:text-white mb-1">New DNA Matches
+                                    </h3>
+                                    <p class="text-xs text-[#4c8d9a] mb-4">We found 2 potential relatives matching
+                                        William's profile.</p>
+                                    <button class="text-xs font-bold text-primary hover:underline">View Matches
+                                        →</button>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- Footer -->
+            <footer
+                class="border-t border-[#e7f1f3] dark:border-gray-800 mt-20 py-8 text-center text-[#4c8d9a] text-sm">
+                <p>© 2024 AncestryTree. Preserve your heritage for future generations.</p>
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>

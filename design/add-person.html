@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Add New Family Member - AncestryTree</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0d191b] dark:text-white font-display overflow-hidden">
+    <div class="relative flex h-screen w-full flex-col overflow-hidden">
+        <!-- Header / Top Nav -->
+        <header
+            class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7f1f3] dark:border-[#2a3a3d] bg-white dark:bg-[#152528] px-10 py-3 z-10">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 text-[#0d191b] dark:text-white">
+                    <div class="size-6 text-primary">
+                        <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">AncestryTree</h2>
+                </div>
+                <nav class="hidden md:flex items-center gap-9">
+                    <a class="text-sm font-medium leading-normal hover:text-primary transition-colors"
+                        href="#">Dashboard</a>
+                    <a class="text-sm font-bold leading-normal text-primary" href="#">Family Tree</a>
+                    <a class="text-sm font-medium leading-normal hover:text-primary transition-colors"
+                        href="#">Research</a>
+                    <a class="text-sm font-medium leading-normal hover:text-primary transition-colors"
+                        href="#">Photos</a>
+                </nav>
+            </div>
+            <div class="flex flex-1 justify-end gap-4">
+                <div class="flex gap-2">
+                    <button
+                        class="flex items-center justify-center rounded-xl size-10 bg-[#e7f1f3] dark:bg-[#2a3a3d] text-[#0d191b] dark:text-white">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button
+                        class="flex items-center justify-center rounded-xl size-10 bg-[#e7f1f3] dark:bg-[#2a3a3d] text-[#0d191b] dark:text-white">
+                        <span class="material-symbols-outlined">settings</span>
+                    </button>
+                </div>
+                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary"
+                    data-alt="User profile avatar"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgoF6mbdC_Tm0cfZXfo9Xjho7Qqi4seXt13p0FsWpdOGCqsMSW7eKZDhEGJ-YMul7hj7nEtfb4tC0q5Fz78Td6bknOuHO0bjV_tWTHlCiESk8IzGJ505-DUh0Nm6F5brLopFc1CCoSJab-uGaJYfTs7Xh5sCBYm2bvR7oarRZnJN8f9UIbvUnlawb0NXb3Lci40nmrL6wR0Lp_ATgCOKgM7RTvbt2Ye1FaI-_OFy1WmZXODsSjTEB5xy35S4MjVUVjFjWHa2wu0eM");'>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 flex relative">
+            <!-- Background: Dimmed Family Tree View -->
+            <div class="flex-1 p-8 opacity-40 grayscale pointer-events-none">
+                <div class="flex flex-col items-center gap-12 mt-10">
+                    <!-- Sample Tree Node Root -->
+                    <div class="flex flex-col items-center">
+                        <div
+                            class="bg-white dark:bg-[#1a2e32] p-4 rounded-lg shadow-sm border border-[#cfe3e7] dark:border-[#2a3a3d] w-48 text-center">
+                            <p class="font-bold">John Smith</p>
+                            <p class="text-xs text-[#4c8d9a]">1945 - Present</p>
+                        </div>
+                        <div class="h-10 w-px bg-[#cfe3e7] dark:bg-[#2a3a3d]"></div>
+                        <div class="w-96 h-px bg-[#cfe3e7] dark:bg-[#2a3a3d] flex justify-between">
+                            <div class="h-10 w-px bg-[#cfe3e7] dark:bg-[#2a3a3d]"></div>
+                            <div class="h-10 w-px bg-[#cfe3e7] dark:bg-[#2a3a3d]"></div>
+                        </div>
+                        <div class="flex gap-20">
+                            <div
+                                class="bg-white dark:bg-[#1a2e32] p-4 rounded-lg shadow-sm border border-[#cfe3e7] dark:border-[#2a3a3d] w-48 text-center">
+                                <p class="font-bold">Sarah Smith</p>
+                                <p class="text-xs text-[#4c8d9a]">1972 - Present</p>
+                            </div>
+                            <div
+                                class="bg-white dark:bg-[#1a2e32] p-4 rounded-lg shadow-sm border border-[#cfe3e7] dark:border-[#2a3a3d] w-48 text-center">
+                                <p class="font-bold">Michael Smith</p>
+                                <p class="text-xs text-[#4c8d9a]">1975 - Present</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Overlay Backdrop -->
+            <div class="absolute inset-0 bg-background-dark/30 backdrop-blur-[2px]"></div>
+            <!-- Side Panel Container (The Drawer) -->
+            <aside
+                class="absolute right-0 top-0 h-full w-full max-w-md bg-white dark:bg-[#152528] shadow-2xl flex flex-col z-20 overflow-y-auto border-l border-[#e7f1f3] dark:border-[#2a3a3d]">
+                <!-- Panel Header -->
+                <div class="flex flex-wrap justify-between gap-3 p-6 border-b border-[#e7f1f3] dark:border-[#2a3a3d]">
+                    <div class="flex flex-col gap-1">
+                        <h2
+                            class="text-[#0d191b] dark:text-white text-2xl font-black leading-tight tracking-[-0.033em]">
+                            Add New Member</h2>
+                        <p class="text-[#4c8d9a] text-sm font-normal leading-normal">Connecting to <span
+                                class="font-bold text-[#0d191b] dark:text-primary">John Smith</span></p>
+                    </div>
+                    <button
+                        class="flex items-center justify-center rounded-xl size-10 hover:bg-[#f0f5f6] dark:hover:bg-[#1f2f32] transition-colors">
+                        <span class="material-symbols-outlined text-[#4c8d9a]">close</span>
+                    </button>
+                </div>
+                <!-- Form Content -->
+                <div class="flex flex-col gap-6 p-6">
+                    <!-- Basic Information Section -->
+                    <div class="flex flex-col gap-4">
+                        <h3 class="text-[#0d191b] dark:text-white text-lg font-bold leading-tight">Identity</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex flex-col gap-2">
+                                <p class="text-[#0d191b] dark:text-white text-sm font-medium">First Name</p>
+                                <input
+                                    class="form-input w-full rounded-lg border-[#cfe3e7] dark:border-[#2a3a3d] bg-transparent focus:border-primary focus:ring-primary h-12 text-sm"
+                                    placeholder="e.g. Emily" type="text" />
+                            </label>
+                            <label class="flex flex-col gap-2">
+                                <p class="text-[#0d191b] dark:text-white text-sm font-medium">Last Name</p>
+                                <input
+                                    class="form-input w-full rounded-lg border-[#cfe3e7] dark:border-[#2a3a3d] bg-transparent focus:border-primary focus:ring-primary h-12 text-sm"
+                                    placeholder="e.g. Smith" type="text" />
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Gender Selection -->
+                    <div class="flex flex-col gap-4">
+                        <p class="text-[#0d191b] dark:text-white text-sm font-medium">Gender</p>
+                        <div class="flex gap-2">
+                            <button
+                                class="flex flex-1 items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-primary bg-primary/10 text-[#0d191b] dark:text-white text-sm font-medium">
+                                <span class="material-symbols-outlined text-primary text-[20px]">male</span> Male
+                            </button>
+                            <button
+                                class="flex flex-1 items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-[#cfe3e7] dark:border-[#2a3a3d] hover:bg-[#f8fbfc] dark:hover:bg-[#1a2e32] text-[#0d191b] dark:text-white text-sm font-medium">
+                                <span class="material-symbols-outlined text-[#4c8d9a] text-[20px]">female</span> Female
+                            </button>
+                            <button
+                                class="flex flex-1 items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-[#cfe3e7] dark:border-[#2a3a3d] hover:bg-[#f8fbfc] dark:hover:bg-[#1a2e32] text-[#0d191b] dark:text-white text-sm font-medium">
+                                <span class="material-symbols-outlined text-[#4c8d9a] text-[20px]">person</span> Other
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Relationship Selection -->
+                    <div class="flex flex-col gap-4">
+                        <p class="text-[#0d191b] dark:text-white text-sm font-medium">Relationship to John Smith</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button
+                                class="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#cfe3e7] dark:border-[#2a3a3d] hover:border-primary group transition-all">
+                                <div
+                                    class="size-8 rounded-full bg-[#f0f5f6] dark:bg-[#2a3a3d] flex items-center justify-center group-hover:bg-primary/20">
+                                    <span class="material-symbols-outlined text-sm">north</span>
+                                </div>
+                                <span class="text-sm font-medium">Parent</span>
+                            </button>
+                            <button
+                                class="flex items-center gap-3 px-4 py-3 rounded-lg border border-primary bg-primary/5 group transition-all">
+                                <div class="size-8 rounded-full bg-primary flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-sm text-white">south</span>
+                                </div>
+                                <span class="text-sm font-bold">Child</span>
+                            </button>
+                            <button
+                                class="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#cfe3e7] dark:border-[#2a3a3d] hover:border-primary group transition-all">
+                                <div
+                                    class="size-8 rounded-full bg-[#f0f5f6] dark:bg-[#2a3a3d] flex items-center justify-center group-hover:bg-primary/20">
+                                    <span class="material-symbols-outlined text-sm">favorite</span>
+                                </div>
+                                <span class="text-sm font-medium">Spouse</span>
+                            </button>
+                            <button
+                                class="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#cfe3e7] dark:border-[#2a3a3d] hover:border-primary group transition-all">
+                                <div
+                                    class="size-8 rounded-full bg-[#f0f5f6] dark:bg-[#2a3a3d] flex items-center justify-center group-hover:bg-primary/20">
+                                    <span class="material-symbols-outlined text-sm">group</span>
+                                </div>
+                                <span class="text-sm font-medium">Sibling</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Progressive Disclosure: Advanced Details -->
+                    <div class="border-t border-[#e7f1f3] dark:border-[#2a3a3d] pt-6">
+                        <button class="flex items-center gap-2 text-primary text-sm font-bold">
+                            <span class="material-symbols-outlined">add_circle</span>
+                            Add more details (Birth, Place, Occupation)
+                        </button>
+                    </div>
+                    <!-- Life Status Minimal Toggle -->
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input
+                            class="form-checkbox rounded text-primary focus:ring-primary border-[#cfe3e7] dark:border-[#2a3a3d] size-5"
+                            type="checkbox" />
+                        <span class="text-sm text-[#0d191b] dark:text-white font-medium">Person is deceased</span>
+                    </label>
+                </div>
+                <!-- Footer Actions -->
+                <div class="mt-auto p-6 border-t border-[#e7f1f3] dark:border-[#2a3a3d] flex flex-col gap-3">
+                    <button
+                        class="w-full bg-primary text-white py-4 rounded-xl font-bold text-base shadow-lg shadow-primary/20 hover:brightness-105 transition-all">
+                        Add to Family Tree
+                    </button>
+                    <button
+                        class="w-full py-2 text-[#4c8d9a] dark:text-[#8eb9c1] text-sm font-medium hover:text-[#0d191b] dark:hover:text-white transition-colors">
+                        Cancel and Go Back
+                    </button>
+                </div>
+            </aside>
+        </main>
+    </div>
+</body>
+
+</html>

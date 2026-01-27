@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Login to AncestryHub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: "Work Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0d191b] dark:text-white min-h-screen">
+    <div class="flex min-h-screen flex-col lg:flex-row">
+        <div class="relative hidden lg:flex lg:w-1/2 xl:w-3/5 bg-primary overflow-hidden">
+            <div class="absolute inset-0 bg-center bg-cover"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAapZFnT6zi2bvpPEbagWq8cm9-7VBobLrhZPEirJIOerOp94fFF8RYMmN8hzsbJ-T2VdjCv2bE9PufT3SozpEVc193usPzm8orPRULc-59bVE0uJk7Q-ENYfGX6Sgb5EjT2xukCeemg4PS4QHhOFNYSkff_exPDeZf11Wgd58myA2oMpp_Q-4vmtuvekUbIrdhQeLVU3LftZBZADyXw3SUbWhBC69AJNsai9omr5nq0Rvd9H8vWVsV7qx6iyQxvcuvDGg3E6b8ubk");'>
+                <div
+                    class="absolute inset-0 bg-gradient-to-tr from-background-dark/80 via-background-dark/20 to-transparent">
+                </div>
+            </div>
+            <div class="relative z-10 flex flex-col justify-end p-12 xl:p-20 w-full">
+                <div class="flex items-center gap-4 text-primary mb-8">
+                    <div class="size-12">
+                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-white text-3xl font-black tracking-tight">AncestryHub</h1>
+                </div>
+                <h2 class="text-4xl xl:text-5xl font-bold text-white leading-tight mb-4">Preserve your family's
+                    <br />legacy for generations.</h2>
+                <p class="text-lg text-white/80 max-w-md">Join thousands of families documenting their history, sharing
+                    stories, and discovering their roots together.</p>
+            </div>
+        </div>
+        <div
+            class="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12 xl:px-24 bg-white dark:bg-background-dark">
+            <div class="w-full max-w-md">
+                <div class="flex items-center gap-3 text-primary mb-10 lg:hidden">
+                    <div class="size-8">
+                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-[#0d191b] dark:text-white text-xl font-black">AncestryHub</h2>
+                </div>
+                <div class="mb-10">
+                    <h1 class="text-3xl font-black text-[#0d191b] dark:text-white mb-2">Welcome back</h1>
+                    <p class="text-[#4c8d9a] font-medium">Log in to your account to continue your journey.</p>
+                </div>
+                <form class="space-y-6" onsubmit="return false;">
+                    <div>
+                        <label class="block text-sm font-semibold text-[#0d191b] dark:text-white mb-2" for="email">Email
+                            Address</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-[#4c8d9a] !text-[20px]">mail</span>
+                            </div>
+                            <input
+                                class="block w-full pl-11 pr-4 py-3 bg-[#e7f1f3] dark:bg-white/5 border-none rounded-xl text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-primary focus:bg-white transition-all"
+                                id="email" name="email" placeholder="name@example.com" required="" type="email" />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-semibold text-[#0d191b] dark:text-white"
+                                for="password">Password</label>
+                            <a class="text-sm font-bold text-primary hover:underline" href="#">Forgot password?</a>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-[#4c8d9a] !text-[20px]">lock</span>
+                            </div>
+                            <input
+                                class="block w-full pl-11 pr-4 py-3 bg-[#e7f1f3] dark:bg-white/5 border-none rounded-xl text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-primary focus:bg-white transition-all"
+                                id="password" name="password" placeholder="••••••••" required="" type="password" />
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <input class="h-5 w-5 rounded border-[#e7f1f3] text-primary focus:ring-primary" id="remember-me"
+                            name="remember-me" type="checkbox" />
+                        <label class="ml-3 block text-sm font-medium text-[#4c8d9a]" for="remember-me">
+                            Remember me for 30 days
+                        </label>
+                    </div>
+                    <div>
+                        <button
+                            class="group relative flex w-full justify-center rounded-xl bg-primary px-6 py-4 text-sm font-bold text-white shadow-lg shadow-primary/25 hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all active:scale-[0.98]"
+                            type="submit">
+                            <span
+                                class="absolute inset-y-0 left-0 flex items-center pl-4 group-hover:translate-x-1 transition-transform">
+                                <span class="material-symbols-outlined !text-[20px]">login</span>
+                            </span>
+                            Sign In
+                        </button>
+                    </div>
+                </form>
+                <div class="mt-8 pt-8 border-t border-[#e7f1f3] dark:border-white/10 text-center">
+                    <p class="text-[#4c8d9a] text-sm">
+                        Don't have an account yet?
+                        <a class="font-bold text-primary hover:underline ml-1" href="#">Create an account</a>
+                    </p>
+                </div>
+                <div class="mt-10 grid grid-cols-2 gap-4">
+                    <button
+                        class="flex items-center justify-center gap-2 px-4 py-2 border border-[#e7f1f3] dark:border-white/10 rounded-xl hover:bg-[#e7f1f3]/50 dark:hover:bg-white/5 transition-colors">
+                        <img alt="Google" class="size-5"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqRIKRpXAD_16OQ7ana6ojjDci-tpVJHbSFwKxdROCHWHpwZI2dxL97GKIJXDAsYg1gZKTnLTrEHN-NN4h7X5pBq7mhVspo_v6MuardeVZlIS6MzFjZbMdbzsNuXtgEGMH0OKmaJUcoYKkreYqbXnSqzqL-zs_4XriFeb29zAofiPOvPPqZcMBh2vyMD-nVzUiB9skcFA8B0kD55Cbaxyh_nyha_Kq0FH4aFQRCycBWp6_pmrdO6NOLDek_StUTjAIdOeV4DqDHP4" />
+                        <span class="text-xs font-bold">Google</span>
+                    </button>
+                    <button
+                        class="flex items-center justify-center gap-2 px-4 py-2 border border-[#e7f1f3] dark:border-white/10 rounded-xl hover:bg-[#e7f1f3]/50 dark:hover:bg-white/5 transition-colors">
+                        <img alt="Facebook" class="size-5"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMivJWrJzNPBUnyizEO9vpNvk-9pc-zfZdeqxbI64jLSlbkuSR-6BScPKgdx9gOpjyGINB-zid26tY7bepa-A5J2_Lf8A4fYXfpY3F4HMbpsP1_NupUP9FJBSeJXsPkXc_pPL_4Sk4cJdMsAfRxMJlS9HKG2AUPjxt7iLlqVzmrs-FC_gyIF1W7poN5NlCH8kpOTacRUQgme0NK6X-l-NTMZgqrEf3dMeb3WwU_G1Xxz8wfBKHsjuk1ArNMlYeIEUhV8yXqlAt6Ak" />
+                        <span class="text-xs font-bold">Facebook</span>
+                    </button>
+                </div>
+                <div class="mt-12 text-center">
+                    <p class="text-[11px] text-[#4c8d9a] uppercase tracking-widest font-bold">Secure SSL Encrypted
+                        Connection</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

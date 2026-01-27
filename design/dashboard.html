@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Family Tree Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0d191b] dark:text-white min-h-screen">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <!-- TopNavBar -->
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f1f3] dark:border-b-white/10 px-6 md:px-10 py-3 bg-white dark:bg-background-dark sticky top-0 z-50">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-4 text-primary">
+                        <div class="size-8">
+                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0d191b] dark:text-white text-xl font-black leading-tight tracking-tight">
+                            AncestryHub</h2>
+                    </div>
+                    <nav class="hidden lg:flex items-center gap-9">
+                        <a class="text-primary text-sm font-semibold leading-normal border-b-2 border-primary pb-1"
+                            href="#">Dashboard</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Trees</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Search</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">DNA</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Help</a>
+                    </nav>
+                </div>
+                <div class="flex flex-1 justify-end gap-4 md:gap-8">
+                    <label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+                        <div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-[#e7f1f3] dark:bg-white/10">
+                            <div class="text-[#4c8d9a] flex items-center justify-center pl-4">
+                                <span class="material-symbols-outlined !text-[20px]">search</span>
+                            </div>
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl text-[#0d191b] dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-[#4c8d9a] px-4 pl-2 text-sm font-normal"
+                                placeholder="Find ancestor..." value="" />
+                        </div>
+                    </label>
+                    <div class="flex gap-2">
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#e7f1f3] dark:bg-white/10 text-[#0d191b] dark:text-white hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined !text-[22px]">notifications</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#e7f1f3] dark:bg-white/10 text-[#0d191b] dark:text-white hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined !text-[22px]">settings</span>
+                        </button>
+                    </div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+                        data-alt="Profile picture of a woman with blond hair"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzsZUOfTowulnWXunM-2BgEtJK7nNmH9gxN5xI-dMrDoSJhZCTFxE8auw4dTAy70fjJzxvjDaeYNMzYIATenC_U19GXIVZA-Z50vNQs-w7ZJFGU2UuDxsgteVJInfhn0eodvSr1DrioBEGxJVghXbVNoMTxzUVxlPH9ABFmuG8RLmY2kqI8NJni7_i4MfjcZYw1uEUr5zzTbQo8kb_Xn4wcbX_QdJhxq7GAqpYlE0UHsOrERN2hctioKdqoYArt28CsBjq2gjOra0");'>
+                    </div>
+                </div>
+            </header>
+            <!-- Main Content -->
+            <main class="flex-1 px-4 md:px-10 lg:px-40 py-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left Section: Greeting & Trees -->
+                    <div class="lg:col-span-8 flex flex-col gap-8">
+                        <!-- PageHeading -->
+                        <div class="flex flex-wrap justify-between items-end gap-4">
+                            <div class="flex min-w-72 flex-col gap-1">
+                                <p
+                                    class="text-[#0d191b] dark:text-white text-4xl font-black leading-tight tracking-tight">
+                                    Welcome back, Sarah!</p>
+                                <p class="text-[#4c8d9a] text-base font-normal leading-normal">You have 4,280 members
+                                    across 3 family trees.</p>
+                            </div>
+                            <button
+                                class="flex min-w-[140px] cursor-pointer items-center justify-center gap-2 rounded-xl h-12 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-95">
+                                <span class="material-symbols-outlined">add</span>
+                                <span class="truncate">Create New Tree</span>
+                            </button>
+                        </div>
+                        <!-- Tree Section -->
+                        <div
+                            class="bg-white dark:bg-white/5 rounded-2xl p-6 shadow-sm border border-[#e7f1f3] dark:border-white/10">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2
+                                    class="text-[#0d191b] dark:text-white text-[22px] font-bold leading-tight tracking-tight">
+                                    My Family Trees</h2>
+                                <button class="text-primary text-sm font-semibold hover:underline">View All</button>
+                            </div>
+                            <!-- ImageGrid -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                                <!-- Tree Item 1 -->
+                                <div class="flex flex-col gap-3 group cursor-pointer">
+                                    <div
+                                        class="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm transition-transform group-hover:scale-[1.02]">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10">
+                                        </div>
+                                        <div class="w-full h-full bg-center bg-no-repeat bg-cover"
+                                            data-alt="Abstract green family tree diagram on light background"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC2RJlq702RXvzQ8VwCHNUXuqhaOBItM2Zb0t2V53fWbV_1xTVyPslh6xc-B1PIgHQCIr9MGYYr-tnfK4TPJx-9CxCVoxuzBZ18MU_NBl8ZI-ZitkF9jVbE-mmkuDZcJIzLCFmO8sgFB6yG2faNCGceuHmLoi8xrBsx7eR_PYuNNyt30nX8qLeSGHld_eWdq9Lgomtx0vN4P2ZYAVgIwdHdnN9hNmUtvAKhkP5cOJJlTh8eIAfuKsIxAT10imT-vKyjRLKKytdFFDQ");'>
+                                        </div>
+                                        <div class="absolute bottom-3 left-3 z-20 flex gap-1">
+                                            <span
+                                                class="bg-primary/90 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Main</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-[#0d191b] dark:text-white text-base font-bold leading-normal group-hover:text-primary transition-colors">
+                                            The Miller Family</p>
+                                        <div class="flex items-center gap-3 text-[#4c8d9a] text-xs font-normal">
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">groups</span> 1,420
+                                                members</span>
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">history</span> 2h
+                                                ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tree Item 2 -->
+                                <div class="flex flex-col gap-3 group cursor-pointer">
+                                    <div
+                                        class="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm transition-transform group-hover:scale-[1.02]">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10">
+                                        </div>
+                                        <div class="w-full h-full bg-center bg-no-repeat bg-cover"
+                                            data-alt="A vintage black and white family portrait photograph"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAapZFnT6zi2bvpPEbagWq8cm9-7VBobLrhZPEirJIOerOp94fFF8RYMmN8hzsbJ-T2VdjCv2bE9PufT3SozpEVc193usPzm8orPRULc-59bVE0uJk7Q-ENYfGX6Sgb5EjT2xukCeemg4PS4QHhOFNYSkff_exPDeZf11Wgd58myA2oMpp_Q-4vmtuvekUbIrdhQeLVU3LftZBZADyXw3SUbWhBC69AJNsai9omr5nq0Rvd9H8vWVsV7qx6iyQxvcuvDGg3E6b8ubk");'>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-[#0d191b] dark:text-white text-base font-bold leading-normal group-hover:text-primary transition-colors">
+                                            Smith &amp; Jones Lineage</p>
+                                        <div class="flex items-center gap-3 text-[#4c8d9a] text-xs font-normal">
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">groups</span> 2,105
+                                                members</span>
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">history</span>
+                                                Yesterday</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tree Item 3 -->
+                                <div class="flex flex-col gap-3 group cursor-pointer">
+                                    <div
+                                        class="relative w-full aspect-video rounded-xl overflow-hidden shadow-sm transition-transform group-hover:scale-[1.02]">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10">
+                                        </div>
+                                        <div class="w-full h-full bg-center bg-no-repeat bg-cover"
+                                            data-alt="Green forest landscape with tall trees and sunlight"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgp1sAjHdn6Of5xdrLidr8B5jdS2UshwUq2iuwN0xOaFedYnT7Lb9TDToZc6crAIYohSqQbtZ_3Ut9qqjEnWSmg4ijmQaHQcczxnCZ65D2OWcSf4kvsAZNq-BGGDOkPjbi3-gYNFyNRwRRC65mdQgBk4vCgRC-bj6-766SbRMcNmkNhHCgEmhuNsUBkYSHYHxElc5PlWLNMKn0huxriGOsSzbclY7E4WjNfS7WN8kFEm4XMfLqvm54GPQsfKjnM3X_UXDb_Nt94yY");'>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p
+                                            class="text-[#0d191b] dark:text-white text-base font-bold leading-normal group-hover:text-primary transition-colors">
+                                            Greenwood Ancestry</p>
+                                        <div class="flex items-center gap-3 text-[#4c8d9a] text-xs font-normal">
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">groups</span> 755
+                                                members</span>
+                                            <span class="flex items-center gap-1"><span
+                                                    class="material-symbols-outlined !text-[14px]">history</span> Oct
+                                                12</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- DNA Insights Placeholder (Bonus content) -->
+                        <div
+                            class="bg-gradient-to-r from-primary to-[#00b4db] rounded-2xl p-6 text-white flex items-center justify-between">
+                            <div class="flex flex-col gap-1">
+                                <h3 class="text-xl font-bold">New DNA matches found</h3>
+                                <p class="text-white/80 text-sm">You have 12 potential relatives matching your DNA
+                                    profile.</p>
+                            </div>
+                            <button
+                                class="bg-white text-primary px-6 py-2 rounded-xl font-bold text-sm hover:bg-white/90 transition-colors">Review
+                                Matches</button>
+                        </div>
+                    </div>
+                    <!-- Right Section: Sidebar -->
+                    <div class="lg:col-span-4 flex flex-col gap-6">
+                        <!-- Invitations Widget -->
+                        <div
+                            class="bg-white dark:bg-white/5 rounded-2xl p-6 shadow-sm border border-[#e7f1f3] dark:border-white/10">
+                            <div class="flex items-center gap-2 mb-4">
+                                <span class="material-symbols-outlined text-primary">mail</span>
+                                <h3 class="text-[#0d191b] dark:text-white font-bold text-lg">Invitations</h3>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <div
+                                    class="flex items-start gap-3 p-3 bg-[#f8fbfc] dark:bg-white/5 rounded-xl border border-[#e7f1f3] dark:border-white/10">
+                                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                        data-alt="Avatar of an elderly man"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBnfxsmrSHPjMuSDc_Oj98TzG0V6ZF2vMuMUnxlPUFbh5ain9K1lZUPJawj5TmUkfJbBHh57xVBqq64tLJzRMUcUNmdD9oQv8XCb2i6qlg854BPIj1K-AtaxsTbiPkym6r_clbxkBgdEMXprfrUXY5zVYWOmzZBcFsrP7v_qiKKLfMVqMETyMMmFXu1q4ZxlYRt-71fVnwGLbhA79Hk3lneUutc3w46Vcw2HxvnDR0vTdE0R3OnXps-5s_cTTie0CNX8Itwj9t1neE");'>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-xs text-[#0d191b] dark:text-white leading-tight"><span
+                                                class="font-bold">Uncle Joe</span> invited you to collaborate on <span
+                                                class="font-bold">Miller Lineage</span></p>
+                                        <div class="flex gap-2 mt-2">
+                                            <button
+                                                class="px-3 py-1 bg-primary text-white text-[11px] font-bold rounded-lg">Accept</button>
+                                            <button
+                                                class="px-3 py-1 bg-[#e7f1f3] dark:bg-white/10 text-[#0d191b] dark:text-white text-[11px] font-bold rounded-lg">Decline</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Recent Activity Sidebar -->
+                        <div
+                            class="bg-white dark:bg-white/5 rounded-2xl p-6 shadow-sm border border-[#e7f1f3] dark:border-white/10 flex flex-col gap-5">
+                            <h3 class="text-[#0d191b] dark:text-white font-bold text-lg">Recent Activity</h3>
+                            <div
+                                class="flex flex-col gap-6 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-[1px] before:bg-[#e7f1f3] dark:before:bg-white/10">
+                                <div class="relative pl-10">
+                                    <div
+                                        class="absolute left-0 top-0 size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary z-10">
+                                        <span class="material-symbols-outlined !text-[20px]">add_a_photo</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-[#0d191b] dark:text-white">Uploaded 4 new
+                                            photos</p>
+                                        <p class="text-xs text-[#4c8d9a]">To "Smith Family Tree" • 45m ago</p>
+                                        <div class="flex gap-2 mt-2">
+                                            <div class="size-8 rounded bg-center bg-cover"
+                                                data-alt="Vintage sepia photo of a house"
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD6forpvHBx6SngjEwJHophb7pq7Pad7mZ0vQNpIM8wquCa5p8A3vG4JDMvWz2vA09RXRnzqDiPZSTXh0Hrbb-tindbHoa8zr0xNgJ2n_v-GMlCXag4GYeagOXSBvfBG0CKu6Dq9RApp6gx9aI1ZSQjTAyJhr_wu95SUVPoVjLWSYZCuwHWgmlX5ZWx1NZRry5NzHD0HFKMOZJNIayknSTU3rVfLn-OGO-0FURQgugt5g_AFtDmP2OV5RzHY1FngGdNmBHz3iYmHNg')">
+                                            </div>
+                                            <div class="size-8 rounded bg-center bg-cover"
+                                                data-alt="Black and white portrait of a woman"
+                                                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC4t9K1b1QTY-p5VyIwVdNPaX9VbxojHaqHo5_S82rxWCG9pIij2fklE8cep1YnfMZ_QLgKS-McQJ4xMTqn4Su2N05b7aJt0cAmgkKzkRxV-ttSQnw57VRwYZvQ4xPnWT-paKksl_r4YI4q_aeCgLI05kx3Jpreyi1-Th-uVRLsqlM0jNiTIL6fXXTdE-ExZ1rIWzP1GwPP1SlVLsKE7TnY9Kkai9cuLdnFZ87krHCO1hdBamg0LnwwQ0poYdkGwCngVReyHCiMeVI')">
+                                            </div>
+                                            <div
+                                                class="size-8 rounded bg-[#e7f1f3] dark:bg-white/10 flex items-center justify-center text-[10px] font-bold">
+                                                +2</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="relative pl-10">
+                                    <div
+                                        class="absolute left-0 top-0 size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary z-10">
+                                        <span class="material-symbols-outlined !text-[20px]">person_add</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-[#0d191b] dark:text-white">Added "Thomas
+                                            Greenwood"</p>
+                                        <p class="text-xs text-[#4c8d9a]">To "Greenwood Ancestry" • 3h ago</p>
+                                    </div>
+                                </div>
+                                <div class="relative pl-10">
+                                    <div
+                                        class="absolute left-0 top-0 size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary z-10">
+                                        <span class="material-symbols-outlined !text-[20px]">description</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-[#0d191b] dark:text-white">Attached 1880
+                                            Census record</p>
+                                        <p class="text-xs text-[#4c8d9a]">For "Martha Miller" • 5h ago</p>
+                                    </div>
+                                </div>
+                                <div class="relative pl-10">
+                                    <div
+                                        class="absolute left-0 top-0 size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary z-10">
+                                        <span class="material-symbols-outlined !text-[20px]">edit</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-[#0d191b] dark:text-white">Updated birth
+                                            location</p>
+                                        <p class="text-xs text-[#4c8d9a]">For "Samuel Jones" • Yesterday</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button
+                                class="w-full py-2 text-primary text-sm font-bold border border-primary/20 rounded-xl hover:bg-primary/5 transition-colors">Show
+                                More Activity</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- Bottom Navigation for Mobile (Mobile-only) -->
+            <div
+                class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-[#e7f1f3] dark:border-white/10 px-4 py-2 flex justify-around items-center z-50">
+                <button class="flex flex-col items-center gap-1 text-primary">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-[10px] font-medium">Home</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">account_tree</span>
+                    <span class="text-[10px] font-medium">Trees</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">search</span>
+                    <span class="text-[10px] font-medium">Search</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Account Settings - AncestryHub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13c8ec",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#101f22",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0d191b] dark:text-white min-h-screen">
+    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+        <div class="layout-container flex h-full grow flex-col">
+            <header
+                class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f1f3] dark:border-b-white/10 px-6 md:px-10 py-3 bg-white dark:bg-background-dark sticky top-0 z-50">
+                <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-4 text-primary">
+                        <div class="size-8">
+                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-[#0d191b] dark:text-white text-xl font-black leading-tight tracking-tight">
+                            AncestryHub</h2>
+                    </div>
+                    <nav class="hidden lg:flex items-center gap-9">
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Dashboard</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Trees</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Search</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">DNA</a>
+                        <a class="text-[#4c8d9a] hover:text-primary text-sm font-medium leading-normal transition-colors"
+                            href="#">Help</a>
+                    </nav>
+                </div>
+                <div class="flex flex-1 justify-end gap-4 md:gap-8">
+                    <div class="flex gap-2">
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-[#e7f1f3] dark:bg-white/10 text-[#0d191b] dark:text-white hover:bg-primary/20 transition-colors">
+                            <span class="material-symbols-outlined !text-[22px]">notifications</span>
+                        </button>
+                        <button
+                            class="flex items-center justify-center rounded-xl h-10 w-10 bg-primary/10 text-primary border border-primary/20">
+                            <span class="material-symbols-outlined !text-[22px]">settings</span>
+                        </button>
+                    </div>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20"
+                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzsZUOfTowulnWXunM-2BgEtJK7nNmH9gxN5xI-dMrDoSJhZCTFxE8auw4dTAy70fjJzxvjDaeYNMzYIATenC_U19GXIVZA-Z50vNQs-w7ZJFGU2UuDxsgteVJInfhn0eodvSr1DrioBEGxJVghXbVNoMTxzUVxlPH9ABFmuG8RLmY2kqI8NJni7_i4MfjcZYw1uEUr5zzTbQo8kb_Xn4wcbX_QdJhxq7GAqpYlE0UHsOrERN2hctioKdqoYArt28CsBjq2gjOra0");'>
+                    </div>
+                </div>
+            </header>
+            <main class="flex-1 px-4 md:px-10 lg:px-40 py-10">
+                <div class="mb-8">
+                    <h1 class="text-[#0d191b] dark:text-white text-3xl font-black leading-tight tracking-tight">Account
+                        Settings</h1>
+                    <p class="text-[#4c8d9a] text-base mt-1">Manage your profile information and tree preferences.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <aside class="lg:col-span-3 flex flex-col gap-2">
+                        <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white dark:bg-white/5 border border-primary/20 text-primary font-bold shadow-sm transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined">person</span>
+                            <span>Profile</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-white/5 text-[#4c8d9a] font-medium transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined">security</span>
+                            <span>Security</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-white/5 text-[#4c8d9a] font-medium transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined">payments</span>
+                            <span>Subscription</span>
+                        </a>
+                        <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white dark:hover:bg-white/5 text-[#4c8d9a] font-medium transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <span>Notifications</span>
+                        </a>
+                        <hr class="my-4 border-[#e7f1f3] dark:border-white/10" />
+                        <button
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 font-medium transition-all">
+                            <span class="material-symbols-outlined">logout</span>
+                            <span>Log Out</span>
+                        </button>
+                    </aside>
+                    <div class="lg:col-span-9 flex flex-col gap-8">
+                        <div
+                            class="bg-white dark:bg-white/5 rounded-2xl p-8 shadow-sm border border-[#e7f1f3] dark:border-white/10">
+                            <h2 class="text-xl font-bold mb-8 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">badge</span>
+                                Personal Information
+                            </h2>
+                            <div class="space-y-8">
+                                <div class="flex items-center gap-6">
+                                    <div class="relative group">
+                                        <div class="size-24 rounded-full bg-center bg-cover ring-4 ring-[#e7f1f3] dark:ring-white/5"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzsZUOfTowulnWXunM-2BgEtJK7nNmH9gxN5xI-dMrDoSJhZCTFxE8auw4dTAy70fjJzxvjDaeYNMzYIATenC_U19GXIVZA-Z50vNQs-w7ZJFGU2UuDxsgteVJInfhn0eodvSr1DrioBEGxJVghXbVNoMTxzUVxlPH9ABFmuG8RLmY2kqI8NJni7_i4MfjcZYw1uEUr5zzTbQo8kb_Xn4wcbX_QdJhxq7GAqpYlE0UHsOrERN2hctioKdqoYArt28CsBjq2gjOra0");'>
+                                        </div>
+                                        <button
+                                            class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform">
+                                            <span class="material-symbols-outlined !text-sm">photo_camera</span>
+                                        </button>
+                                    </div>
+                                    <div class="flex flex-col gap-1">
+                                        <p class="font-bold text-lg">Profile Picture</p>
+                                        <p class="text-sm text-[#4c8d9a]">PNG, JPG or GIF. Max 5MB.</p>
+                                        <div class="flex gap-3 mt-2">
+                                            <button class="text-xs font-bold text-primary hover:underline">Upload
+                                                New</button>
+                                            <button
+                                                class="text-xs font-bold text-red-500 hover:underline">Remove</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="border-[#e7f1f3] dark:border-white/10" />
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-sm font-semibold text-[#4c8d9a]">Display Name</label>
+                                        <input
+                                            class="form-input rounded-xl border-[#e7f1f3] dark:border-white/10 bg-transparent text-[#0d191b] dark:text-white focus:border-primary focus:ring-0"
+                                            type="text" value="Sarah Miller" />
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <label class="text-sm font-semibold text-[#4c8d9a]">Contact Email</label>
+                                        <input
+                                            class="form-input rounded-xl border-[#e7f1f3] dark:border-white/10 bg-transparent text-[#0d191b] dark:text-white focus:border-primary focus:ring-0"
+                                            type="email" value="sarah.miller@example.com" />
+                                    </div>
+                                    <div class="flex flex-col gap-2 md:col-span-2">
+                                        <label class="text-sm font-semibold text-[#4c8d9a]">Short Bio</label>
+                                        <textarea
+                                            class="form-input rounded-xl border-[#e7f1f3] dark:border-white/10 bg-transparent text-[#0d191b] dark:text-white focus:border-primary focus:ring-0 resize-none"
+                                            rows="3">Passionate genealogist researching the Miller and Greenwood lineages across Western Europe.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white dark:bg-white/5 rounded-2xl p-8 shadow-sm border border-[#e7f1f3] dark:border-white/10">
+                            <h2 class="text-xl font-bold mb-8 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">account_tree</span>
+                                Tree Preferences
+                            </h2>
+                            <div class="space-y-6">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div class="flex flex-col">
+                                        <p class="font-bold">Default Visibility</p>
+                                        <p class="text-sm text-[#4c8d9a]">Control who can see your family trees by
+                                            default.</p>
+                                    </div>
+                                    <div class="flex bg-[#e7f1f3] dark:bg-white/10 p-1 rounded-xl">
+                                        <button
+                                            class="px-6 py-2 rounded-lg text-sm font-bold bg-white dark:bg-white/20 shadow-sm">Private</button>
+                                        <button
+                                            class="px-6 py-2 rounded-lg text-sm font-bold text-[#4c8d9a]">Public</button>
+                                    </div>
+                                </div>
+                                <hr class="border-[#e7f1f3] dark:border-white/10" />
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div class="flex flex-col">
+                                        <p class="font-bold">Measurement Units</p>
+                                        <p class="text-sm text-[#4c8d9a]">Used for displaying distances and map data.
+                                        </p>
+                                    </div>
+                                    <select
+                                        class="form-select rounded-xl border-[#e7f1f3] dark:border-white/10 bg-transparent text-[#0d191b] dark:text-white focus:border-primary focus:ring-0 min-w-40">
+                                        <option>Metric (km, m)</option>
+                                        <option>Imperial (mi, ft)</option>
+                                    </select>
+                                </div>
+                                <hr class="border-[#e7f1f3] dark:border-white/10" />
+                                <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                        <p class="font-bold">Open Collaboration</p>
+                                        <p class="text-sm text-[#4c8d9a]">Allow others to request to join your tree
+                                            edits.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input checked="" class="sr-only peer" type="checkbox" />
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 dark:bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-4">
+                            <button
+                                class="px-6 py-3 rounded-xl font-bold text-[#4c8d9a] hover:bg-white dark:hover:bg-white/5 transition-all">Cancel</button>
+                            <button
+                                class="px-10 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/25 hover:bg-primary/90 transition-all active:scale-95">Save
+                                Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <div
+                class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-[#e7f1f3] dark:border-white/10 px-4 py-2 flex justify-around items-center z-50">
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="text-[10px] font-medium">Home</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">account_tree</span>
+                    <span class="text-[10px] font-medium">Trees</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-[#4c8d9a]">
+                    <span class="material-symbols-outlined">search</span>
+                    <span class="text-[10px] font-medium">Search</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-primary">
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
