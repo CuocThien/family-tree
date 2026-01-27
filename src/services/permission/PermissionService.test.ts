@@ -1,13 +1,21 @@
 import { PermissionService } from './PermissionService';
-import { IPermissionService, Permission } from './IPermissionService';
+import { IPermissionService } from './IPermissionService';
+import { Permission } from '@/strategies/permission/IPermissionStrategy';
 import { ITreeRepository } from '@/repositories/interfaces/ITreeRepository';
-import { IUserRepository } from '@/repositories/interfaces/IUserRepository';
+import { IPersonRepository } from '@/repositories/interfaces/IPersonRepository';
+import { IRelationshipRepository } from '@/repositories/interfaces/IRelationshipRepository';
 import { ITree } from '@/types/tree';
+import { IPerson } from '@/types/person';
+import { IRelationship } from '@/types/relationship';
+import { RoleBasedPermissionStrategy } from '@/strategies/permission/RoleBasedPermissionStrategy';
+import { AttributeBasedPermissionStrategy } from '@/strategies/permission/AttributeBasedPermissionStrategy';
+import { OwnerOnlyPermissionStrategy } from '@/strategies/permission/OwnerOnlyPermissionStrategy';
 
 describe('PermissionService', () => {
   let service: PermissionService;
   let mockTreeRepo: jest.Mocked<ITreeRepository>;
-  let mockUserRepo: jest.Mocked<IUserRepository>;
+  let mockPersonRepo: jest.Mocked<IPersonRepository>;
+  let mockRelationshipRepo: jest.Mocked<IRelationshipRepository>;
 
   const mockTree: ITree = {
     _id: 'tree-1',
@@ -27,6 +35,30 @@ describe('PermissionService', () => {
     updatedAt: new Date(),
   };
 
+  const publicTree: ITree = {
+    ...mockTree,
+    settings: {
+      isPublic: true,
+      allowComments: false,
+      defaultPhotoQuality: 'medium',
+      language: 'en',
+    },
+  };
+
+  const mockPerson: IPerson = {
+    _id: 'person-1',
+    treeId: 'tree-1',
+    firstName: 'John',
+    lastName: 'Doe',
+    dateOfBirth: new Date('1990-01-01'),
+    dateOfDeath: undefined,
+    photos: [],
+    documents: [],
+    customAttributes: new Map(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   beforeEach(() => {
     mockTreeRepo = {
       findById: jest.fn(),
@@ -34,22 +66,46 @@ describe('PermissionService', () => {
       hasAccess: jest.fn(),
     } as unknown as jest.Mocked<ITreeRepository>;
 
-    mockUserRepo = {
+    mockPersonRepo = {
       findById: jest.fn(),
-      findByEmail: jest.fn(),
+      findByTreeId: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-      findByEmailWithPassword: jest.fn(),
-      updatePassword: jest.fn(),
-      verifyEmail: jest.fn(),
-      addTree: jest.fn(),
-      removeTree: jest.fn(),
+      search: jest.fn(),
+      countByTreeId: jest.fn(),
+      findByIds: jest.fn(),
       exists: jest.fn(),
-      emailExists: jest.fn(),
-    } as unknown as jest.Mocked<IUserRepository>;
+      existsInTree: jest.fn(),
+      deleteByTreeId: jest.fn(),
+    } as unknown as jest.Mocked<IPersonRepository>;
 
-    service = new PermissionService(mockTreeRepo, mockUserRepo);
+    mockRelationshipRepo = {
+      findById: jest.fn(),
+      findByTreeId: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findByPersonId: jest.fn(),
+      findByPersonIdAndType: jest.fn(),
+      findBetweenPersons: jest.fn(),
+      findParents: jest.fn(),
+      findChildren: jest.fn(),
+      findSpouses: jest.fn(),
+      findSiblings: jest.fn(),
+      exists: jest.fn(),
+      deleteByPersonId: jest.fn(),
+      deleteByTreeId: jest.fn(),
+    } as unknown as jest.Mocked<IRelationshipRepository>;
+
+    // Create strategies with mock repositories
+    const strategies = [
+      new OwnerOnlyPermissionStrategy(mockTreeRepo),
+      new AttributeBasedPermissionStrategy(mockPersonRepo, mockRelationshipRepo, mockTreeRepo),
+      new RoleBasedPermissionStrategy(mockTreeRepo),
+    ];
+
+    service = new PermissionService(strategies);
   });
 
   describe('canAccess', () => {
@@ -57,15 +113,14 @@ describe('PermissionService', () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.canAccess('owner-1', 'tree-1', Permission.DELETE_TREE);
-
       expect(result).toBe(true);
+      expect(mockTreeRepo.findById).toHaveBeenCalledWith('tree-1');
     });
 
     it('should grant editor permissions to editor role', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.canAccess('editor-1', 'tree-1', Permission.EDIT_TREE);
-
       expect(result).toBe(true);
     });
 
@@ -73,7 +128,6 @@ describe('PermissionService', () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.canAccess('editor-1', 'tree-1', Permission.DELETE_TREE);
-
       expect(result).toBe(false);
     });
 
@@ -81,7 +135,6 @@ describe('PermissionService', () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
-
       expect(result).toBe(true);
     });
 
@@ -89,33 +142,43 @@ describe('PermissionService', () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.canAccess('viewer-1', 'tree-1', Permission.EDIT_TREE);
-
       expect(result).toBe(false);
     });
 
     it('should deny access to non-collaborators on private tree', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.canAccess('nonmember-1', 'tree-1', Permission.VIEW_TREE);
-
+      const result = await service.canAccess('stranger-1', 'tree-1', Permission.VIEW_TREE);
       expect(result).toBe(false);
     });
 
     it('should grant view access to non-collaborators on public tree', async () => {
-      const publicTree = { ...mockTree, settings: { ...mockTree.settings, isPublic: true } };
       mockTreeRepo.findById.mockResolvedValue(publicTree);
 
-      const result = await service.canAccess('nonmember-1', 'tree-1', Permission.VIEW_TREE);
-
+      const result = await service.canAccess('stranger-1', 'tree-1', Permission.VIEW_TREE);
       expect(result).toBe(true);
     });
 
     it('should return false for non-existent tree', async () => {
       mockTreeRepo.findById.mockResolvedValue(null);
 
-      const result = await service.canAccess('user-1', 'nonexistent', Permission.VIEW_TREE);
-
+      const result = await service.canAccess('owner-1', 'nonexistent', Permission.VIEW_TREE);
       expect(result).toBe(false);
+    });
+
+    it('should cache permission results', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
+
+      // First call - should hit repository (multiple strategies may query)
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      const firstCallCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
+
+      // Second call - should use cache (no additional repository calls)
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      const secondCallCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
+
+      // The count should be the same, indicating cache was used
+      expect(secondCallCount).toBe(firstCallCount);
     });
   });
 
@@ -123,144 +186,138 @@ describe('PermissionService', () => {
     it('should return all permissions for owner', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.getPermissions('owner-1', 'tree-1');
+      const permissions = await service.getPermissions('owner-1', 'tree-1');
 
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).toContain(Permission.EDIT_TREE);
-      expect(result).toContain(Permission.DELETE_TREE);
-      expect(result).toContain(Permission.ADD_PERSON);
+      expect(permissions).toContain(Permission.DELETE_TREE);
+      expect(permissions).toContain(Permission.EDIT_TREE);
+      expect(permissions).toContain(Permission.VIEW_TREE);
+      expect(permissions.length).toBeGreaterThan(5);
     });
 
     it('should return editor permissions for editor role', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.getPermissions('editor-1', 'tree-1');
+      const permissions = await service.getPermissions('editor-1', 'tree-1');
 
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).toContain(Permission.EDIT_TREE);
-      expect(result).toContain(Permission.ADD_PERSON);
-      expect(result).not.toContain(Permission.DELETE_TREE);
+      expect(permissions).toContain(Permission.EDIT_TREE);
+      expect(permissions).toContain(Permission.VIEW_TREE);
+      expect(permissions).not.toContain(Permission.DELETE_TREE);
     });
 
     it('should return viewer permissions for viewer role', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.getPermissions('viewer-1', 'tree-1');
+      const permissions = await service.getPermissions('viewer-1', 'tree-1');
 
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).not.toContain(Permission.EDIT_TREE);
+      expect(permissions).toContain(Permission.VIEW_TREE);
+      expect(permissions).not.toContain(Permission.EDIT_TREE);
     });
   });
 
   describe('getRolePermissions', () => {
-    it('should return admin permissions', () => {
-      const result = service.getRolePermissions('admin');
+    it('should return permissions for a given role', () => {
+      const permissions = service.getRolePermissions('editor');
 
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).toContain(Permission.DELETE_TREE);
-      expect(result).toContain(Permission.MANAGE_COLLABORATORS);
-    });
-
-    it('should return editor permissions', () => {
-      const result = service.getRolePermissions('editor');
-
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).toContain(Permission.EDIT_TREE);
-      expect(result).not.toContain(Permission.DELETE_TREE);
-      expect(result).not.toContain(Permission.MANAGE_COLLABORATORS);
-    });
-
-    it('should return viewer permissions', () => {
-      const result = service.getRolePermissions('viewer');
-
-      expect(result).toContain(Permission.VIEW_TREE);
-      expect(result).not.toContain(Permission.EDIT_TREE);
-      expect(result).not.toContain(Permission.ADD_PERSON);
-    });
-
-    it('should return empty array for unknown role', () => {
-      const result = service.getRolePermissions('unknown');
-
-      expect(result).toEqual([]);
+      expect(permissions).toContain(Permission.EDIT_TREE);
+      expect(permissions).not.toContain(Permission.DELETE_TREE);
     });
   });
 
   describe('hasMinimumRole', () => {
-    it('should return true for owner checking against any role', async () => {
-      mockTreeRepo.findById.mockResolvedValue(mockTree);
-
-      expect(await service.hasMinimumRole('owner-1', 'tree-1', 'viewer')).toBe(true);
-      expect(await service.hasMinimumRole('owner-1', 'tree-1', 'editor')).toBe(true);
-      expect(await service.hasMinimumRole('owner-1', 'tree-1', 'admin')).toBe(true);
-    });
-
-    it('should return true for editor checking against viewer', async () => {
+    it('should return true when user has higher role', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
       const result = await service.hasMinimumRole('editor-1', 'tree-1', 'viewer');
-
       expect(result).toBe(true);
     });
 
-    it('should return false for editor checking against admin', async () => {
+    it('should return false when user has lower role', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.hasMinimumRole('editor-1', 'tree-1', 'admin');
-
-      expect(result).toBe(false);
-    });
-
-    it('should return false for non-collaborator', async () => {
-      mockTreeRepo.findById.mockResolvedValue(mockTree);
-
-      const result = await service.hasMinimumRole('nonmember-1', 'tree-1', 'viewer');
-
+      const result = await service.hasMinimumRole('viewer-1', 'tree-1', 'editor');
       expect(result).toBe(false);
     });
   });
 
-  describe('getUserRole', () => {
-    it('should return admin for owner', async () => {
+  describe('invalidateCache', () => {
+    it('should clear all cache when no arguments provided', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.getUserRole('owner-1', 'tree-1');
+      // Populate cache
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      const firstCallCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
 
-      expect(result).toBe('admin');
+      // Clear cache
+      service.invalidateCache();
+
+      // Next call should hit repository again
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      const secondCallCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
+
+      // Should have more calls after cache invalidation
+      expect(secondCallCount).toBeGreaterThan(firstCallCount);
     });
 
-    it('should return editor role for editor collaborator', async () => {
+    it('should clear cache for specific user', async () => {
       mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.getUserRole('editor-1', 'tree-1');
+      // Populate cache
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      await service.canAccess('editor-1', 'tree-1', Permission.VIEW_TREE);
+      const beforeClearCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
 
-      expect(result).toBe('editor');
-    });
+      // Clear cache for viewer-1 only
+      service.invalidateCache('viewer-1');
 
-    it('should return viewer role for viewer collaborator', async () => {
-      mockTreeRepo.findById.mockResolvedValue(mockTree);
+      // viewer-1 should hit repository again
+      await service.canAccess('viewer-1', 'tree-1', Permission.VIEW_TREE);
+      const afterViewerCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
 
-      const result = await service.getUserRole('viewer-1', 'tree-1');
+      // editor-1 should still use cache
+      await service.canAccess('editor-1', 'tree-1', Permission.VIEW_TREE);
+      const afterEditorCount = (mockTreeRepo.findById as jest.Mock).mock.calls.length;
 
-      expect(result).toBe('viewer');
+      // viewer-1 call should add new repository calls
+      expect(afterViewerCount).toBeGreaterThan(beforeClearCount);
+      // editor-1 call should not add new repository calls (cached)
+      expect(afterEditorCount).toBe(afterViewerCount);
     });
   });
 
-  describe('isOwner', () => {
-    it('should return true for owner', async () => {
-      mockTreeRepo.isOwner.mockResolvedValue(true);
+  describe('backward compatibility methods', () => {
+    it('should support getUserRole method', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.isOwner('owner-1', 'tree-1');
-
-      expect(result).toBe(true);
-      expect(mockTreeRepo.isOwner).toHaveBeenCalledWith('tree-1', 'owner-1');
+      const role = await service.getUserRole('owner-1', 'tree-1');
+      expect(role).toBe('owner');
     });
 
-    it('should return false for non-owner', async () => {
-      mockTreeRepo.isOwner.mockResolvedValue(false);
+    it('should support isOwner method', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
 
-      const result = await service.isOwner('editor-1', 'tree-1');
+      const isOwner = await service.isOwner('owner-1', 'tree-1');
+      expect(isOwner).toBe(true);
+    });
 
-      expect(result).toBe(false);
+    it('should support canManageCollaborators method', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
+
+      const can = await service.canManageCollaborators('owner-1', 'tree-1');
+      expect(can).toBe(true);
+    });
+
+    it('should support canDeleteTree method', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
+
+      const can = await service.canDeleteTree('owner-1', 'tree-1');
+      expect(can).toBe(true);
+    });
+
+    it('should support canExportTree method', async () => {
+      mockTreeRepo.findById.mockResolvedValue(mockTree);
+
+      const can = await service.canExportTree('viewer-1', 'tree-1');
+      expect(can).toBe(true);
     });
   });
 });

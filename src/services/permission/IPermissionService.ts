@@ -1,30 +1,21 @@
-/**
- * Permissions available for tree operations.
- * These permissions can be checked per-user, per-tree.
- */
-export enum Permission {
-  VIEW_TREE = 'view_tree',
-  EDIT_TREE = 'edit_tree',
-  DELETE_TREE = 'delete_tree',
-  ADD_PERSON = 'add_person',
-  EDIT_PERSON = 'edit_person',
-  DELETE_PERSON = 'delete_person',
-  ADD_RELATIONSHIP = 'add_relationship',
-  MANAGE_COLLABORATORS = 'manage_collaborators',
-  EXPORT_TREE = 'export_tree',
-}
+import { Permission } from '@/strategies/permission/IPermissionStrategy';
+
+// Re-export Permission for convenience
+export type { Permission };
 
 /**
  * Service interface for Permission operations.
- * Handles authorization checks and role-based access control.
+ * Handles authorization checks and role-based access control using strategy pattern.
  *
  * Permission Matrix:
  *
  * | Role   | VIEW | EDIT | DELETE | ADD_PERSON | MANAGE_COLLAB |
  * |--------|------|------|--------|------------|---------------|
- * | admin  | ✓    | ✓    | ✓      | ✓          | ✓             |
+ * | owner  | ✓    | ✓    | ✓      | ✓          | ✓             |
+ * | admin  | ✓    | ✓    | ✗      | ✓          | ✓             |
  * | editor | ✓    | ✓    | ✗      | ✓          | ✗             |
  * | viewer | ✓    | ✗    | ✗      | ✗          | ✗             |
+ * | guest  | ✓    | ✗    | ✗      | ✗          | ✗             |
  */
 export interface IPermissionService {
   // Check Permissions
@@ -34,4 +25,7 @@ export interface IPermissionService {
   // Role-based
   getRolePermissions(role: string): Permission[];
   hasMinimumRole(userId: string, treeId: string, role: string): Promise<boolean>;
+
+  // Cache management
+  invalidateCache(userId?: string, treeId?: string): void;
 }
