@@ -1,11 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface ICustomAttribute {
-  key: string;
-  value: string | number | boolean;
-}
-
-export interface IPerson extends Document {
+export interface IPersonDocument extends Document {
   treeId: mongoose.Types.ObjectId;
   firstName: string;
   lastName: string;
@@ -21,12 +16,7 @@ export interface IPerson extends Document {
   updatedAt: Date;
 }
 
-const CustomAttributeSchema = new Schema<ICustomAttribute>({
-  key: { type: String, required: true },
-  value: { type: Schema.Types.Mixed, required: true },
-}, { _id: false });
-
-const PersonSchema = new Schema<IPerson>({
+const PersonSchema = new Schema<IPersonDocument>({
   treeId: { type: Schema.Types.ObjectId, ref: 'FamilyTree', required: true },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
@@ -40,5 +30,9 @@ const PersonSchema = new Schema<IPerson>({
   customAttributes: { type: Map, of: Schema.Types.Mixed, default: new Map() },
 }, { timestamps: true });
 
-export const PersonModel: Model<IPerson> =
-  mongoose.models.Person || mongoose.model<IPerson>('Person', PersonSchema);
+// Index for faster tree-based queries
+PersonSchema.index({ treeId: 1, lastName: 1, firstName: 1 });
+PersonSchema.index({ treeId: 1, dateOfBirth: 1 });
+
+export const PersonModel: Model<IPersonDocument> =
+  mongoose.models.Person || mongoose.model<IPersonDocument>('Person', PersonSchema);

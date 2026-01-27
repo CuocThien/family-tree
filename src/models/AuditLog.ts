@@ -1,28 +1,28 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IAuditLogChanges {
+export interface IAuditLogChangesDocument {
   field: string;
   oldValue: unknown;
   newValue: unknown;
 }
 
-export interface IAuditLog extends Document {
+export interface IAuditLogDocument extends Document {
   treeId: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
   action: 'create' | 'update' | 'delete' | 'view' | 'export' | 'share';
   entityType: 'Person' | 'Relationship' | 'Media' | 'FamilyTree';
   entityId: mongoose.Types.ObjectId;
-  changes: IAuditLogChanges[];
+  changes: IAuditLogChangesDocument[];
   timestamp: Date;
 }
 
-const AuditLogChangesSchema = new Schema<IAuditLogChanges>({
+const AuditLogChangesSchema = new Schema<IAuditLogChangesDocument>({
   field: { type: String, required: true },
   oldValue: { type: Schema.Types.Mixed },
   newValue: { type: Schema.Types.Mixed },
 }, { _id: false });
 
-const AuditLogSchema = new Schema<IAuditLog>({
+const AuditLogSchema = new Schema<IAuditLogDocument>({
   treeId: { type: Schema.Types.ObjectId, ref: 'FamilyTree', required: true },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   action: { type: String, enum: ['create', 'update', 'delete', 'view', 'export', 'share'], required: true },
@@ -35,5 +35,5 @@ const AuditLogSchema = new Schema<IAuditLog>({
 AuditLogSchema.index({ treeId: 1, timestamp: -1 });
 AuditLogSchema.index({ userId: 1, timestamp: -1 });
 
-export const AuditLogModel: Model<IAuditLog> =
-  mongoose.models.AuditLog || mongoose.model<IAuditLog>('AuditLog', AuditLogSchema);
+export const AuditLogModel: Model<IAuditLogDocument> =
+  mongoose.models.AuditLog || mongoose.model<IAuditLogDocument>('AuditLog', AuditLogSchema);

@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IRelationship extends Document {
+export interface IRelationshipDocument extends Document {
   treeId: mongoose.Types.ObjectId;
   person1Id: mongoose.Types.ObjectId;
   person2Id: mongoose.Types.ObjectId;
@@ -12,7 +12,7 @@ export interface IRelationship extends Document {
   updatedAt: Date;
 }
 
-const RelationshipSchema = new Schema<IRelationship>({
+const RelationshipSchema = new Schema<IRelationshipDocument>({
   treeId: { type: Schema.Types.ObjectId, ref: 'FamilyTree', required: true },
   person1Id: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
   person2Id: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
@@ -25,5 +25,5 @@ const RelationshipSchema = new Schema<IRelationship>({
 RelationshipSchema.index({ treeId: 1, person1Id: 1, person2Id: 1 });
 RelationshipSchema.index({ treeId: 1, type: 1 });
 
-export const RelationshipModel: Model<IRelationship> =
-  mongoose.models.Relationship || mongoose.model<IRelationship>('Relationship', RelationshipSchema);
+export const RelationshipModel: Model<IRelationshipDocument> =
+  mongoose.models.Relationship || mongoose.model<IRelationshipDocument>('Relationship', RelationshipSchema);

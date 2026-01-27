@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-export interface IMediaMetadata {
+export interface IMediaMetadataDocument {
   width?: number;
   height?: number;
   location?: string;
@@ -8,7 +8,7 @@ export interface IMediaMetadata {
   description?: string;
 }
 
-export interface IMedia extends Document {
+export interface IMediaDocument extends Document {
   treeId: mongoose.Types.ObjectId;
   personId?: mongoose.Types.ObjectId;
   type: 'photo' | 'document';
@@ -16,12 +16,12 @@ export interface IMedia extends Document {
   mimeType: string;
   size: number;
   url: string;
-  metadata: IMediaMetadata;
+  metadata: IMediaMetadataDocument;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const MediaMetadataSchema = new Schema<IMediaMetadata>({
+const MediaMetadataSchema = new Schema<IMediaMetadataDocument>({
   width: { type: Number },
   height: { type: Number },
   location: { type: String },
@@ -29,7 +29,7 @@ const MediaMetadataSchema = new Schema<IMediaMetadata>({
   description: { type: String },
 }, { _id: false });
 
-const MediaSchema = new Schema<IMedia>({
+const MediaSchema = new Schema<IMediaDocument>({
   treeId: { type: Schema.Types.ObjectId, ref: 'FamilyTree', required: true },
   personId: { type: Schema.Types.ObjectId, ref: 'Person' },
   type: { type: String, enum: ['photo', 'document'], required: true },
@@ -43,5 +43,5 @@ const MediaSchema = new Schema<IMedia>({
 MediaSchema.index({ treeId: 1 });
 MediaSchema.index({ treeId: 1, personId: 1 });
 
-export const MediaModel: Model<IMedia> =
-  mongoose.models.Media || mongoose.model<IMedia>('Media', MediaSchema);
+export const MediaModel: Model<IMediaDocument> =
+  mongoose.models.Media || mongoose.model<IMediaDocument>('Media', MediaSchema);
