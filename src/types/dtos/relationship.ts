@@ -3,8 +3,8 @@ import { RelationshipType } from '../relationship';
 
 export const CreateRelationshipDtoSchema = z.object({
   treeId: z.string().min(1, 'Tree ID is required'),
-  person1Id: z.string().min(1, 'Person 1 ID is required'),
-  person2Id: z.string().min(1, 'Person 2 ID is required'),
+  fromPersonId: z.string().min(1, 'From person ID is required'),
+  toPersonId: z.string().min(1, 'To person ID is required'),
   type: z.enum(['parent', 'child', 'spouse', 'sibling'] as const, {
     errorMap: () => ({ message: 'Invalid relationship type' }),
   }),
@@ -15,8 +15,8 @@ export const CreateRelationshipDtoSchema = z.object({
   (data) => !data.endDate || !data.startDate || data.endDate >= data.startDate,
   { message: 'End date must be after start date', path: ['endDate'] }
 ).refine(
-  (data) => data.person1Id !== data.person2Id,
-  { message: 'Cannot create relationship with same person', path: ['person2Id'] }
+  (data) => data.fromPersonId !== data.toPersonId,
+  { message: 'Cannot create relationship with same person', path: ['toPersonId'] }
 );
 
 export type CreateRelationshipDto = z.infer<typeof CreateRelationshipDtoSchema>;

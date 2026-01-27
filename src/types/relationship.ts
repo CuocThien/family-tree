@@ -7,8 +7,8 @@ export type RelationshipType = 'parent' | 'child' | 'spouse' | 'sibling';
 export interface IRelationship {
   _id: string;
   treeId: string;
-  person1Id: string;
-  person2Id: string;
+  fromPersonId: string;
+  toPersonId: string;
   type: RelationshipType;
   startDate?: Date;
   endDate?: Date;
@@ -19,8 +19,8 @@ export interface IRelationship {
 
 export interface CreateRelationshipData {
   treeId: string;
-  person1Id: string;
-  person2Id: string;
+  fromPersonId: string;
+  toPersonId: string;
   type: RelationshipType;
   startDate?: Date;
   endDate?: Date;

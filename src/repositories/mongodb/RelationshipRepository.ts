@@ -41,8 +41,8 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const createData = {
       ...data,
       treeId: new mongoose.Types.ObjectId(data.treeId),
-      person1Id: new mongoose.Types.ObjectId(data.person1Id),
-      person2Id: new mongoose.Types.ObjectId(data.person2Id),
+      fromPersonId: new mongoose.Types.ObjectId(data.fromPersonId),
+      toPersonId: new mongoose.Types.ObjectId(data.toPersonId),
     };
 
     const doc = await this.model.create(createData);
@@ -72,7 +72,7 @@ export class RelationshipRepository extends BaseRepository implements IRelations
 
     const docs = await this.model
       .find({
-        $or: [{ person1Id: oid }, { person2Id: oid }],
+        $or: [{ fromPersonId: oid }, { toPersonId: oid }],
       })
       .lean()
       .exec();
@@ -86,7 +86,7 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const docs = await this.model
       .find({
         type,
-        $or: [{ person1Id: oid }, { person2Id: oid }],
+        $or: [{ fromPersonId: oid }, { toPersonId: oid }],
       })
       .lean()
       .exec();
@@ -101,8 +101,8 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const doc = await this.model
       .findOne({
         $or: [
-          { person1Id: oid1, person2Id: oid2 },
-          { person1Id: oid2, person2Id: oid1 },
+          { fromPersonId: oid1, toPersonId: oid2 },
+          { fromPersonId: oid2, toPersonId: oid1 },
         ],
       })
       .lean()
@@ -114,10 +114,10 @@ export class RelationshipRepository extends BaseRepository implements IRelations
   async findParents(personId: string): Promise<IRelationship[]> {
     const oid = new mongoose.Types.ObjectId(personId);
 
-    // Find relationships where personId is person2Id and type is 'parent'
+    // Find relationships where personId is toPersonId and type is 'parent'
     const docs = await this.model
       .find({
-        person2Id: oid,
+        toPersonId: oid,
         type: 'parent',
       })
       .lean()
@@ -129,10 +129,10 @@ export class RelationshipRepository extends BaseRepository implements IRelations
   async findChildren(personId: string): Promise<IRelationship[]> {
     const oid = new mongoose.Types.ObjectId(personId);
 
-    // Find relationships where personId is person1Id and type is 'child'
+    // Find relationships where personId is fromPersonId and type is 'child'
     const docs = await this.model
       .find({
-        person1Id: oid,
+        fromPersonId: oid,
         type: 'child',
       })
       .lean()
@@ -147,7 +147,7 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const docs = await this.model
       .find({
         type: 'spouse',
-        $or: [{ person1Id: oid }, { person2Id: oid }],
+        $or: [{ fromPersonId: oid }, { toPersonId: oid }],
       })
       .lean()
       .exec();
@@ -161,7 +161,7 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const docs = await this.model
       .find({
         type: 'sibling',
-        $or: [{ person1Id: oid }, { person2Id: oid }],
+        $or: [{ fromPersonId: oid }, { toPersonId: oid }],
       })
       .lean()
       .exec();
@@ -177,8 +177,8 @@ export class RelationshipRepository extends BaseRepository implements IRelations
       .countDocuments({
         type,
         $or: [
-          { person1Id: oid1, person2Id: oid2 },
-          { person1Id: oid2, person2Id: oid1 },
+          { fromPersonId: oid1, toPersonId: oid2 },
+          { fromPersonId: oid2, toPersonId: oid1 },
         ],
       })
       .exec();
@@ -191,7 +191,7 @@ export class RelationshipRepository extends BaseRepository implements IRelations
 
     const result = await this.model
       .deleteMany({
-        $or: [{ person1Id: oid }, { person2Id: oid }],
+        $or: [{ fromPersonId: oid }, { toPersonId: oid }],
       })
       .exec();
 
@@ -212,8 +212,8 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     return {
       _id: this.idToString(doc._id)!,
       treeId: this.idToString(doc.treeId)!,
-      person1Id: this.idToString(doc.person1Id)!,
-      person2Id: this.idToString(doc.person2Id)!,
+      fromPersonId: this.idToString(doc.fromPersonId)!,
+      toPersonId: this.idToString(doc.toPersonId)!,
       type: doc.type as RelationshipType,
       startDate: this.toDate(doc.startDate),
       endDate: this.toDate(doc.endDate),

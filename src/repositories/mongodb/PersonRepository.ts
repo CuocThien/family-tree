@@ -175,6 +175,13 @@ export class PersonRepository extends BaseRepository implements IPersonRepositor
     }
   }
 
+  async deleteByTreeId(treeId: string): Promise<number> {
+    const result = await this.model
+      .deleteMany({ treeId: new mongoose.Types.ObjectId(treeId) })
+      .exec();
+    return result.deletedCount || 0;
+  }
+
   /**
    * Converts a MongoDB document to a domain entity (IPerson).
    * Handles type conversions including ObjectId to string.
