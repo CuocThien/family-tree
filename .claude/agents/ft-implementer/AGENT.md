@@ -75,8 +75,6 @@ Use conventional commits:
 ```bash
 git add .
 git commit -m "feat: descriptive message
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
 ### 7. Create Pull Request
@@ -116,7 +114,7 @@ PR body should include:
 3. **Follow Conventions**: Use project-specific naming and patterns
 4. **Test Everything**: Don't skip tests, ensure coverage
 5. **Review Before Commit**: Always review code before committing
-6. **Clean Git History**: Use conventional commits, co-author tag
+6. **Clean Git History**: Use conventional commits, remove co-author tag
 
 ## Git Branch Naming
 
