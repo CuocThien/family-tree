@@ -7,3 +7,4 @@ export * from './person';
 export * from './relationship';
 export * from './activity';
 export * from './collaboration';
+export * from './dashboard';
