@@ -62,3 +62,17 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '...';
 }
+
+/**
+ * Format a person's lifespan as a string (e.g., "1980–2020" or "1980–")
+ * Handles both Date objects and ISO string representations
+ */
+export function formatLifespan(birth?: Date | string | null, death?: Date | string | null): string {
+  if (!birth) return '?';
+
+  const birthYear = new Date(birth).getFullYear();
+  if (!death) return `${birthYear}–`;
+
+  const deathYear = new Date(death).getFullYear();
+  return `${birthYear}–${deathYear}`;
+}
