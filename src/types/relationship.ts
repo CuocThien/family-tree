@@ -1,4 +1,13 @@
-export type RelationshipType = 'parent' | 'child' | 'spouse' | 'sibling';
+export type RelationshipType =
+  | 'parent'
+  | 'child'
+  | 'spouse'
+  | 'sibling'
+  | 'step-parent'
+  | 'step-child'
+  | 'adoptive-parent'
+  | 'adoptive-child'
+  | 'partner';
 
 /**
  * Domain type for Relationship entity
@@ -12,9 +21,18 @@ export interface IRelationship {
   type: RelationshipType;
   startDate?: Date;
   endDate?: Date;
+  status?: 'active' | 'ended' | 'unknown';
   notes?: string;
+  createdBy?: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface FamilyMembers {
+  parents: IPerson[];
+  children: IPerson[];
+  spouses: IPerson[];
+  siblings: IPerson[];
 }
 
 export interface CreateRelationshipData {
