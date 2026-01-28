@@ -1,37 +1,32 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/?(*.)+(spec|test).ts', '**/?(*.)+(spec|test).tsx'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
-    'src/**/*.ts',
+    'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/**/*.test.ts',
+    '!src/**/*.test.tsx',
     '!src/**/*.spec.ts',
+    '!src/**/*.spec.tsx',
   ],
-  projects: [
-    {
-      displayName: 'node',
-      testEnvironment: 'node',
-      testMatch: ['<rootDir>/src/services/**/*.test.ts', '<rootDir>/src/strategies/**/*.test.ts'],
-      preset: 'ts-jest',
-      moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/src/$1',
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react-jsx',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
       },
-    },
-    {
-      displayName: 'jsdom',
-      testEnvironment: 'jsdom',
-      testMatch: ['<rootDir>/src/store/**/*.test.ts', '<rootDir>/src/components/**/*.test.ts'],
-      preset: 'ts-jest',
-      moduleNameMapper: {
-        '^@/(.*)$': '<rootDir>/src/$1',
-      },
-      setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-    },
+      useESM: false,
+    }],
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!(lucide-react|@testing-library.*|@jest.*))',
   ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };
