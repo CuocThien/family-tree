@@ -257,7 +257,7 @@ export class MediaService implements IMediaService {
       return media.url;
     }
 
-    return this.storageStrategy.getSignedUrl(key, expiresIn);
+    return this.storageStrategy.getSignedUrl(key, { expiresIn });
   }
 
   private getMediaType(mimeType: string): MediaType {

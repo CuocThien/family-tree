@@ -61,7 +61,7 @@ export const GET = withAuth(async (request: AuthenticatedRequest) => {
   // Get recent activity (limit to 10 items)
   let recentActivity: unknown[] = [];
   try {
-    recentActivity = await container.auditLogService.getRecentActivity(request.user.id);
+    recentActivity = await container.auditLogService.findByUserId(request.user.id, { limit: 10 });
   } catch {
     // If audit log fails, continue without it
     recentActivity = [];

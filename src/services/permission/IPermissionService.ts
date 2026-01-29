@@ -1,7 +1,7 @@
 import { Permission } from '@/strategies/permission/IPermissionStrategy';
 
 // Re-export Permission for convenience
-export type { Permission };
+export { Permission };
 
 /**
  * Service interface for Permission operations.

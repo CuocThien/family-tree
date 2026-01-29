@@ -45,8 +45,8 @@ export function TimelineSection({ person }: TimelineSectionProps) {
     if (lifeEvents && Array.isArray(lifeEvents)) {
       events.push(
         ...(lifeEvents as TimelineEvent[]).map((e, i) => ({
-          id: `event-${i}`,
           ...e,
+          id: `event-${i}`,
         }))
       );
     }

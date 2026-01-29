@@ -97,10 +97,17 @@ export function useUpdateTree() {
       const previousTree = queryClient.getQueryData<ITree>(treeKeys.detail(id));
 
       if (previousTree) {
-        queryClient.setQueryData<ITree>(treeKeys.detail(id), {
+        const updatedTree: ITree = {
           ...previousTree,
           ...data,
-        });
+          settings: {
+            isPublic: data.settings?.isPublic ?? previousTree.settings.isPublic,
+            allowComments: data.settings?.allowComments ?? previousTree.settings.allowComments,
+            defaultPhotoQuality: data.settings?.defaultPhotoQuality ?? previousTree.settings.defaultPhotoQuality,
+            language: data.settings?.language ?? previousTree.settings.language,
+          },
+        };
+        queryClient.setQueryData<ITree>(treeKeys.detail(id), updatedTree);
       }
 
       return { previousTree };

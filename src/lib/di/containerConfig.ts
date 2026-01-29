@@ -17,6 +17,9 @@ import { RelationshipRepository } from '@/repositories/mongodb/RelationshipRepos
 import { MediaRepository } from '@/repositories/mongodb/MediaRepository';
 import { UserRepository } from '@/repositories/mongodb/UserRepository';
 import { AuditRepository } from '@/repositories/mongodb/AuditRepository';
+import { ITreeRepository } from '@/repositories/interfaces/ITreeRepository';
+import { IPersonRepository } from '@/repositories/interfaces/IPersonRepository';
+import { IRelationshipRepository } from '@/repositories/interfaces/IRelationshipRepository';
 
 // ==================
 // Services
@@ -157,12 +160,13 @@ export function configureContainer(): Container {
   container.register({
     identifier: SERVICES.PermissionService,
     factory: (c) => {
-      const treeRepo = c.resolve(SERVICES.TreeRepository);
-      const personRepo = c.resolve(SERVICES.PersonRepository);
+      const treeRepo = c.resolve(SERVICES.TreeRepository) as ITreeRepository;
+      const personRepo = c.resolve(SERVICES.PersonRepository) as IPersonRepository;
+      const relationshipRepo = c.resolve(SERVICES.RelationshipRepository) as IRelationshipRepository;
 
       const strategies = [
         new OwnerOnlyPermissionStrategy(treeRepo),
-        new AttributeBasedPermissionStrategy(personRepo),
+        new AttributeBasedPermissionStrategy(personRepo, relationshipRepo, treeRepo),
         new RoleBasedPermissionStrategy(treeRepo),
       ];
 

@@ -37,7 +37,7 @@ interface UsePersonFormOptions {
 
 interface UsePersonFormReturn {
   form: UseFormReturn<PersonFormData>;
-  onSubmit: (data: PersonFormData) => Promise<void>;
+  onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   isEdit: boolean;
 }

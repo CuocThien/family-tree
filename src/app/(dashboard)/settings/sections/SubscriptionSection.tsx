@@ -118,7 +118,7 @@ export function SubscriptionSection() {
               </ul>
 
               <Button
-                variant={plan.popular ? 'default' : 'outline'}
+                variant={plan.popular ? 'primary' : 'outline'}
                 className="w-full"
                 disabled={plan.id === 'free'}
               >
