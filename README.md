@@ -1,36 +1,170 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Family Tree Application
 
-## Getting Started
+A modern web application for creating and managing family trees with visualization, collaboration, and media management features.
 
-First, run the development server:
+## Features
+
+- **Family Tree Management**: Create, edit, and share family trees
+- **Person Management**: Add family members with detailed profiles
+- **Relationships**: Define parent-child, spouse, and sibling relationships
+- **Visualization**: Multiple tree layout strategies (vertical, horizontal, timeline, fan chart)
+- **Media Management**: Upload and associate photos with family members
+- **Collaboration**: Share trees with family members
+- **Authentication**: Email/password and OAuth (Google, Facebook)
+
+## Tech Stack
+
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Database**: MongoDB
+- **Authentication**: NextAuth v5
+- **State Management**: Zustand
+- **Data Fetching**: React Query
+- **Styling**: Tailwind CSS
+- **UI Components**: Custom components with shadcn/ui patterns
+- **Testing**: Jest, Vitest, Playwright
+
+## Prerequisites
+
+- Node.js 18+ and npm/yarn/pnpm
+- MongoDB (local or Atlas cloud instance)
+- Google/Facebook OAuth credentials (optional, for social login)
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/family-tree.git
+cd family-tree
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+
+Create a `.env.local` file:
+
+```env
+# Database
+MONGODB_URI=mongodb://localhost:27017/family-tree
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+
+# OAuth (optional)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+FACEBOOK_CLIENT_ID=your-facebook-app-id
+FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
+
+# Email (optional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+```
+
+### 4. Start the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── (auth)/            # Authentication pages
+│   ├── (dashboard)/       # Dashboard and settings pages
+│   └── api/               # API routes
+├── components/            # React components
+│   ├── ui/               # Base UI components
+│   ├── tree/             # Tree visualization components
+│   ├── person/           # Person-related components
+│   └── dashboard/        # Dashboard widgets
+├── services/             # Business logic layer
+├── repositories/         # Data access layer
+├── models/              # MongoDB/Mongoose models
+├── lib/                 # Utilities and DI container
+├── strategies/          # Strategy pattern implementations
+├── hooks/               # Custom React hooks
+├── store/               # Zustand state management
+└── types/               # TypeScript types
+```
 
-## Learn More
+## Architecture
 
-To learn more about Next.js, take a look at the following resources:
+This application follows **SOLID principles** and **layered architecture**:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Presentation Layer**: Next.js pages and React components
+2. **Service Layer**: Business logic and orchestration
+3. **Repository Layer**: Data access abstraction
+4. **Model Layer**: Database schemas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Key patterns:
+- **Repository Pattern**: Clean data access
+- **Service Layer Pattern**: Centralized business logic
+- **Strategy Pattern**: Pluggable algorithms
+- **Dependency Injection**: Loose coupling
 
-## Deploy on Vercel
+## Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Running tests
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Unit and integration tests
+npm test
+
+# E2E tests
+npm run test:e2e
+
+# Test with coverage
+npm test -- --coverage
+```
+
+### Building for production
+
+```bash
+npm run build
+npm start
+```
+
+### Linting
+
+```bash
+npm run lint
+```
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. Push code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+### Other platforms
+
+See [DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md) for detailed deployment guides.
+
+## API Documentation
+
+See [API.md](docs/api/API.md) for API endpoint documentation.
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## License
+
+MIT License - see LICENSE file for details.
