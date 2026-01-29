@@ -196,7 +196,7 @@ export function ProfileSection({ user }: ProfileSectionProps) {
             </div>
             <Select
               value={preferencesForm.watch('measurementUnit')}
-              onChange={(value) =>
+              onValueChange={(value) =>
                 preferencesForm.setValue('measurementUnit', value as 'metric' | 'imperial')
               }
               options={[

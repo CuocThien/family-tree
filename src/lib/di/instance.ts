@@ -17,7 +17,7 @@ import type { IPermissionService } from '@/services/permission/IPermissionServic
 import type { IEmailService } from '@/services/email/IEmailService';
 import type { ICollaborationService } from '@/services/collaboration/ICollaborationService';
 import type { IUserRepository } from '@/repositories/interfaces/IUserRepository';
-import type { IAuditLogRepository } from '@/repositories/interfaces/IAuditLogRepository';
+import type { IAuditRepository } from '@/repositories/interfaces/IAuditRepository';
 import type { VisualizationStrategyRegistry } from '@/strategies/visualization/VisualizationStrategyRegistry';
 import type { IStorageStrategy } from '@/strategies/storage/IStorageStrategy';
 import type { StorageStrategyRegistry } from '@/strategies/storage/StorageStrategyRegistry';
@@ -78,8 +78,8 @@ export const container = {
   get userRepository(): IUserRepository {
     return getContainer().resolve(SERVICES.UserRepository) as IUserRepository;
   },
-  get auditLogService(): IAuditLogRepository {
-    return getContainer().resolve(SERVICES.AuditLogRepository) as IAuditLogRepository;
+  get auditLogService(): IAuditRepository {
+    return getContainer().resolve(SERVICES.AuditLogRepository) as IAuditRepository;
   },
   get collaborationService(): ICollaborationService {
     return getContainer().resolve(SERVICES.CollaborationService) as ICollaborationService;

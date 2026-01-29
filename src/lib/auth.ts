@@ -12,7 +12,6 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import Facebook from 'next-auth/providers/facebook';
 import bcrypt from 'bcryptjs';
-import { container } from '@/lib/di';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -28,7 +27,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Email and password required');
         }
 
-        const user = await container.userRepository.findByEmailWithPassword(credentials.email.toLowerCase());
+        // Lazy import to avoid Edge Runtime issues
+        const { container } = await import('@/lib/di');
+        const user = await container.userRepository.findByEmailWithPassword(
+          (credentials.email as string).toLowerCase()
+        );
 
         if (!user) {
           throw new Error('Invalid email or password');
@@ -40,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const isValidPassword = await bcrypt.compare(
-          credentials.password,
+          credentials.password as string,
           (user as any).password
         );
 
@@ -154,16 +157,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       console.log(`User ${user.email} signed in via ${account?.provider}`);
 
       if (isNewUser) {
-        // Send welcome email
-        if (user.email) {
-          await container.emailService.sendWelcomeEmail(user.email, user.name || 'User');
+        // Send welcome email - lazy import to avoid Edge Runtime issues
+        try {
+          const { container } = await import('@/lib/di');
+          if (user.email) {
+            await container.emailService.sendWelcomeEmail(user.email, user.name || 'User');
+          }
+        } catch (error) {
+          console.error('Failed to send welcome email:', error);
+          // Don't block sign-in if email fails
         }
       }
     },
 
-    async signOut({ token }) {
+    async signOut(params) {
       // Log sign out
-      console.log(`User ${token.email} signed out`);
+      const token = params as any;
+      if (token && token.email) {
+        console.log(`User ${token.email} signed out`);
+      }
     },
   },
 

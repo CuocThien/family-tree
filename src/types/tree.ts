@@ -1,3 +1,5 @@
+import type { IPerson } from './person';
+
 export type PermissionLevel = 'viewer' | 'editor' | 'admin';
 export type TreePrivacy = 'private' | 'family' | 'public';
 

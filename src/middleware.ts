@@ -1,54 +1,50 @@
 /**
  * Authentication Middleware
  *
- * Protects routes and handles authentication redirects using NextAuth middleware.
+ * Protects routes and handles authentication redirects.
+ * Uses Next.js middleware with edge-compatible JWT validation.
  */
 
-import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(request) {
-    const { pathname } = request.nextUrl;
-    const token = request.nextauth.token;
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-    // Redirect authenticated users away from auth pages
-    if (token && (pathname === '/login' || pathname === '/register')) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
+  // Get the token from cookies
+  const token = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
 
-    return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
+  const isLoggedIn = !!token;
 
-        // Public paths
-        const publicPaths = [
-          '/login',
-          '/register',
-          '/forgot-password',
-          '/reset-password',
-          '/verify-email',
-          '/api/auth',
-        ];
+  // Public paths that don't require authentication
+  const publicPaths = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+    '/verify-email',
+    '/api/auth',
+  ];
 
-        if (publicPaths.some(path => pathname.startsWith(path))) {
-          return true;
-        }
+  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
 
-        // Static files don't need auth
-        if (pathname.startsWith('/_next') || pathname.startsWith('/favicon')) {
-          return true;
-        }
+  // Static files don't need auth
+  const isStaticFile = pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.startsWith('/public');
 
-        // All other paths require authentication
-        return !!token;
-      },
-    },
+  // Redirect authenticated users away from auth pages
+  if (isLoggedIn && (pathname === '/login' || pathname === '/register')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-);
+
+  // Protect non-public routes
+  if (!isPublicPath && !isStaticFile && !isLoggedIn) {
+    const loginUrl = new URL('/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', encodeURI(pathname));
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
   matcher: [

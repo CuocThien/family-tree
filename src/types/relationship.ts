@@ -1,3 +1,5 @@
+import type { IPerson } from './person';
+
 export type RelationshipType =
   | 'parent'
   | 'child'

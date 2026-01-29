@@ -11,7 +11,7 @@ interface MediaTabProps {
 }
 
 export function MediaTab({ media, documents, isLoading, onAddMedia }: MediaTabProps) {
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'photos' | 'documents'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'photo' | 'document'>('all');
 
   if (isLoading) {
     return (
@@ -67,13 +67,13 @@ export function MediaTab({ media, documents, isLoading, onAddMedia }: MediaTabPr
             label={`All (${allItems.length})`}
           />
           <FilterButton
-            active={selectedFilter === 'photos'}
-            onClick={() => setSelectedFilter('photos')}
+            active={selectedFilter === 'photo'}
+            onClick={() => setSelectedFilter('photo')}
             label={`Photos (${media.length})`}
           />
           <FilterButton
-            active={selectedFilter === 'documents'}
-            onClick={() => setSelectedFilter('documents')}
+            active={selectedFilter === 'document'}
+            onClick={() => setSelectedFilter('document')}
             label={`Documents (${documents.length})`}
           />
         </div>
@@ -87,7 +87,7 @@ export function MediaTab({ media, documents, isLoading, onAddMedia }: MediaTabPr
       {filteredItems.length === 0 ? (
         <Card>
           <p className="text-[#4c8d9a] text-center py-8">
-            No {selectedFilter === 'photos' ? 'photos' : 'documents'} found.
+            No {selectedFilter === 'photo' ? 'photos' : 'documents'} found.
           </p>
         </Card>
       ) : (

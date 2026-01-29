@@ -8,8 +8,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { container } from '@/lib/di';
-import { CreateUserDTO } from '@/types/dto/user';
-import { ValidationError, ConflictError } from '@/types/errors';
+import { CreateUserData } from '@/types/user';
+import { ValidationError, ConflictError } from '@/services/errors/ServiceErrors';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,17 +18,17 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     if (!name || typeof name !== 'string' || name.trim().length < 2) {
-      throw new ValidationError('Name must be at least 2 characters');
+      throw ValidationError.fromMessage('Name must be at least 2 characters');
     }
 
     if (!email || typeof email !== 'string') {
-      throw new ValidationError('Valid email is required');
+      throw ValidationError.fromMessage('Valid email is required');
     }
 
     const emailNormalized = email.toLowerCase().trim();
 
     if (!password || typeof password !== 'string' || password.length < 8) {
-      throw new ValidationError('Password must be at least 8 characters');
+      throw ValidationError.fromMessage('Password must be at least 8 characters');
     }
 
     // Check if user already exists
@@ -40,25 +40,17 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user DTO
-    const createUserDTO: CreateUserDTO = {
+    // Create user data
+    const createUserData: CreateUserData = {
       email: emailNormalized,
       password: hashedPassword,
       profile: {
         name: name.trim(),
-        avatar: null,
-        bio: null,
-      },
-      isVerified: false,
-      settings: {
-        language: 'en',
-        theme: 'light',
-        timezone: 'UTC',
       },
     };
 
     // Create user
-    const user = await container.userRepository.create(createUserDTO);
+    const user = await container.userRepository.create(createUserData);
 
     // Send verification email
     try {
@@ -82,7 +74,7 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ error: error.errors[0] }, { status: 400 });
     }
 
     if (error instanceof ConflictError) {

@@ -3,11 +3,25 @@
  * Provides specific error types for better error handling
  */
 
+// Array-based ValidationError for multiple validation errors
 export class ValidationError extends Error {
   constructor(public errors: string[]) {
     super(`Validation failed: ${errors.join(', ')}`);
     this.name = 'ValidationError';
     Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+
+  // Convenience method to create from single error message
+  static fromMessage(message: string): ValidationError {
+    return new ValidationError([message]);
+  }
+}
+
+export class ConflictError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConflictError';
+    Object.setPrototypeOf(this, ConflictError.prototype);
   }
 }
 

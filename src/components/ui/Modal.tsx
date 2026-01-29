@@ -52,26 +52,27 @@ export function Modal({
         (focusableElements?.length || 0) - 1
       ] as HTMLElement;
 
-      const handleTabKey = (e: KeyboardEvent) => {
-        if (e.key !== 'Tab') return;
+      const handleTabKey = (e: Event) => {
+        const keyboardEvent = e as unknown as KeyboardEvent;
+        if (keyboardEvent.key !== 'Tab') return;
 
-        if (e.shiftKey) {
+        if (keyboardEvent.shiftKey) {
           if (document.activeElement === firstElement) {
             lastElement?.focus();
-            e.preventDefault();
+            keyboardEvent.preventDefault();
           }
         } else {
           if (document.activeElement === lastElement) {
             firstElement?.focus();
-            e.preventDefault();
+            keyboardEvent.preventDefault();
           }
         }
       };
 
-      document.addEventListener('keydown', handleTabKey as EventListener);
+      document.addEventListener('keydown', handleTabKey);
 
       return () => {
-        document.removeEventListener('keydown', handleTabKey as EventListener);
+        document.removeEventListener('keydown', handleTabKey);
         document.body.style.overflow = '';
         previousActiveElement.current?.focus();
       };
@@ -79,15 +80,15 @@ export function Modal({
   }, [open]);
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) {
+    const handleEscape = (e: Event) => {
+      if ((e as unknown as KeyboardEvent).key === 'Escape' && open) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape as EventListener);
+    document.addEventListener('keydown', handleEscape);
     return () => {
-      document.removeEventListener('keydown', handleEscape as EventListener);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [open, onClose]);
 

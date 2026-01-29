@@ -95,10 +95,14 @@ export function useUpdatePerson() {
       const previousPerson = queryClient.getQueryData<IPerson>(personKeys.detail(id));
 
       if (previousPerson) {
-        queryClient.setQueryData<IPerson>(personKeys.detail(id), {
+        const updatedPerson: IPerson = {
           ...previousPerson,
           ...data,
-        });
+          customAttributes: data.customAttributes instanceof Map
+            ? data.customAttributes
+            : new Map(Object.entries(data.customAttributes || {})),
+        };
+        queryClient.setQueryData<IPerson>(personKeys.detail(id), updatedPerson);
       }
 
       return { previousPerson };
