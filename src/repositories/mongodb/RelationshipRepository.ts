@@ -208,18 +208,19 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     return result.deletedCount || 0;
   }
 
-  private toEntity(doc: any): IRelationship {
+  private toEntity(doc: IRelationshipDocument | ReturnType<IRelationshipDocument['toObject']>): IRelationship {
+    const docRecord = doc as Record<string, unknown>;
     return {
-      _id: this.idToString(doc._id)!,
-      treeId: this.idToString(doc.treeId)!,
-      fromPersonId: this.idToString(doc.fromPersonId)!,
-      toPersonId: this.idToString(doc.toPersonId)!,
-      type: doc.type as RelationshipType,
-      startDate: this.toDate(doc.startDate),
-      endDate: this.toDate(doc.endDate),
-      notes: doc.notes as string | undefined,
-      createdAt: doc.createdAt as Date,
-      updatedAt: doc.updatedAt as Date,
+      _id: this.idToString(docRecord._id)!,
+      treeId: this.idToString(docRecord.treeId)!,
+      fromPersonId: this.idToString(docRecord.fromPersonId)!,
+      toPersonId: this.idToString(docRecord.toPersonId)!,
+      type: docRecord.type as RelationshipType,
+      startDate: this.toDate(docRecord.startDate),
+      endDate: this.toDate(docRecord.endDate),
+      notes: docRecord.notes as string | undefined,
+      createdAt: docRecord.createdAt as Date,
+      updatedAt: docRecord.updatedAt as Date,
     };
   }
 }

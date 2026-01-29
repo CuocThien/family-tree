@@ -8,6 +8,7 @@ import {
 import { IPerson, CreatePersonData, UpdatePersonData } from '@/types/person';
 import { BaseRepository } from './BaseRepository';
 import mongoose from 'mongoose';
+import { NotFoundError } from '@/services/errors/ServiceErrors';
 
 /**
  * MongoDB implementation of IPersonRepository.
@@ -84,7 +85,7 @@ export class PersonRepository extends BaseRepository implements IPersonRepositor
       .exec();
 
     if (!doc) {
-      throw new Error(`Person with id ${id} not found`);
+      throw new NotFoundError('Person', id);
     }
 
     return this.toEntity(doc);
@@ -103,10 +104,10 @@ export class PersonRepository extends BaseRepository implements IPersonRepositor
     };
 
     if (criteria.firstName) {
-      query.firstName = { $regex: criteria.firstName, $options: 'i' };
+      query.firstName = { $regex: this.sanitizeRegexInput(criteria.firstName), $options: 'i' };
     }
     if (criteria.lastName) {
-      query.lastName = { $regex: criteria.lastName, $options: 'i' };
+      query.lastName = { $regex: this.sanitizeRegexInput(criteria.lastName), $options: 'i' };
     }
     if (criteria.birthYear) {
       query.dateOfBirth = {
@@ -183,25 +184,37 @@ export class PersonRepository extends BaseRepository implements IPersonRepositor
   }
 
   /**
+   * Sanitizes user input for safe use in MongoDB regex queries.
+   * Escapes regex special characters to prevent NoSQL injection attacks.
+   * @param input - The user input string to sanitize
+   * @returns A sanitized string safe for use in regex patterns
+   */
+  private sanitizeRegexInput(input: string): string {
+    // Escape all regex special characters: . * + ? ^ $ { } ( ) | [ ] \
+    return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /**
    * Converts a MongoDB document to a domain entity (IPerson).
    * Handles type conversions including ObjectId to string.
    */
-  private toEntity(doc: any): IPerson {
+  private toEntity(doc: IPersonDocument | ReturnType<IPersonDocument['toObject']>): IPerson {
+    const docRecord = doc as Record<string, unknown>;
     return {
-      _id: this.idToString(doc._id)!,
-      treeId: this.idToString(doc.treeId)!,
-      firstName: doc.firstName as string,
-      lastName: doc.lastName as string,
-      middleName: doc.middleName as string | undefined,
-      dateOfBirth: this.toDate(doc.dateOfBirth),
-      dateOfDeath: this.toDate(doc.dateOfDeath),
-      gender: doc.gender as IPerson['gender'],
-      biography: doc.biography as string | undefined,
-      photos: (doc.photos as string[]) ?? [],
-      documents: (doc.documents as string[]) ?? [],
-      customAttributes: this.toMap(doc.customAttributes) ?? new Map<string, string | number | boolean>(),
-      createdAt: doc.createdAt as Date,
-      updatedAt: doc.updatedAt as Date,
+      _id: this.idToString(docRecord._id)!,
+      treeId: this.idToString(docRecord.treeId)!,
+      firstName: docRecord.firstName as string,
+      lastName: docRecord.lastName as string,
+      middleName: docRecord.middleName as string | undefined,
+      dateOfBirth: this.toDate(docRecord.dateOfBirth),
+      dateOfDeath: this.toDate(docRecord.dateOfDeath),
+      gender: docRecord.gender as IPerson['gender'],
+      biography: docRecord.biography as string | undefined,
+      photos: (docRecord.photos as string[]) ?? [],
+      documents: (docRecord.documents as string[]) ?? [],
+      customAttributes: this.toMap(docRecord.customAttributes) ?? new Map<string, string | number | boolean>(),
+      createdAt: docRecord.createdAt as Date,
+      updatedAt: docRecord.updatedAt as Date,
     };
   }
 

@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { MediaModel, IMediaDocument } from '@/models/Media';
+import { MediaModel, IMediaDocument, IMediaMetadataDocument } from '@/models/Media';
 import {
   IMediaRepository,
   MediaQueryOptions,
@@ -190,18 +190,19 @@ export class MediaRepository extends BaseRepository implements IMediaRepository 
     return result[0]?.total || 0;
   }
 
-  private toEntity(doc: any): IMedia {
-    const metadata = doc.metadata as any;
+  private toEntity(doc: IMediaDocument | ReturnType<IMediaDocument['toObject']>): IMedia {
+    const docRecord = doc as Record<string, unknown>;
+    const metadata = docRecord.metadata as IMediaMetadataDocument | undefined;
 
     return {
-      _id: this.idToString(doc._id)!,
-      treeId: this.idToString(doc.treeId)!,
-      personId: this.idToString(doc.personId),
-      type: doc.type as IMedia['type'],
-      filename: doc.filename as string,
-      mimeType: doc.mimeType as string,
-      size: doc.size as number,
-      url: doc.url as string,
+      _id: this.idToString(docRecord._id)!,
+      treeId: this.idToString(docRecord.treeId)!,
+      personId: this.idToString(docRecord.personId),
+      type: docRecord.type as IMedia['type'],
+      filename: docRecord.filename as string,
+      mimeType: docRecord.mimeType as string,
+      size: docRecord.size as number,
+      url: docRecord.url as string,
       metadata: {
         width: metadata?.width,
         height: metadata?.height,
@@ -209,8 +210,8 @@ export class MediaRepository extends BaseRepository implements IMediaRepository 
         dateTaken: this.toDate(metadata?.dateTaken),
         description: metadata?.description,
       },
-      createdAt: doc.createdAt as Date,
-      updatedAt: doc.updatedAt as Date,
+      createdAt: docRecord.createdAt as Date,
+      updatedAt: docRecord.updatedAt as Date,
     };
   }
 }

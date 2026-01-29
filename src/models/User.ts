@@ -40,5 +40,11 @@ const UserSchema = new Schema<IUserDocument>({
   resetPasswordExpiry: { type: Date, select: false },
 }, { timestamps: true });
 
+// Indexes for better query performance
+// Note: email field already has index from unique: true
+UserSchema.index({ isVerified: 1 }); // Index for filtering unverified users
+UserSchema.index({ resetPasswordToken: 1, resetPasswordExpiry: 1 }); // Password reset queries
+UserSchema.index({ verificationToken: 1, verificationTokenExpiry: 1 }); // Email verification queries
+
 export const UserModel: Model<IUserDocument> =
   mongoose.models.User || mongoose.model<IUserDocument>('User', UserSchema);

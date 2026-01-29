@@ -12,6 +12,7 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import Facebook from 'next-auth/providers/facebook';
 import bcrypt from 'bcryptjs';
+import { rateLimits } from './rateLimit';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -27,11 +28,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Email and password required');
         }
 
+        const email = (credentials.email as string).toLowerCase();
+
+        // Check rate limit based on email
+        const rateLimitResult = rateLimits.login.check(email);
+        if (!rateLimitResult.success) {
+          throw new Error('Too many login attempts. Please try again later.');
+        }
+
         // Lazy import to avoid Edge Runtime issues
         const { container } = await import('@/lib/di');
-        const user = await container.userRepository.findByEmailWithPassword(
-          (credentials.email as string).toLowerCase()
-        );
+        const user = await container.userRepository.findByEmailWithPassword(email);
 
         if (!user) {
           throw new Error('Invalid email or password');
@@ -54,6 +61,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user.isVerified) {
           throw new Error('Please verify your email address');
         }
+
+        // Reset rate limit on successful login
+        rateLimits.login.reset(email);
 
         return {
           id: user._id.toString(),
@@ -97,7 +107,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 7 * 24 * 60 * 60, // 7 days (reduced from 30 for security)
   },
 
   pages: {
