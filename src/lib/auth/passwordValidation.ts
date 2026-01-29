@@ -14,12 +14,12 @@ export interface PasswordRequirements {
 }
 
 export const DEFAULT_PASSWORD_REQUIREMENTS: PasswordRequirements = {
-  minLength: 8,
+  minLength: 12, // Increased from 8 for better security
   maxLength: 128,
   requireUppercase: true,
   requireLowercase: true,
   requireNumber: true,
-  requireSpecialChar: false,
+  requireSpecialChar: true, // Now required for better security
 };
 
 /**
@@ -97,7 +97,7 @@ export function isValidPassword(
  */
 export async function hashPassword(password: string): Promise<string> {
   const bcrypt = await import('bcryptjs');
-  return bcrypt.hash(password, 12);
+  return bcrypt.hash(password, 13); // Increased from 12 for OWASP compliance
 }
 
 /**

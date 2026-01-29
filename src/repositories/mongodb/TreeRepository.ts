@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { FamilyTreeModel, IFamilyTreeDocument } from '@/models/FamilyTree';
+import { FamilyTreeModel, IFamilyTreeDocument, ICollaboratorDocument, ITreeSettingsDocument } from '@/models/FamilyTree';
 import {
   ITreeRepository,
   TreeQueryOptions,
@@ -265,21 +265,23 @@ export class TreeRepository extends BaseRepository implements ITreeRepository {
    * Converts a MongoDB document to a domain entity (ITree).
    * Handles type conversions including ObjectId to string.
    */
-  private toEntity(doc: any): ITree {
+  private toEntity(doc: IFamilyTreeDocument | ReturnType<IFamilyTreeDocument['toObject']>): ITree {
+    const docRecord = doc as Record<string, unknown>;
+    const settings = docRecord.settings as ITreeSettingsDocument | undefined;
     return {
-      _id: this.idToString(doc._id)!,
-      ownerId: this.idToString(doc.ownerId)!,
-      name: doc.name as string,
-      rootPersonId: this.idToString(doc.rootPersonId),
-      collaborators: this.toCollaboratorsArray(doc.collaborators as any[]),
+      _id: this.idToString(docRecord._id)!,
+      ownerId: this.idToString(docRecord.ownerId)!,
+      name: docRecord.name as string,
+      rootPersonId: this.idToString(docRecord.rootPersonId),
+      collaborators: this.toCollaboratorsArray(docRecord.collaborators as ICollaboratorDocument[]),
       settings: {
-        isPublic: (doc.settings as any)?.isPublic ?? false,
-        allowComments: (doc.settings as any)?.allowComments ?? true,
-        defaultPhotoQuality: (doc.settings as any)?.defaultPhotoQuality ?? 'medium',
-        language: (doc.settings as any)?.language ?? 'en',
+        isPublic: settings?.isPublic ?? false,
+        allowComments: settings?.allowComments ?? true,
+        defaultPhotoQuality: settings?.defaultPhotoQuality ?? 'medium',
+        language: settings?.language ?? 'en',
       },
-      createdAt: doc.createdAt as Date,
-      updatedAt: doc.updatedAt as Date,
+      createdAt: docRecord.createdAt as Date,
+      updatedAt: docRecord.updatedAt as Date,
     };
   }
 
@@ -287,7 +289,7 @@ export class TreeRepository extends BaseRepository implements ITreeRepository {
    * Converts MongoDB collaborator documents to domain entities.
    */
   private toCollaboratorsArray(
-    collaborators: Array<{ userId: mongoose.Types.ObjectId; permission: string; addedAt: Date }>
+    collaborators: ICollaboratorDocument[]
   ): ICollaborator[] {
     if (!collaborators || collaborators.length === 0) {
       return [];

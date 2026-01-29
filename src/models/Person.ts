@@ -33,6 +33,8 @@ const PersonSchema = new Schema<IPersonDocument>({
 // Index for faster tree-based queries
 PersonSchema.index({ treeId: 1, lastName: 1, firstName: 1 });
 PersonSchema.index({ treeId: 1, dateOfBirth: 1 });
+// Index for gender filtering within trees
+PersonSchema.index({ treeId: 1, gender: 1 });
 
 export const PersonModel: Model<IPersonDocument> =
   mongoose.models.Person || mongoose.model<IPersonDocument>('Person', PersonSchema);

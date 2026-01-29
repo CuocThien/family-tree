@@ -5,6 +5,7 @@ import { IAuditRepository } from '@/repositories/interfaces/IAuditRepository';
 import { CreatePersonDto, UpdatePersonDto, CreatePersonDtoSchema, UpdatePersonDtoSchema } from '@/types/dtos/person';
 import { IPerson, UpdatePersonData } from '@/types/person';
 import { ValidationError, PermissionError, NotFoundError, BusinessRuleError } from '@/services/errors/ServiceErrors';
+import { sanitizePersonData as sanitizeDataUtil, sanitizeHTML } from '@/lib/utils/sanitization';
 
 export class PersonService implements IPersonService {
   constructor(
@@ -254,13 +255,12 @@ export class PersonService implements IPersonService {
   }
 
   private sanitizePersonData(data: CreatePersonDto): CreatePersonDto {
-    return {
-      ...data,
-      firstName: data.firstName.trim(),
-      lastName: data.lastName.trim(),
-      middleName: data.middleName?.trim(),
-      biography: data.biography?.trim(),
-    };
+    const sanitized = sanitizeDataUtil(data);
+    // Sanitize HTML in biography to prevent XSS attacks
+    if (sanitized.biography) {
+      (sanitized as any).biography = sanitizeHTML(sanitized.biography as string);
+    }
+    return sanitized;
   }
 
   private sanitizeUpdateData(data: UpdatePersonDto): UpdatePersonData {
@@ -276,7 +276,8 @@ export class PersonService implements IPersonService {
       sanitized.middleName = data.middleName?.trim();
     }
     if (data.biography !== undefined) {
-      sanitized.biography = data.biography?.trim();
+      // Sanitize HTML in biography to prevent XSS attacks
+      sanitized.biography = sanitizeHTML(data.biography);
     }
 
     // Copy other fields as-is

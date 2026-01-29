@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { UserModel, IUserDocument } from '@/models/User';
+import { UserModel, IUserDocument, IUserProfileDocument } from '@/models/User';
 import {
   IUserRepository,
 } from '@/repositories/interfaces/IUserRepository';
@@ -166,22 +166,23 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     return count > 0;
   }
 
-  private toEntity(doc: any): IUser {
-    const profile = doc.profile as any;
-    const trees = doc.trees as mongoose.Types.ObjectId[];
+  private toEntity(doc: IUserDocument | ReturnType<IUserDocument['toObject']>): IUser {
+    const docRecord = doc as Record<string, unknown>;
+    const profile = docRecord.profile as IUserProfileDocument | undefined;
+    const trees = (docRecord.trees as mongoose.Types.ObjectId[]) ?? [];
 
     return {
-      _id: this.idToString(doc._id)!,
-      email: doc.email as string,
+      _id: this.idToString(docRecord._id)!,
+      email: docRecord.email as string,
       profile: {
-        name: profile?.name,
+        name: profile?.name ?? '',
         avatar: profile?.avatar,
       },
       trees: trees.map((id) => id.toString()),
-      role: doc.role as IUser['role'],
-      isVerified: doc.isVerified as boolean,
-      createdAt: doc.createdAt as Date,
-      updatedAt: doc.updatedAt as Date,
+      role: docRecord.role as IUser['role'],
+      isVerified: docRecord.isVerified as boolean,
+      createdAt: docRecord.createdAt as Date,
+      updatedAt: docRecord.updatedAt as Date,
     };
   }
 }

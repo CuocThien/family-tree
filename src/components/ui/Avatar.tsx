@@ -1,4 +1,4 @@
-import { forwardRef, type ImgHTMLAttributes } from 'react';
+import React, { forwardRef, type ImgHTMLAttributes, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 export interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
@@ -31,8 +31,8 @@ export const Avatar = forwardRef<HTMLImageElement, AvatarProps>(
     },
     ref
   ) => {
-    const [imageError, setImageError] = React.useState(false);
-    const [imageLoaded, setImageLoaded] = React.useState(false);
+    const [imageError, setImageError] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     // Generate initials from full name
     const getInitials = (name?: string) => {
@@ -111,6 +111,3 @@ export const Avatar = forwardRef<HTMLImageElement, AvatarProps>(
 );
 
 Avatar.displayName = 'Avatar';
-
-// Import React for useState
-import React from 'react';

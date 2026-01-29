@@ -24,6 +24,9 @@ const RelationshipSchema = new Schema<IRelationshipDocument>({
 
 RelationshipSchema.index({ treeId: 1, person1Id: 1, person2Id: 1 });
 RelationshipSchema.index({ treeId: 1, type: 1 });
+// Individual person indexes for findByPersonId queries
+RelationshipSchema.index({ person1Id: 1 });
+RelationshipSchema.index({ person2Id: 1 });
 
 export const RelationshipModel: Model<IRelationshipDocument> =
   mongoose.models.Relationship || mongoose.model<IRelationshipDocument>('Relationship', RelationshipSchema);
