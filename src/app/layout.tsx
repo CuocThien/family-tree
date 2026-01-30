@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@/store/init"; // Initialize Immer plugins for Map/Set support
 import "@/lib/db/init"; // Initialize database connection on app startup
+import { Providers } from "@/components/providers/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
