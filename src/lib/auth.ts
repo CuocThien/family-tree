@@ -45,13 +45,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         // Check if user has password (OAuth users may not)
-        if (!(user as any).password) {
+        if (!user.password) {
           throw new Error('Please sign in with your social account');
         }
 
         const isValidPassword = await bcrypt.compare(
           credentials.password as string,
-          (user as any).password
+          user.password
         );
 
         if (!isValidPassword) {

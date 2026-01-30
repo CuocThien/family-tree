@@ -6,6 +6,14 @@ export interface IUserProfile {
 }
 
 /**
+ * User type with password for authentication purposes only
+ * Should never be exposed to the client
+ */
+export interface IUserWithPassword extends IUser {
+  password: string;
+}
+
+/**
  * Domain type for User entity
  * Note: Uses string for IDs instead of mongoose.Types.ObjectId
  */

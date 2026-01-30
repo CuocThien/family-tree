@@ -19,6 +19,8 @@ export interface IFamilyTreeDocument extends Document {
   rootPersonId?: mongoose.Types.ObjectId;
   collaborators: ICollaboratorDocument[];
   settings: ITreeSettingsDocument;
+  coverImage?: string;
+  isMain?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +44,8 @@ const FamilyTreeSchema = new Schema<IFamilyTreeDocument>({
   rootPersonId: { type: Schema.Types.ObjectId, ref: 'Person' },
   collaborators: [CollaboratorSchema],
   settings: { type: TreeSettingsSchema, default: () => ({}) },
+  coverImage: { type: String },
+  isMain: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // Index for faster owner-based queries

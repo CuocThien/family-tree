@@ -3,7 +3,7 @@ import { UserModel, IUserDocument, IUserProfileDocument } from '@/models/User';
 import {
   IUserRepository,
 } from '@/repositories/interfaces/IUserRepository';
-import { IUser, CreateUserData, UpdateUserData } from '@/types/user';
+import { IUser, IUserWithPassword, CreateUserData, UpdateUserData } from '@/types/user';
 import { BaseRepository } from './BaseRepository';
 import mongoose from 'mongoose';
 
@@ -33,7 +33,7 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     return doc ? this.toEntity(doc) : null;
   }
 
-  async findByEmailWithPassword(email: string): Promise<IUser | null> {
+  async findByEmailWithPassword(email: string): Promise<IUserWithPassword | null> {
     // Use select('+password') to include the password field
     const doc = await this.model
       .findOne({ email: email.toLowerCase() })
