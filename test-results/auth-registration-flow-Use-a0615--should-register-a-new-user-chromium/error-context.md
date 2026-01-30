@@ -15,12 +15,12 @@
           - generic [ref=e15]: Full Name
           - textbox "Full Name" [disabled] [ref=e17]:
             - /placeholder: John Doe
-            - text: Test User
+            - text: New User 1769767707106
         - generic [ref=e18]:
           - generic [ref=e19]: Email address
           - textbox "Email address" [disabled] [ref=e21]:
             - /placeholder: name@example.com
-            - text: test@example.com
+            - text: new-1769767707106@example.com
         - generic [ref=e22]:
           - generic [ref=e23]: Password
           - textbox "Password" [disabled] [ref=e25]:

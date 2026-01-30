@@ -38,8 +38,7 @@ import { CollaborationService } from '@/services/collaboration/CollaborationServ
 // ==================
 import { VisualizationStrategyRegistry } from '@/strategies/visualization/VisualizationStrategyRegistry';
 import { StorageStrategyRegistry } from '@/strategies/storage/StorageStrategyRegistry';
-import { LocalStorageStrategy } from '@/strategies/storage/LocalStorageStrategy';
-import { CloudinaryStorageStrategy } from '@/strategies/storage/CloudinaryStorageStrategy';
+// Storage strategies are lazy-loaded to avoid bundling server-only modules in client code
 import { RoleBasedPermissionStrategy } from '@/strategies/permission/RoleBasedPermissionStrategy';
 import { AttributeBasedPermissionStrategy } from '@/strategies/permission/AttributeBasedPermissionStrategy';
 import { OwnerOnlyPermissionStrategy } from '@/strategies/permission/OwnerOnlyPermissionStrategy';
@@ -121,17 +120,23 @@ export function configureContainer(): Container {
     factory: () => {
       const registry = new StorageStrategyRegistry();
 
-      // Register local storage strategy (always available)
-      registry.register(new LocalStorageStrategy());
+      // Only register storage strategies on server side
+      // This prevents server-only modules (sharp, fs) from being bundled in client code
+      if (typeof window === 'undefined') {
+        // Use require for server-only modules to prevent bundling in client code
+        const { LocalStorageStrategy } = require('@/strategies/storage/LocalStorageStrategy');
+        registry.register(new LocalStorageStrategy());
 
-      // Register cloudinary if configured
-      if (process.env.CLOUDINARY_CLOUD_NAME) {
-        registry.register(new CloudinaryStorageStrategy({
-          cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-          apiKey: process.env.CLOUDINARY_API_KEY!,
-          apiSecret: process.env.CLOUDINARY_API_SECRET!,
-        }));
-        registry.setDefault('cloudinary');
+        // Register cloudinary if configured
+        if (process.env.CLOUDINARY_CLOUD_NAME) {
+          const { CloudinaryStorageStrategy } = require('@/strategies/storage/CloudinaryStorageStrategy');
+          registry.register(new CloudinaryStorageStrategy({
+            cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+            apiKey: process.env.CLOUDINARY_API_KEY!,
+            apiSecret: process.env.CLOUDINARY_API_SECRET!,
+          }));
+          registry.setDefault('cloudinary');
+        }
       }
 
       return registry;

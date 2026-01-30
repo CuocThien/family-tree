@@ -42,3 +42,7 @@ next-env.d.ts
 
 # next-doc
 .next-docs
+
+# play wright
+playwright-report
+.playwright-mcp

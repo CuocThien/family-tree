@@ -6,7 +6,8 @@ import { IAuditRepository } from '@/repositories/interfaces/IAuditRepository';
 import { UploadMediaDto, UpdateMediaDto } from '@/types/dtos/media';
 import { IMedia, MediaType } from '@/types/media';
 import { ValidationError, PermissionError, NotFoundError } from '@/services/errors/ServiceErrors';
-import sharp from 'sharp';
+// Sharp is lazy-loaded to prevent bundling in client code
+// It will only be loaded on the server when thumbnail generation is needed
 
 export class MediaService implements IMediaService {
   private readonly MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
@@ -268,6 +269,12 @@ export class MediaService implements IMediaService {
   }
 
   private async generateThumbnailFromBuffer(imageBuffer: Buffer): Promise<string> {
+    // Lazy load sharp only on server side
+    const sharp = typeof window === 'undefined' ? require('sharp') : null;
+    if (!sharp) {
+      throw new Error('Sharp is only available on the server side');
+    }
+
     const thumbnailBuffer = await sharp(imageBuffer)
       .resize(this.THUMBNAIL_WIDTH, this.THUMBNAIL_HEIGHT, {
         fit: 'cover',

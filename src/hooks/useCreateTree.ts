@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
-import { container } from '@/lib/di';
 import type { TreeFormInput } from '@/schemas/tree';
 import type { ITree } from '@/types/tree';
 
@@ -23,19 +22,27 @@ export function useCreateTree() {
       }
 
       try {
-        const treeService = container.treeService;
-        const newTree = await treeService.createTree(session.user.id, {
-          name: data.name,
-          rootPersonId: undefined,
-          settings: {
-            isPublic: data.visibility === 'public',
-            allowComments: true,
-          },
+        const response = await fetch('/api/trees', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: data.name,
+            visibility: data.visibility,
+          }),
         });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          return {
+            success: false,
+            error: result.error || 'Failed to create tree',
+          };
+        }
 
         return {
           success: true,
-          data: newTree,
+          data: result.data,
         };
       } catch (error) {
         return {

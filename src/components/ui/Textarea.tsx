@@ -15,6 +15,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       hint,
       className,
       id,
+      name,
       ...props
     },
     ref
