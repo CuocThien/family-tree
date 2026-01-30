@@ -19,11 +19,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       rightIcon,
       className,
       id,
+      name,
       ...props
     },
     ref
   ) => {
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-') || name;
     const errorId = error ? `${inputId}-error` : undefined;
     const hintId = hint ? `${inputId}-hint` : undefined;
 
@@ -49,6 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
+            name={name}
             className={cn(
               'block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/5',
               'px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a]',

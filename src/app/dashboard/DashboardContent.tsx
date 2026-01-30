@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,7 +11,12 @@ import { ActivityTimeline } from '@/components/dashboard';
 import { DNAInsightsBanner } from '@/components/dashboard';
 import { DashboardSkeleton } from '@/components/dashboard';
 import { DashboardNavbar, MobileBottomNav } from '@/components/dashboard';
+import { CreateTreeModal } from '@/components/dashboard/CreateTreeModal';
 import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
+import { useCreateTree } from '@/hooks/useCreateTree';
+import { useToast } from '@/hooks/useToast';
+import type { TreeFormInput } from '@/schemas/tree';
 
 interface DashboardContentProps {
   userId: string;
@@ -19,6 +25,9 @@ interface DashboardContentProps {
 
 export function DashboardContent({ userId, userName }: DashboardContentProps) {
   const router = useRouter();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const { createTree } = useCreateTree();
+  const { toasts, removeToast } = useToast();
 
   const { data: dashboard, isLoading, isError, error } = useQuery({
     queryKey: ['dashboard', userId],
@@ -70,6 +79,14 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   const firstName = userName?.split(' ')[0] || 'there';
 
+  const handleCreateTree = async (data: TreeFormInput) => {
+    const result = await createTree.mutateAsync(data);
+    if (result.success) {
+      router.push(`/dashboard/trees/${result.data?._id}`);
+    }
+    return result;
+  };
+
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       <DashboardNavbar userName={userName || undefined} />
@@ -89,7 +106,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                 </p>
               </div>
               <Button
-                onClick={() => router.push('/trees/new')}
+                onClick={() => setIsCreateModalOpen(true)}
                 leftIcon={<Plus size={18} />}
                 className="bg-primary text-white shadow-lg shadow-primary/25"
               >
@@ -148,6 +165,24 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav />
+
+      {/* Create Tree Modal */}
+      <CreateTreeModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreate={handleCreateTree}
+      />
+
+      {/* Toast Notifications */}
+      {toasts.map((toast) => (
+        <Toast
+          key={toast.id}
+          id={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={removeToast}
+        />
+      ))}
     </div>
   );
 }

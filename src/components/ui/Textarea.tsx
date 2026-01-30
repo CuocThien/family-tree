@@ -36,6 +36,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           ref={ref}
           id={textareaId}
+          name={name}
           className={cn(
             'block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/5',
             'px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a]',
