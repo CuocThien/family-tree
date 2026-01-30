@@ -11,7 +11,7 @@ interface PersonProfilePageProps {
   };
 }
 
-export async function generateMetadata({ params }: PersonProfilePageProps): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Person Profile - Family Tree',
     description: 'View person details and family connections',
@@ -19,6 +19,18 @@ export async function generateMetadata({ params }: PersonProfilePageProps): Prom
 }
 
 export default async function PersonProfilePage({ params }: PersonProfilePageProps) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect('/login');
+  }
+
+  return (
+    <Suspense fallback={<PersonProfileSkeleton />}>
+      <PersonProfileContent personId={params.personId} />
+    </Suspense>
+  );
+}
   const session = await auth();
 
   if (!session?.user?.id) {

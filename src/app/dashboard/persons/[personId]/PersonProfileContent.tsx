@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { PersonProfileHeader } from '@/components/person/PersonProfileHeader';
 import { PersonProfileTabs } from '@/components/person/PersonProfileTabs';
 import { PersonOverviewTab } from '@/components/person/PersonOverviewTab';
@@ -48,13 +49,13 @@ export function PersonProfileContent({ personId }: PersonProfileContentProps) {
     <div className="min-h-screen bg-background-light dark:bg-background-dark">
       {/* Navigation */}
       <nav className="flex items-center gap-2 py-2 px-4 md:px-8 border-b border-[#e7f1f3] dark:border-gray-800">
-        <a href="/dashboard" className="text-primary text-sm font-medium hover:underline">
+        <Link href="/dashboard" className="text-primary text-sm font-medium hover:underline">
           Dashboard
-        </a>
+        </Link>
         <span className="text-[#4c8d9a] text-sm font-medium">/</span>
-        <a href="/dashboard/trees" className="text-primary text-sm font-medium hover:underline">
+        <Link href="/dashboard/trees" className="text-primary text-sm font-medium hover:underline">
           Family Trees
-        </a>
+        </Link>
         <span className="text-[#4c8d9a] text-sm font-medium">/</span>
         <span className="text-[#0d191b] dark:text-gray-400 text-sm font-medium">
           {person.firstName} {person.lastName}
