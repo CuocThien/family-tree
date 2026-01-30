@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Bell, Settings, Menu, Home, X } from 'lucide-react';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Search, Bell, Settings, Home } from 'lucide-react';
+import { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -11,24 +11,7 @@ interface DashboardNavbarProps {
 }
 
 export function DashboardNavbar({ userName }: DashboardNavbarProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
-
-  // Close mobile menu on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && mobileMenuOpen) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [mobileMenuOpen]);
 
   const navLinks = useMemo(() => [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -37,16 +20,8 @@ export function DashboardNavbar({ userName }: DashboardNavbarProps) {
     { name: 'Settings', href: '/dashboard/settings', icon: null },
   ], []);
 
-  const toggleMobileMenu = useCallback(() => {
-    setMobileMenuOpen((prev) => !prev);
-  }, []);
-
-  const closeMobileMenu = useCallback(() => {
-    setMobileMenuOpen(false);
-  }, []);
-
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-background-dark border-b border-[#e7f1f3] dark:border-white/10">
+    <header className="sticky top-0 z-40 bg-background-dark border-b border-white/10">
       <div className="px-4 md:px-10 py-3">
         <div className="flex items-center justify-between">
           {/* Logo and Desktop Nav */}
@@ -126,48 +101,16 @@ export function DashboardNavbar({ userName }: DashboardNavbarProps) {
               <span className="sr-only">Profile</span>
             </Link>
 
-            {/* Mobile Menu Button */}
-            <button
+            {/* Mobile Search Button */}
+            <Link
+              href="/search"
               className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-[#e7f1f3] dark:bg-white/10 text-[#0d191b] dark:text-white hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors"
-              onClick={toggleMobileMenu}
-              type="button"
-              aria-label="Toggle menu"
-              aria-expanded={mobileMenuOpen}
+              aria-label="Search"
             >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </button>
+              <Search className="w-5 h-5" />
+            </Link>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <nav className="lg:hidden py-4 flex flex-col gap-2">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={closeMobileMenu}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-[#4c8d9a] hover:bg-[#e7f1f3] dark:hover:bg-white/10'
-                  )}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {link.icon && <link.icon className="w-5 h-5" />}
-                  <span>{link.name}</span>
-                </Link>
-              );
-            })}
-            </nav>
-          )}
       </div>
     </header>
   );

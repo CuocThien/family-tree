@@ -13,3 +13,5 @@ export { DNAInsightsBanner } from './DNAInsightsBanner';
 export type { DNAInsightsBannerProps } from './DNAInsightsBanner';
 
 export { DashboardSkeleton } from './DashboardSkeleton';
+
+export { MobileBottomNav } from './MobileBottomNav';

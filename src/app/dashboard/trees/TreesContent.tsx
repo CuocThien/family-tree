@@ -3,9 +3,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, Home, Search, User, ArrowLeft } from 'lucide-react';
+import { Plus, ArrowLeft } from 'lucide-react';
 import { TreeGrid } from '@/components/dashboard';
-import { DashboardNavbar } from '@/components/dashboard';
+import { DashboardNavbar, MobileBottomNav } from '@/components/dashboard';
 import { DashboardSkeleton } from '@/components/dashboard';
 import { Button } from '@/components/ui/Button';
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
@@ -168,26 +168,7 @@ export function TreesContent({ userId, userName }: TreesContentProps) {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-background-dark border-t border-[#e7f1f3] dark:border-white/10 px-4 py-2 flex justify-around items-center z-50">
-        <Link href="/dashboard" className="flex flex-col items-center gap-1 text-[#4c8d9a]">
-          <Home className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Home</span>
-        </Link>
-        <Link href="/dashboard/trees" className="flex flex-col items-center gap-1 text-primary">
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L12 12M12 12L8 16M12 12L16 16M12 12L5 22M12 12L19 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span className="text-[10px] font-medium">Trees</span>
-        </Link>
-        <Link href="/search" className="flex flex-col items-center gap-1 text-[#4c8d9a]">
-          <Search className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Search</span>
-        </Link>
-        <Link href="/dashboard/settings" className="flex flex-col items-center gap-1 text-[#4c8d9a]">
-          <User className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Profile</span>
-        </Link>
-      </div>
+      <MobileBottomNav />
     </div>
   );
 }
