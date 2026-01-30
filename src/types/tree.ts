@@ -45,6 +45,7 @@ export interface ITree {
   settings: ITreeSettings;
   privacy?: TreePrivacy;
   coverImage?: string;
+  isMain?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

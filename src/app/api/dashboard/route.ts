@@ -15,6 +15,8 @@ interface TreeWithStats {
   relationshipCount: number;
   mediaCount: number;
   generations: number;
+  coverImage?: string;
+  isMain?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,8 @@ export const GET = withAuth(async (request: AuthenticatedRequest) => {
           relationshipCount: stats.relationshipCount,
           mediaCount: stats.mediaCount,
           generations: stats.generations,
+          coverImage: (tree as any).coverImage,
+          isMain: (tree as any).isMain || false,
           createdAt: tree.createdAt,
           updatedAt: tree.updatedAt,
         } as TreeWithStats;
@@ -51,6 +55,8 @@ export const GET = withAuth(async (request: AuthenticatedRequest) => {
           relationshipCount: 0,
           mediaCount: 0,
           generations: 0,
+          coverImage: (tree as any).coverImage,
+          isMain: (tree as any).isMain || false,
           createdAt: tree.createdAt,
           updatedAt: tree.updatedAt,
         } as TreeWithStats;

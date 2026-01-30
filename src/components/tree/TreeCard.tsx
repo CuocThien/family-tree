@@ -1,5 +1,4 @@
 import { Users, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
 import { cn } from '@/lib/utils';
 import type { ITree } from '@/types/tree';
 
@@ -56,7 +55,9 @@ export function TreeCard({
         {/* Main Badge */}
         {isMain && (
           <div className="absolute bottom-3 left-3 z-20">
-            <Badge variant="primary">Main</Badge>
+            <span className="bg-primary/90 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+              Main
+            </span>
           </div>
         )}
       </div>
@@ -66,13 +67,13 @@ export function TreeCard({
         <p className="text-[#0d191b] dark:text-white text-base font-bold group-hover:text-[#13c8ec] transition-colors line-clamp-1">
           {tree.name}
         </p>
-        <div className="flex items-center gap-3 text-[#4c8d9a] text-xs">
+        <div className="flex items-center gap-3 text-[#4c8d9a] text-xs font-normal">
           <span className="flex items-center gap-1">
-            <Users size={14} aria-hidden="true" />
-            {memberCount} {memberCount === 1 ? 'member' : 'members'}
+            <Users className="w-3 h-3" aria-hidden="true" />
+            {memberCount.toLocaleString()} members
           </span>
           <span className="flex items-center gap-1">
-            <Clock size={14} aria-hidden="true" />
+            <Clock className="w-3 h-3" aria-hidden="true" />
             {formatRelativeTime(lastUpdated)}
           </span>
         </div>
@@ -86,30 +87,22 @@ function formatRelativeTime(date: Date): string {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) {
-    return 'just now';
+  if (diffInSeconds < 3600) {
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    return diffInMinutes <= 1 ? '1m ago' : `${diffInMinutes}m ago`;
   }
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes}m`;
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInHours = Math.floor(diffInSeconds / 3600);
   if (diffInHours < 24) {
-    return `${diffInHours}h`;
+    return `${diffInHours}h ago`;
   }
 
   const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 30) {
-    return `${diffInDays}d`;
+  if (diffInDays === 1) {
+    return 'Yesterday';
   }
 
-  const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) {
-    return `${diffInMonths}mo`;
-  }
-
-  const diffInYears = Math.floor(diffInMonths / 12);
-  return `${diffInYears}y`;
+  // For older dates, show "Mon DD" format
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[date.getMonth()]} ${date.getDate()}`;
 }

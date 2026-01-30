@@ -3,7 +3,7 @@ import { IAuthService, AuthResult } from './IAuthService';
 import { IUserRepository } from '@/repositories/interfaces/IUserRepository';
 import { IEmailService } from '@/services/email/IEmailService';
 import { RegisterDto, LoginDto, UpdateProfileDto } from '@/types/dtos/auth';
-import { IUser, CreateUserData } from '@/types/user';
+import { IUser, IUserWithPassword, CreateUserData } from '@/types/user';
 import { ValidationError, NotFoundError, BusinessRuleError } from '@/services/errors/ServiceErrors';
 import crypto from 'crypto';
 
@@ -85,9 +85,8 @@ export class AuthService implements IAuthService {
       throw new ValidationError(['Invalid email or password']);
     }
 
-    // 2. Verify password (user object from findByEmailWithPassword should have password field)
-    const userWithPassword = user as IUser & { password: string };
-    const isValidPassword = await bcrypt.compare(data.password, userWithPassword.password);
+    // 2. Verify password
+    const isValidPassword = await bcrypt.compare(data.password, user.password);
     if (!isValidPassword) {
       throw new ValidationError(['Invalid email or password']);
     }
@@ -96,7 +95,7 @@ export class AuthService implements IAuthService {
     const accessToken = this.generateAccessToken(user._id);
 
     // 4. Return user without password
-    const { password: _pwd, ...userWithoutPassword } = userWithPassword;
+    const { password: _pwd, ...userWithoutPassword } = user;
 
     return {
       user: userWithoutPassword as IUser,
@@ -124,10 +123,7 @@ export class AuthService implements IAuthService {
     }
 
     // 3. Verify old password
-    const isValidPassword = await bcrypt.compare(
-      oldPassword,
-      (userWithPassword as IUser & { password: string }).password
-    );
+    const isValidPassword = await bcrypt.compare(oldPassword, userWithPassword.password);
     if (!isValidPassword) {
       throw new ValidationError(['Invalid current password']);
     }

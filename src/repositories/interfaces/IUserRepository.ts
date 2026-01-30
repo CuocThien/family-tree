@@ -1,10 +1,10 @@
-import { IUser, CreateUserData, UpdateUserData } from '@/types/user';
+import { IUser, IUserWithPassword, CreateUserData, UpdateUserData } from '@/types/user';
 
 export interface IUserRepository {
   // CRUD Operations
   findById(id: string): Promise<IUser | null>;
   findByEmail(email: string): Promise<IUser | null>;
-  findByEmailWithPassword(email: string): Promise<IUser | null>;
+  findByEmailWithPassword(email: string): Promise<IUserWithPassword | null>;
   create(data: CreateUserData): Promise<IUser>;
   update(id: string, data: UpdateUserData): Promise<IUser>;
   delete(id: string): Promise<void>;
