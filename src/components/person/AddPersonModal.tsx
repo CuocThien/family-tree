@@ -32,6 +32,7 @@ export function AddPersonModal({
 }: AddPersonModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<GenderType>('male');
   const [selectedRelationship, setSelectedRelationship] = useState<RelationshipType>(
     defaultRelationship || 'child'
@@ -57,6 +58,7 @@ export function AddPersonModal({
 
   const onSubmit = async (data: AddPersonToTreeInput) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       const result = onCreate
         ? await onCreate({
@@ -69,15 +71,18 @@ export function AddPersonModal({
       if (result.success) {
         reset();
         onClose();
+      } else {
+        setError(result.error || 'Failed to add person');
       }
     } catch (error) {
-      console.error('Failed to add person:', error);
+      setError(error instanceof Error ? error.message : 'Failed to add person');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
+    setError(null);
     reset();
     onClose();
   };
@@ -127,6 +132,13 @@ export function AddPersonModal({
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 p-6 flex-1">
+          {/* Error Display */}
+          {error && (
+            <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
+
           {/* Basic Information */}
           <div className="flex flex-col gap-4">
             <h3 className="text-[#0d191b] dark:text-white text-lg font-bold leading-tight">

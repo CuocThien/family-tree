@@ -21,6 +21,7 @@ interface EditPersonModalProps {
 
 export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPersonModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<GenderType>(
     (person.gender as GenderType) || 'male'
   );
@@ -46,8 +47,6 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
       biography: person.biography || '',
       occupation: person.occupation || '',
       nationality: person.nationality || '',
-      email: '',
-      phone: '',
     },
   });
 
@@ -55,20 +54,24 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
 
   const onSubmit = async (data: PersonFormInput) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       const result = onUpdate ? await onUpdate(data) : { success: true };
       if (result.success) {
         reset();
         onClose();
+      } else {
+        setError(result.error || 'Failed to update person');
       }
     } catch (error) {
-      console.error('Failed to update person:', error);
+      setError(error instanceof Error ? error.message : 'Failed to update person');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
+    setError(null);
     reset();
     onClose();
   };
@@ -98,6 +101,13 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {/* Error Display */}
+          {error && (
+            <div className="p-3 mb-4 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
+
           {/* Name Fields */}
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">

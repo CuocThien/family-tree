@@ -31,15 +31,3 @@ export default async function PersonProfilePage({ params }: PersonProfilePagePro
     </Suspense>
   );
 }
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    redirect('/login');
-  }
-
-  return (
-    <Suspense fallback={<PersonProfileSkeleton />}>
-      <PersonProfileContent personId={params.personId} />
-    </Suspense>
-  );
-}
