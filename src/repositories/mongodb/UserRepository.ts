@@ -50,6 +50,7 @@ export class UserRepository extends BaseRepository implements IUserRepository {
     return {
       _id: doc._id.toString(),
       email: doc.email,
+      password: (doc as any).password,
       profile: {
         name: (doc.profile as any).name,
         avatar: (doc.profile as any).avatar,

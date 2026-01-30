@@ -2,17 +2,18 @@
  * Register API Route
  *
  * Handles user registration with email/password.
- * Creates a new user account and sends verification email.
+ * Creates a new user account.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { container } from '@/lib/di';
+import { container, getContainer } from '@/lib/di';
 import { CreateUserData } from '@/types/user';
 import { ValidationError, ConflictError } from '@/services/errors/ServiceErrors';
 
 export async function POST(request: NextRequest) {
   try {
+
     const body = await request.json();
     const { name, email, password } = body;
 
@@ -52,18 +53,10 @@ export async function POST(request: NextRequest) {
     // Create user
     const user = await container.userRepository.create(createUserData);
 
-    // Send verification email
-    try {
-      await container.emailService.sendVerificationEmail(user.email, user.profile.name || 'User');
-    } catch (emailError) {
-      // Log but don't fail registration if email fails
-      console.error('Failed to send verification email:', emailError);
-    }
-
     return NextResponse.json(
       {
         success: true,
-        message: 'Registration successful. Please check your email to verify your account.',
+        message: 'Registration successful.',
         user: {
           id: user._id.toString(),
           email: user.email,

@@ -62,6 +62,8 @@ function LoginForm() {
           setError('Invalid email or password');
         }
       } else {
+        // Sign-in successful, redirect to callbackUrl
+        // Use router.push for client-side navigation
         router.push(callbackUrl);
         router.refresh();
       }

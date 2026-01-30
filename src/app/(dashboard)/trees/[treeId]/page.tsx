@@ -4,7 +4,7 @@ import { TreeBoardContent } from './TreeBoardContent';
 import { TreeBoardSkeleton } from '@/components/tree/TreeBoardSkeleton';
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  params: Promise<{ treeId: string }>;
 }
 
 export default async function TreeBoardPage({ params }: PageProps) {
@@ -14,7 +14,7 @@ export default async function TreeBoardPage({ params }: PageProps) {
     redirect('/login');
   }
 
-  const { id: treeId } = await params;
+  const { treeId } = await params;
 
   return (
     <>

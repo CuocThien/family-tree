@@ -12,7 +12,11 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get the token from cookies
-  const token = request.cookies.get('next-auth.session-token') || request.cookies.get('__Secure-next-auth.session-token');
+  // NextAuth v5 uses different cookie names than v3/v4
+  const token = request.cookies.get('authjs.session-token') ||
+                request.cookies.get('__Secure-authjs.session-token') ||
+                request.cookies.get('next-auth.session-token') || // Fallback for v3/v4
+                request.cookies.get('__Secure-next-auth.session-token'); // Fallback for v3/v4
 
   const isLoggedIn = !!token;
 

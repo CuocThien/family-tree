@@ -1,0 +1,60 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - heading "Connect Your Family Story" [level=1] [ref=e11]
+      - paragraph [ref=e12]: Preserve memories, celebrate heritage, and build your family tree together.
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - heading "Welcome back" [level=2] [ref=e16]
+        - paragraph [ref=e17]: Sign in to continue to your family tree
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]: Email
+          - generic [ref=e21]:
+            - generic:
+              - img
+            - textbox "Email" [ref=e22]:
+              - /placeholder: you@example.com
+        - generic [ref=e23]:
+          - generic [ref=e24]:
+            - generic [ref=e25]: Password
+            - generic [ref=e26]:
+              - generic:
+                - img
+              - textbox "Password" [ref=e27]:
+                - /placeholder: Enter your password
+          - button "Show password" [ref=e28]:
+            - img [ref=e29]
+        - generic [ref=e32]:
+          - generic [ref=e33] [cursor=pointer]:
+            - checkbox "Remember me" [ref=e34]
+            - generic [ref=e35]: Remember me
+          - link "Forgot password?" [ref=e36] [cursor=pointer]:
+            - /url: /forgot-password
+        - button "Sign In" [ref=e37]:
+          - generic [ref=e38]: Sign In
+      - generic [ref=e43]: Or continue with
+      - generic [ref=e44]:
+        - button "Sign in with Google" [ref=e45]:
+          - generic [ref=e46]:
+            - img [ref=e47]
+            - text: Sign in with Google
+        - button "Sign in with Facebook" [ref=e52]:
+          - generic [ref=e53]:
+            - img [ref=e54]
+            - text: Sign in with Facebook
+      - paragraph [ref=e56]:
+        - text: Don't have an account?
+        - link "Sign up" [ref=e57] [cursor=pointer]:
+          - /url: /register
+      - generic [ref=e58]:
+        - img [ref=e59]
+        - generic [ref=e62]: Secured with SSL encryption
+  - button "Open Next.js Dev Tools" [ref=e68] [cursor=pointer]:
+    - img [ref=e69]
+  - alert [ref=e72]
+```

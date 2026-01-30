@@ -1,16 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
-import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { PasswordStrength } from '@/components/auth/PasswordStrength';
 
 const registerSchema = z
   .object({
@@ -43,16 +39,41 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [credentials, setCredentials] = useState<{ email: string; password: string } | null>(null);
+
+  // Auto-sign in after successful registration
+  useEffect(() => {
+    if (success && credentials) {
+      const timer = setTimeout(async () => {
+        try {
+          const signInResult = await signIn('credentials', {
+            email: credentials.email,
+            password: credentials.password,
+            redirect: false,
+          });
+
+          if (signInResult?.ok) {
+            // Sign-in successful, redirect to dashboard
+            router.push('/dashboard');
+            router.refresh();
+          } else {
+            router.push('/login?registered=true');
+          }
+        } catch {
+          window.location.href = '/login?registered=true';
+        }
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success, credentials]);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -60,8 +81,6 @@ export default function RegisterPage() {
       acceptTerms: false,
     },
   });
-
-  const password = watch('password', '');
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
@@ -86,55 +105,33 @@ export default function RegisterPage() {
         } else {
           setError(result.error || 'Registration failed. Please try again.');
         }
+        setIsLoading(false);
         return;
       }
 
+      // Store credentials for auto sign-in
+      setCredentials({
+        email: data.email.toLowerCase().trim(),
+        password: data.password,
+      });
       setSuccess(true);
-
-      // Auto-sign in after successful registration
-      setTimeout(async () => {
-        const signInResult = await signIn('credentials', {
-          email: data.email.toLowerCase().trim(),
-          password: data.password,
-          redirect: false,
-        });
-
-        if (signInResult?.ok) {
-          router.push('/dashboard');
-        } else {
-          router.push('/login?registered=true');
-        }
-      }, 1500);
     } catch {
       setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleOAuthSignIn = async (provider: 'google' | 'facebook') => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      await signIn(provider, { callbackUrl: '/dashboard' });
-    } catch {
-      setError(`Could not sign in with ${provider}. Please try again.`);
       setIsLoading(false);
     }
   };
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center px-6 bg-white dark:bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center px-6 bg-[#f6f8f8] dark:bg-[#101f22]">
         <div className="w-full max-w-md text-center">
           <div className="mb-6 flex justify-center">
-            <div className="h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center">
+            <div className="size-20 rounded-full bg-[#13c8ec]/10 flex items-center justify-center">
               <svg
-                className="h-8 w-8 text-green-500"
+                className="h-10 w-10 text-[#13c8ec]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   strokeLinecap="round"
@@ -145,38 +142,42 @@ export default function RegisterPage() {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-[#0d191b] dark:text-white mb-2">
+          <h2 className="text-2xl font-black text-[#0d191b] dark:text-white mb-2">
             Account created successfully!
           </h2>
-          <p className="text-[#4c8d9a] dark:text-gray-400">
-            Signing you in...
-          </p>
+          <p className="text-[#4c8d9a]">Signing you in...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
+    <div className="flex min-h-screen flex-col lg:flex-row bg-[#f6f8f8] dark:bg-[#101f22]">
       {/* Form Section */}
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 lg:px-12 xl:px-24 bg-white dark:bg-gray-900 order-2 lg:order-1">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex justify-center mb-8">
-            <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="32" cy="32" r="30" stroke="#13c8ec" strokeWidth="4" />
-              <path d="M32 16V32L44 44" stroke="#13c8ec" strokeWidth="4" strokeLinecap="round" />
-              <circle cx="32" cy="32" r="6" fill="#13c8ec" />
-            </svg>
+      <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-24 xl:px-32">
+        <div className="mx-auto w-full max-w-md">
+          {/* Logo */}
+          <div className="mb-10 flex items-center gap-4 text-[#13c8ec]">
+            <div className="size-10">
+              <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </div>
+            <h1 className="text-[#0d191b] dark:text-white text-2xl font-black leading-tight tracking-tight">
+              AncestryHub
+            </h1>
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-[#0d191b] dark:text-white mb-2">
+          <div className="mb-10">
+            <h2 className="text-3xl font-black tracking-tight text-[#0d191b] dark:text-white">
               Create your account
             </h2>
-            <p className="text-[#4c8d9a] dark:text-gray-400">
-              Start building your family tree today
+            <p className="mt-2 text-base text-[#4c8d9a]">
+              Join thousands of genealogists discovering their family history.
             </p>
           </div>
 
@@ -210,300 +211,210 @@ export default function RegisterPage() {
 
           {/* Register Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-            <Input
-              label="Full Name"
-              type="text"
-              placeholder="John Doe"
-              leftIcon={<User size={20} />}
-              error={errors.fullName?.message}
-              disabled={isLoading}
-              autoComplete="name"
-              aria-required="true"
-              {...register('fullName')}
-            />
-
-            <Input
-              label="Email"
-              type="email"
-              placeholder="you@example.com"
-              leftIcon={<Mail size={20} />}
-              error={errors.email?.message}
-              disabled={isLoading}
-              autoComplete="email"
-              aria-required="true"
-              {...register('email')}
-            />
-
+            {/* Full Name */}
             <div>
-              <div className="relative">
-                <Input
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Create a password"
-                  leftIcon={<Lock size={20} />}
-                  error={errors.password?.message}
+              <label
+                className="block text-sm font-bold text-[#0d191b] dark:text-white"
+                htmlFor="full-name"
+              >
+                Full Name
+              </label>
+              <div className="mt-1">
+                <input
+                  id="full-name"
+                  type="text"
+                  placeholder="John Doe"
                   disabled={isLoading}
-                  autoComplete="new-password"
+                  className="block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/10 px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-[#13c8ec] sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  autoComplete="name"
                   aria-required="true"
-                  {...register('password')}
+                  aria-invalid={errors.fullName ? 'true' : undefined}
+                  {...register('fullName')}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-[2.3rem] text-[#4c8d9a] hover:text-[#13c8ec] transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
               </div>
-              <PasswordStrength password={password} />
+              {errors.fullName && (
+                <p className="mt-1 text-xs text-red-500" role="alert">
+                  {errors.fullName.message}
+                </p>
+              )}
             </div>
 
-            <div className="relative">
-              <Input
-                label="Confirm Password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Confirm your password"
-                leftIcon={<Lock size={20} />}
-                error={errors.confirmPassword?.message}
-                disabled={isLoading}
-                autoComplete="new-password"
-                aria-required="true"
-                {...register('confirmPassword')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-4 top-[2.3rem] text-[#4c8d9a] hover:text-[#13c8ec] transition-colors"
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+            {/* Email */}
+            <div>
+              <label
+                className="block text-sm font-bold text-[#0d191b] dark:text-white"
+                htmlFor="email"
               >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
+                Email address
+              </label>
+              <div className="mt-1">
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  disabled={isLoading}
+                  className="block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/10 px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-[#13c8ec] sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  autoComplete="email"
+                  aria-required="true"
+                  aria-invalid={errors.email ? 'true' : undefined}
+                  {...register('email')}
+                />
+              </div>
+              {errors.email && (
+                <p className="mt-1 text-xs text-red-500" role="alert">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                className="block text-sm font-bold text-[#0d191b] dark:text-white"
+                htmlFor="password"
+              >
+                Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  className="block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/10 px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-[#13c8ec] sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  autoComplete="new-password"
+                  aria-required="true"
+                  aria-invalid={errors.password ? 'true' : undefined}
+                  {...register('password')}
+                />
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-xs text-red-500" role="alert">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            {/* Confirm Password */}
+            <div>
+              <label
+                className="block text-sm font-bold text-[#0d191b] dark:text-white"
+                htmlFor="confirm-password"
+              >
+                Confirm Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                  className="block w-full rounded-xl border-none bg-[#e7f1f3] dark:bg-white/10 px-4 py-3 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] focus:ring-2 focus:ring-[#13c8ec] sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  autoComplete="new-password"
+                  aria-required="true"
+                  aria-invalid={errors.confirmPassword ? 'true' : undefined}
+                  {...register('confirmPassword')}
+                />
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-500" role="alert">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
 
             {/* Terms Checkbox */}
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="acceptTerms"
-                {...register('acceptTerms')}
-                className="mt-1 w-4 h-4 rounded border-gray-300 text-[#13c8ec] focus:ring-[#13c8ec] focus:ring-offset-0"
-                disabled={isLoading}
-              />
-              <label htmlFor="acceptTerms" className="text-sm text-[#4c8d9a] dark:text-gray-400">
-                I agree to the{' '}
-                <Link href="/terms" className="text-[#13c8ec] hover:text-[#0d8fa8] font-semibold">
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link href="/privacy" className="text-[#13c8ec] hover:text-[#0d8fa8] font-semibold">
-                  Privacy Policy
-                </Link>
-              </label>
+            <div className="flex items-start">
+              <div className="flex h-5 items-center">
+                <input
+                  id="acceptTerms"
+                  type="checkbox"
+                  disabled={isLoading}
+                  className="h-4 w-4 rounded border-gray-300 text-[#13c8ec] focus:ring-[#13c8ec]"
+                  aria-invalid={errors.acceptTerms ? 'true' : undefined}
+                  {...register('acceptTerms')}
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="acceptTerms" className="text-[#4c8d9a]">
+                  I agree to the{' '}
+                  <Link href="/terms" className="font-semibold text-[#13c8ec] hover:underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" className="font-semibold text-[#13c8ec] hover:underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
             </div>
             {errors.acceptTerms && (
-              <p className="text-xs text-red-500 flex items-center gap-1" role="alert">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={12}
-                  height={12}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
+              <p className="text-xs text-red-500" role="alert">
                 {errors.acceptTerms.message}
               </p>
             )}
 
-            {/* Sign Up Button */}
-            <Button
-              type="submit"
-              size="lg"
-              loading={isLoading}
-              disabled={isLoading}
-              className="w-full"
-            >
-              Create Account
-            </Button>
+            {/* Submit Button */}
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex w-full items-center justify-center rounded-xl bg-[#13c8ec] px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#13c8ec]/25 hover:bg-[#13c8ec]/90 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Creating account...' : 'Start My Journey'}
+              </button>
+            </div>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200 dark:border-gray-700" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-900 text-[#4c8d9a] dark:text-gray-400">
-                Or sign up with
-              </span>
-            </div>
-          </div>
-
-          {/* OAuth Buttons */}
-          <div className="space-y-3">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => handleOAuthSignIn('google')}
-              disabled={isLoading}
-              className="w-full"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  fill="#34A853"
-                />
-                <path
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  fill="#EA4335"
-                />
-              </svg>
-              Sign up with Google
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              onClick={() => handleOAuthSignIn('facebook')}
-              disabled={isLoading}
-              className="w-full"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-              Sign up with Facebook
-            </Button>
-          </div>
-
           {/* Login Link */}
-          <p className="mt-8 text-center text-sm text-[#4c8d9a] dark:text-gray-400">
+          <p className="mt-10 text-center text-sm text-[#4c8d9a]">
             Already have an account?{' '}
-            <Link
-              href="/login"
-              className="font-semibold text-[#13c8ec] hover:text-[#0d8fa8] transition-colors"
-            >
-              Sign in
+            <Link href="/login" className="font-bold text-[#13c8ec] hover:underline">
+              Log in instead
             </Link>
           </p>
-
-          {/* SSL Badge */}
-          <div className="mt-8 flex items-center justify-center gap-2 text-xs text-[#4c8d9a] dark:text-gray-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={14}
-              height={14}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            <span>Secured with SSL encryption</span>
-          </div>
         </div>
       </div>
 
       {/* Hero Section - Visible on desktop */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-2/5 bg-gradient-to-br from-[#13c8ec] to-[#0d8fa8] overflow-hidden order-1 lg:order-2">
-        {/* Background Pattern */}
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-
-        <div className="relative z-10 flex flex-col justify-center items-center w-full h-full px-12 text-white">
-          {/* Feature Highlights */}
-          <div className="space-y-8 max-w-md">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
+      <div className="hidden lg:relative lg:block lg:w-1/2">
+        <div className="absolute inset-0 h-full w-full">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#13c8ec]/80 to-[#101f22]/90 z-10"></div>
+          <div
+            className="h-full w-full bg-center bg-no-repeat bg-cover"
+            style={{
+              backgroundImage:
+                "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgp1sAjHdn6Of5xdrLidr8B5jdS2UshwUq2iuwN0xOaFedYnT7Lb9TDToZc6crAIYohSqQbtZ_3Ut9qqjEnWSmg4ijmQaHQcczxnCZ65D2OWcSf4kvsAZNq-BGGDOkPjbi3-gYNFyNRwRRC65mdQgBk4vCgRC-bj6-766SbRMcNmkNhHCgEmhuNsUBkYSHYHxElc5PlWLNMKn0huxriGOsSzbclY7E4WjNfS7WN8kFEm4XMfLqvm54GPQsfKjnM3X_UXDb_Nt94yY')",
+            }}
+          ></div>
+        </div>
+        <div className="relative z-20 flex h-full flex-col items-center justify-center px-12 text-center text-white">
+          <div className="max-w-md">
+            <span className="mb-4 inline-block rounded-full bg-white/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+              Your History Awaits
+            </span>
+            <h2 className="text-4xl font-black leading-tight tracking-tight mb-6">
+              Discover the stories that made you who you are.
+            </h2>
+            <p className="text-lg text-white/80 font-medium">
+              Build your family tree, search billions of historical records, and connect with
+              distant relatives through DNA matching.
+            </p>
+            <div className="mt-12 grid grid-cols-2 gap-4 text-left">
+              <div className="rounded-xl bg-white/10 p-4 backdrop-blur-md border border-white/10">
+                <span className="material-symbols-outlined text-[#13c8ec] mb-2">
+                  account_tree
+                </span>
+                <p className="text-sm font-bold">Smart Trees</p>
+                <p className="text-xs text-white/60">Dynamic visualization of lineages</p>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-1">Build Together</h3>
-                <p className="text-white/80">Collaborate with family members to grow your tree</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-1">Share Memories</h3>
-                <p className="text-white/80">Upload photos and documents to preserve your history</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-1">Secure & Private</h3>
-                <p className="text-white/80">Your family data is protected with enterprise-grade security</p>
+              <div className="rounded-xl bg-white/10 p-4 backdrop-blur-md border border-white/10">
+                <span className="material-symbols-outlined text-[#13c8ec] mb-2">
+                  genetics
+                </span>
+                <p className="text-sm font-bold">DNA Analysis</p>
+                <p className="text-xs text-white/60">Find biological connections</p>
               </div>
             </div>
           </div>

@@ -22,12 +22,19 @@ export async function createTestUser(overrides: Partial<IUser> = {}): Promise<IU
     profile: {
       name: 'Test User',
     },
+    trees: [],
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
   };
 
-  await db.collection('users').insertOne({ ...user, password: hashedPassword });
+  const dbUser = {
+    ...user,
+    _id: new ObjectId(user._id),
+    password: hashedPassword,
+  };
+
+  await db.collection('users').insertOne(dbUser);
   return user;
 }
 
@@ -53,7 +60,12 @@ export async function createTestTree(userId: string, overrides: Partial<ITree> =
     ...overrides,
   };
 
-  await db.collection('trees').insertOne(tree);
+  const dbTree = {
+    ...tree,
+    _id: new ObjectId(tree._id),
+  };
+
+  await db.collection('trees').insertOne(dbTree);
   return tree;
 }
 
@@ -77,7 +89,12 @@ export async function createTestPerson(treeId: string, overrides: Partial<IPerso
     ...overrides,
   };
 
-  await db.collection('persons').insertOne(person);
+  const dbPerson = {
+    ...person,
+    _id: new ObjectId(person._id),
+  };
+
+  await db.collection('persons').insertOne(dbPerson);
   return person;
 }
 
@@ -103,7 +120,12 @@ export async function createTestRelationship(
     ...overrides,
   };
 
-  await db.collection('relationships').insertOne(relationship);
+  const dbRelationship = {
+    ...relationship,
+    _id: new ObjectId(relationship._id),
+  };
+
+  await db.collection('relationships').insertOne(dbRelationship);
   return relationship;
 }
 
@@ -130,7 +152,12 @@ export async function createTestMedia(
     ...overrides,
   };
 
-  await db.collection('media').insertOne(media);
+  const dbMedia = {
+    ...media,
+    _id: new ObjectId(media._id),
+  };
+
+  await db.collection('media').insertOne(dbMedia);
   return media;
 }
 

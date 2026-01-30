@@ -47,7 +47,6 @@ import { OwnerOnlyPermissionStrategy } from '@/strategies/permission/OwnerOnlyPe
 // ==================
 // Infrastructure
 // ==================
-import { connectToDatabase } from '@/lib/db/mongodb';
 
 /**
  * Configure and return a fully wired DI container.
@@ -59,11 +58,6 @@ export function configureContainer(): Container {
   // ==================
   // Infrastructure
   // ==================
-  container.register({
-    identifier: SERVICES.DatabaseConnection,
-    factory: () => connectToDatabase(),
-    lifecycle: 'singleton',
-  });
 
   container.register({
     identifier: SERVICES.EmailService,

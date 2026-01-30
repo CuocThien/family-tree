@@ -58,10 +58,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Invalid email or password');
         }
 
-        if (!user.isVerified) {
-          throw new Error('Please verify your email address');
-        }
-
         // Reset rate limit on successful login
         rateLimits.login.reset(email);
 
@@ -154,10 +150,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async redirect({ url, baseUrl }) {
-      // Ensure redirects stay on same origin
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      // Handle callbackUrl from signIn()
+      // If url is empty or equals baseUrl, redirect to dashboard
+      if (!url || url === baseUrl) {
+        return `${baseUrl}/dashboard`;
+      }
+      // If url is a relative path (from callbackUrl), use it
+      if (url.startsWith('/')) {
+        return url;
+      }
+      // If url is from the same origin, use it
+      try {
+        if (new URL(url).origin === baseUrl) {
+          return url;
+        }
+      } catch {
+        // If URL parsing fails, treat as relative path
+      }
+      // Default to dashboard after successful sign-in
+      return `${baseUrl}/dashboard`;
     },
   },
 
