@@ -32,7 +32,7 @@ export function TreeGrid({ trees, limit, emptyState }: TreeGridProps) {
           lastUpdated={tree.lastUpdated}
           isMain={tree.isMain}
           coverImage={tree.coverImage}
-          onClick={() => router.push(`/trees/${tree._id}`)}
+          onClick={() => router.push(`/dashboard/trees/${tree._id}`)}
         />
       ))}
     </div>
