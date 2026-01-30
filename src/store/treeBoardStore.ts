@@ -12,6 +12,13 @@ interface Viewport {
   zoom: number;
 }
 
+interface TreeFilters {
+  generations?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+  branches?: string[];
+  gender?: ('male' | 'female' | 'other')[];
+  lifeStatus?: 'all' | 'living' | 'deceased';
+}
+
 interface TreeBoardState {
   // Data
   treeId: string | null;
@@ -26,6 +33,10 @@ interface TreeBoardState {
   hoveredPersonId: string | null;
   expandedPersonIds: Set<string>;
   maxGenerations: number;
+
+  // Search and filter state
+  searchQuery: string;
+  filters: TreeFilters;
 
   // UI State
   showMinimap: boolean;
@@ -64,6 +75,11 @@ interface TreeBoardActions {
   collapsePerson: (personId: string) => void;
   toggleExpanded: (personId: string) => void;
 
+  // Search and filter actions
+  setSearchQuery: (query: string) => void;
+  setFilter: (filter: Partial<TreeFilters>) => void;
+  clearFilters: () => void;
+
   // UI Actions
   toggleMinimap: () => void;
   toggleSidebar: () => void;
@@ -76,6 +92,9 @@ interface TreeBoardActions {
 
   // Reset
   reset: () => void;
+
+  // Computed
+  filteredPersons: IPerson[];
 }
 
 const initialState: TreeBoardState = {
@@ -90,6 +109,9 @@ const initialState: TreeBoardState = {
   hoveredPersonId: null,
   expandedPersonIds: new Set(),
   maxGenerations: 5,
+
+  searchQuery: '',
+  filters: {},
 
   showMinimap: true,
   showSidebar: true,
@@ -222,6 +244,23 @@ export const useTreeBoardStore = create<TreeBoardState & TreeBoardActions>()(
             }
           }),
 
+        // Search and filter actions
+        setSearchQuery: (query) =>
+          set((state) => {
+            state.searchQuery = query;
+          }),
+
+        setFilter: (filter) =>
+          set((state) => {
+            state.filters = { ...state.filters, ...filter };
+          }),
+
+        clearFilters: () =>
+          set((state) => {
+            state.searchQuery = '';
+            state.filters = {};
+          }),
+
         // UI Actions
         toggleMinimap: () =>
           set((state) => {
@@ -260,6 +299,36 @@ export const useTreeBoardStore = create<TreeBoardState & TreeBoardActions>()(
 
         // Reset
         reset: () => set(initialState),
+
+        // Computed
+        get filteredPersons(): IPerson[] {
+          const { persons, searchQuery, filters } = get();
+          return Array.from(persons.values()).filter((person) => {
+            // Search filter
+            if (searchQuery) {
+              const fullName = `${person.firstName || ''} ${person.lastName || ''}`.toLowerCase();
+              if (!fullName.includes(searchQuery.toLowerCase())) {
+                return false;
+              }
+            }
+
+            // Gender filter
+            if (filters.gender && filters.gender.length > 0) {
+              if (!person.gender || !filters.gender.includes(person.gender as 'male' | 'female' | 'other')) {
+                return false;
+              }
+            }
+
+            // Life status filter
+            if (filters.lifeStatus && filters.lifeStatus !== 'all') {
+              const isDeceased = person.dateOfDeath !== undefined && person.dateOfDeath !== null;
+              if (filters.lifeStatus === 'living' && isDeceased) return false;
+              if (filters.lifeStatus === 'deceased' && !isDeceased) return false;
+            }
+
+            return true;
+          });
+        },
       }))
     ),
     { name: 'tree-board-store' }
@@ -281,4 +350,9 @@ export const usePersonById = (personId: string) =>
   useTreeBoardStore((state) => state.persons.get(personId));
 
 export const useVisiblePersons = () =>
-  useTreeBoardStore((state) => Array.from(state.persons.values()));
+  useTreeBoardStore((state) => state.filteredPersons);
+
+export const useFilteredPersons = () =>
+  useTreeBoardStore((state) => state.filteredPersons);
+
+export const useZoom = () => useTreeBoardStore((state) => Math.round(state.viewport.zoom * 100));
