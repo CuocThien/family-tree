@@ -27,7 +27,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
       if (!res.ok) {
         throw new Error('Failed to fetch dashboard data');
       }
-      return res.json();
+      return res.json().then((response) => response.data);
     }),
   });
 
@@ -63,7 +63,8 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
     );
   }
 
-  const totalMembers = dashboard.trees.reduce(
+  const trees = dashboard.trees || [];
+  const totalMembers = trees.reduce(
     (sum: number, tree: any) => sum + (tree.memberCount || 0),
     0
   );
@@ -85,7 +86,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                   Welcome back, {firstName}!
                 </h1>
                 <p className="text-base text-[#4c8d9a] mt-1">
-                  You have {totalMembers.toLocaleString()} {totalMembers === 1 ? 'member' : 'members'} across {dashboard.trees.length} {dashboard.trees.length === 1 ? 'family tree' : 'family trees'}.
+                  You have {totalMembers.toLocaleString()} {totalMembers === 1 ? 'member' : 'members'} across {trees.length} {trees.length === 1 ? 'family tree' : 'family trees'}.
                 </p>
               </div>
               <Button
@@ -103,7 +104,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                 <h2 className="text-[22px] font-bold text-[#0d191b] dark:text-white">
                   My Family Trees
                 </h2>
-                {dashboard.trees.length > 3 && (
+                {trees.length > 3 && (
                   <button
                     onClick={() => router.push('/dashboard/trees')}
                     className="text-primary text-sm font-semibold hover:underline"
@@ -113,7 +114,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                 )}
               </div>
               <TreeGrid
-                trees={dashboard.trees.map((tree: any) => ({
+                trees={trees.map((tree: any) => ({
                   ...tree,
                   lastUpdated: new Date(tree.updatedAt),
                 }))}
@@ -122,8 +123,8 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
             </section>
 
             {/* DNA Banner */}
-            {dashboard.dnaMatches > 0 && (
-              <DNAInsightsBanner matchCount={dashboard.dnaMatches} />
+            {(dashboard.dnaMatches || 0) > 0 && (
+              <DNAInsightsBanner matchCount={dashboard.dnaMatches || 0} />
             )}
           </div>
 
