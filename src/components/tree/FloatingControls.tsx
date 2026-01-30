@@ -1,16 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { useTreeBoardStore, ViewMode } from '@/store/treeBoardStore';
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
+import { AddPersonModal } from '@/components/person/AddPersonModal';
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
+import { useRouter } from 'next/navigation';
 
 const VIEW_MODES: { label: string; value: ViewMode }[] = [
   { label: 'Pedigree View', value: 'pedigree' },
   { label: 'Fan Chart', value: 'fan' },
 ];
 
-export function FloatingControls() {
+interface FloatingControlsProps {
+  treeId: string;
+}
+
+export function FloatingControls({ treeId }: FloatingControlsProps) {
   const {
     viewport,
     zoomIn,
@@ -19,6 +27,10 @@ export function FloatingControls() {
     setViewMode,
     viewMode,
   } = useTreeBoardStore();
+
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { addPerson } = useAddPersonToTree();
+  const router = useRouter();
 
   const handleZoomIn = useCallback(() => {
     zoomIn();
@@ -33,7 +45,7 @@ export function FloatingControls() {
   }, [fitToScreen]);
 
   const handleAddPerson = useCallback(() => {
-    // TODO(FEAT-XXX): Open add person modal
+    setIsAddModalOpen(true);
   }, []);
 
   return (
@@ -113,5 +125,20 @@ export function FloatingControls() {
         <span className="text-sm">Quick Add</span>
       </button>
     </div>
+
+    {/* Add Person Modal */}
+    <AddPersonModal
+      isOpen={isAddModalOpen}
+      onClose={() => setIsAddModalOpen(false)}
+      treeId={treeId}
+      onCreate={async (data) => {
+        const result = await addPerson.mutateAsync({ ...data, treeId });
+        if (result.success) {
+          // Refresh the page to show the new person
+          router.refresh();
+        }
+        return result;
+      }}
+    />
   );
 }

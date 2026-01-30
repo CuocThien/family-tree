@@ -105,7 +105,7 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
       </main>
 
       {/* Floating Controls */}
-      <FloatingControls />
+      <FloatingControls treeId={treeId} />
     </div>
   );
 }
