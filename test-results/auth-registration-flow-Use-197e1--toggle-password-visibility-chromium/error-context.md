@@ -17,18 +17,16 @@
           - generic [ref=e21]:
             - generic:
               - img
-            - textbox "Email" [disabled] [ref=e22]:
+            - textbox "Email" [ref=e22]:
               - /placeholder: you@example.com
-              - text: test@example.com
         - generic [ref=e23]:
           - generic [ref=e24]:
             - generic [ref=e25]: Password
             - generic [ref=e26]:
               - generic:
                 - img
-              - textbox "Password" [disabled] [ref=e27]:
+              - textbox "Password" [ref=e27]:
                 - /placeholder: Enter your password
-                - text: TestPassword123!
           - button "Show password" [ref=e28]:
             - img [ref=e29]
         - generic [ref=e32]:
@@ -37,27 +35,24 @@
             - generic [ref=e35]: Remember me
           - link "Forgot password?" [ref=e36] [cursor=pointer]:
             - /url: /forgot-password
-        - button "Sign In" [disabled]:
-          - img
-          - text: Sign In
-      - generic [ref=e41]: Or continue with
-      - generic [ref=e42]:
-        - button "Sign in with Google" [disabled]:
-          - generic:
-            - img
+        - button "Sign In" [ref=e37]:
+          - generic [ref=e38]: Sign In
+      - generic [ref=e43]: Or continue with
+      - generic [ref=e44]:
+        - button "Sign in with Google" [ref=e45]:
+          - generic [ref=e46]:
+            - img [ref=e47]
             - text: Sign in with Google
-        - button "Sign in with Facebook" [disabled]:
-          - generic:
-            - img
+        - button "Sign in with Facebook" [ref=e52]:
+          - generic [ref=e53]:
+            - img [ref=e54]
             - text: Sign in with Facebook
-      - paragraph [ref=e43]:
+      - paragraph [ref=e56]:
         - text: Don't have an account?
-        - link "Sign up" [ref=e44] [cursor=pointer]:
+        - link "Sign up" [ref=e57] [cursor=pointer]:
           - /url: /register
-      - generic [ref=e45]:
-        - img [ref=e46]
-        - generic [ref=e49]: Secured with SSL encryption
-  - button "Open Next.js Dev Tools" [ref=e55] [cursor=pointer]:
-    - img [ref=e56]
-  - alert [ref=e59]
+      - generic [ref=e58]:
+        - img [ref=e59]
+        - generic [ref=e62]: Secured with SSL encryption
+  - alert [ref=e63]
 ```

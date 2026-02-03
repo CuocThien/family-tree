@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { cn } from '@/lib/utils';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -293,7 +292,7 @@ function LoginForm() {
 
           {/* Register Link */}
           <p className="mt-8 text-center text-sm text-[#4c8d9a] dark:text-gray-400">
-            Don't have an account?{' '}
+            Do not have an account?{' '}
             <Link
               href="/register"
               className="font-semibold text-[#13c8ec] hover:text-[#0d8fa8] transition-colors"

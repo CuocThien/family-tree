@@ -94,7 +94,7 @@ interface TreeBoardActions {
   reset: () => void;
 
   // Computed
-  filteredPersons: IPerson[];
+  getFilteredPersons: () => IPerson[];
 }
 
 const initialState: TreeBoardState = {
@@ -301,8 +301,10 @@ export const useTreeBoardStore = create<TreeBoardState & TreeBoardActions>()(
         reset: () => set(initialState),
 
         // Computed
-        get filteredPersons(): IPerson[] {
-          const { persons, searchQuery, filters } = get();
+        getFilteredPersons: () => {
+          const state = get();
+          const { persons, searchQuery, filters } = state;
+          if (!persons || persons.size === 0) return [];
           return Array.from(persons.values()).filter((person) => {
             // Search filter
             if (searchQuery) {
@@ -350,9 +352,9 @@ export const usePersonById = (personId: string) =>
   useTreeBoardStore((state) => state.persons.get(personId));
 
 export const useVisiblePersons = () =>
-  useTreeBoardStore((state) => state.filteredPersons);
+  useTreeBoardStore((state) => state.getFilteredPersons());
 
 export const useFilteredPersons = () =>
-  useTreeBoardStore((state) => state.filteredPersons);
+  useTreeBoardStore((state) => state.getFilteredPersons());
 
 export const useZoom = () => useTreeBoardStore((state) => Math.round(state.viewport.zoom * 100));

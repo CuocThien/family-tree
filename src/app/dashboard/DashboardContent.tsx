@@ -23,6 +23,34 @@ interface DashboardContentProps {
   userName?: string | null;
 }
 
+interface TreeWithStats {
+  id: string;
+  name: string;
+  memberCount: number;
+  relationshipCount: number;
+  mediaCount: number;
+  generations: number;
+  coverImage?: string;
+  isMain?: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+interface Invitation {
+  id: string;
+  treeId: string;
+  treeName: string;
+  invitedBy: string;
+  createdAt: Date | string;
+  expiresAt?: Date | string;
+}
+
+interface Activity {
+  id: string;
+  action: string;
+  timestamp: Date | string;
+}
+
 export function DashboardContent({ userId, userName }: DashboardContentProps) {
   const router = useRouter();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -73,7 +101,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   const trees = dashboard.trees || [];
   const totalMembers = trees.reduce(
-    (sum: number, tree: any) => sum + (tree.memberCount || 0),
+    (sum: number, tree: TreeWithStats) => sum + (tree.memberCount || 0),
     0
   );
 
@@ -130,7 +158,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                 )}
               </div>
               <TreeGrid
-                trees={trees.map((tree: any) => ({
+                trees={trees.map((tree: TreeWithStats) => ({
                   ...tree,
                   lastUpdated: new Date(tree.updatedAt),
                 }))}
@@ -147,14 +175,14 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
           {/* Sidebar */}
           <aside className="lg:col-span-4 flex flex-col gap-6">
             <InvitationsWidget
-              invitations={(dashboard.invitations || []).map((inv: any) => ({
+              invitations={(dashboard.invitations || []).map((inv: Invitation) => ({
                 ...inv,
                 createdAt: new Date(inv.createdAt),
                 expiresAt: inv.expiresAt ? new Date(inv.expiresAt) : undefined,
               }))}
             />
             <ActivityTimeline
-              activities={(dashboard.recentActivity || []).map((activity: any) => ({
+              activities={(dashboard.recentActivity || []).map((activity: Activity) => ({
                 ...activity,
                 timestamp: new Date(activity.timestamp),
               }))}

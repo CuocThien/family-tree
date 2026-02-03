@@ -65,7 +65,7 @@ describe('TreeCard', () => {
         lastUpdated={oneHourAgo}
       />
     );
-    expect(screen.getByText('1h')).toBeInTheDocument();
+    expect(screen.getByText('1h ago')).toBeInTheDocument();
   });
 
   it('shows main badge when isMain is true', () => {

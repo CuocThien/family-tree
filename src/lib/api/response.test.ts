@@ -7,12 +7,13 @@ import { successResponse, errorResponse, errors } from './response';
 
 describe('API Response Utilities', () => {
   describe('successResponse', () => {
-    it('should create a success response with data', () => {
+    it('should create a success response with data', async () => {
       const data = { id: '1', name: 'Test' };
       const response = successResponse(data);
 
       expect(response.status).toBe(200);
-      expect(response.body).toBeDefined();
+      const body = await response.json();
+      expect(body).toBeDefined();
     });
 
     it('should create a success response with custom status', () => {

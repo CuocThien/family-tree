@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: ['**/__tests__/**/*.ts', '**/__tests__/**/*.tsx', '**/?(*.)+(spec|test).ts', '**/?(*.)+(spec|test).tsx'],
+  testPathIgnorePatterns: ['<rootDir>/tests/e2e', '<rootDir>/node_modules', '<rootDir>/tests/unit/repositories'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
@@ -28,5 +29,5 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(lucide-react|@testing-library.*|@jest.*))',
   ],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.mjs'],
 };

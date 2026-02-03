@@ -70,7 +70,7 @@ export function TreeCard({
         <div className="flex items-center gap-3 text-[#4c8d9a] text-xs font-normal">
           <span className="flex items-center gap-1">
             <Users className="w-3 h-3" aria-hidden="true" />
-            {memberCount.toLocaleString()} members
+            {memberCount.toLocaleString()} {memberCount === 1 ? 'member' : 'members'}
           </span>
           <span className="flex items-center gap-1">
             <Clock className="w-3 h-3" aria-hidden="true" />

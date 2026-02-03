@@ -59,6 +59,13 @@ const plans: Plan[] = [
 ];
 
 export function SubscriptionSection() {
+  // Static billing dates for demo purposes
+  // In a real app, these would come from an API
+  const billingDates = [
+    new Date('2024-01-15'),
+    new Date('2023-12-15'),
+    new Date('2023-11-15'),
+  ];
   return (
     <div className="space-y-8">
       {/* Current Plan */}
@@ -133,7 +140,7 @@ export function SubscriptionSection() {
       <div className="bg-white dark:bg-white/5 rounded-2xl p-8 shadow-sm border border-[#e7f1f3] dark:border-white/10">
         <h2 className="text-xl font-bold mb-6">Billing History</h2>
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
+          {billingDates.map((date, i) => (
             <div
               key={i}
               className="flex items-center justify-between py-3 border-b border-[#e7f1f3] dark:border-white/10 last:border-0"
@@ -141,7 +148,7 @@ export function SubscriptionSection() {
               <div>
                 <p className="font-semibold">Premium Subscription</p>
                 <p className="text-sm text-[#4c8d9a]">
-                  {new Date(Date.now() - i * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}
+                  {date.toLocaleDateString()}
                 </p>
               </div>
               <div className="text-right">

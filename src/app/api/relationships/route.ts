@@ -9,7 +9,6 @@ import { withAuth, AuthenticatedRequest } from '@/lib/api/withAuth';
 import { withValidation } from '@/lib/api/withValidation';
 import { successResponse, errors } from '@/lib/api/response';
 import { container } from '@/lib/di';
-import { SERVICES } from '@/lib/di/types';
 
 // Schema matching the DTO from the types folder
 const createRelationshipSchema = z.object({

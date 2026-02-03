@@ -41,8 +41,8 @@ export const GET = withAuth(async (request: AuthenticatedRequest) => {
           relationshipCount: stats.relationshipCount,
           mediaCount: stats.mediaCount,
           generations: stats.generations,
-          coverImage: (tree as any).coverImage,
-          isMain: (tree as any).isMain || false,
+          coverImage: ('coverImage' in tree ? tree.coverImage : undefined) as string | undefined,
+          isMain: ('isMain' in tree ? tree.isMain : false) as boolean,
           createdAt: tree.createdAt,
           updatedAt: tree.updatedAt,
         } as TreeWithStats;
@@ -55,8 +55,8 @@ export const GET = withAuth(async (request: AuthenticatedRequest) => {
           relationshipCount: 0,
           mediaCount: 0,
           generations: 0,
-          coverImage: (tree as any).coverImage,
-          isMain: (tree as any).isMain || false,
+          coverImage: ('coverImage' in tree ? tree.coverImage : undefined) as string | undefined,
+          isMain: ('isMain' in tree ? tree.isMain : false) as boolean,
           createdAt: tree.createdAt,
           updatedAt: tree.updatedAt,
         } as TreeWithStats;

@@ -35,7 +35,13 @@ export function LifeEventsTab({ person }: LifeEventsTabProps) {
   const lifeEvents = person.customAttributes?.get('lifeEvents');
   if (lifeEvents && Array.isArray(lifeEvents)) {
     events.push(
-      ...(lifeEvents as any[]).map((event, i) => ({
+      ...(lifeEvents as Array<{
+        type?: string;
+        title?: string;
+        date?: Date | string;
+        location?: string;
+        description?: string;
+      }>).map((event, i) => ({
         id: `custom-${i}`,
         type: event.type || 'custom',
         title: event.title || 'Event',
@@ -93,7 +99,7 @@ export function LifeEventsTab({ person }: LifeEventsTabProps) {
               No Life Events Yet
             </h3>
             <p className="text-[#4c8d9a] text-sm max-w-md mx-auto mb-6">
-              Document important milestones and events to tell this person's life story.
+              Document important milestones and events to tell this person&apos;s life story.
             </p>
             <Button leftIcon={<Plus size={16} />}>Add First Event</Button>
           </div>

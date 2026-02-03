@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { exportTreeAsPDF, getPDFFilename } from '@/lib/tree-export/pdf-export';
 import { withAuth, AuthenticatedRequest } from '@/lib/api/withAuth';
 import { container } from '@/lib/di';

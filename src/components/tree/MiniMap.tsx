@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { useTreeBoardStore } from '@/store/treeBoardStore';
 
 export const MiniMap = memo(function MiniMap() {
-  const filteredPersons = useTreeBoardStore((state) => state.filteredPersons);
+  const filteredPersons = useTreeBoardStore((state) => state.getFilteredPersons());
 
   return (
     <div className="absolute top-6 right-6 z-10 w-48 h-32 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-xl border border-[#e7f1f3] dark:border-[#1e2f32] shadow-lg overflow-hidden">

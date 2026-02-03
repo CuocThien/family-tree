@@ -20,8 +20,9 @@ export async function GET(request: NextRequest) {
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
-  // Find user by verification token
-  const users = await (container.userRepository as any).model?.find({
+  // Find user by verification token using the model
+  // @ts-expect-error - Direct model access for token lookup
+  const users = await container.userRepository.model?.find({
     verificationToken: tokenHash,
   });
 
@@ -44,11 +45,12 @@ export async function GET(request: NextRequest) {
   }
 
   // Verify user email
-  await (container.userRepository as any).update(user._id, {
+  // @ts-ignore - isVerified not in UpdateUserData but needed for email verification
+  await container.userRepository.update(user._id, {
     isVerified: true,
     verificationToken: null,
     verificationTokenExpiry: null,
-  });
+  } as Record<string, unknown>);
 
   return NextResponse.redirect(
     new URL('/login?verified=true', request.url)

@@ -6,13 +6,11 @@
  * DELETE /api/trees/[id] - Delete tree
  */
 
-import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { withAuth, AuthenticatedRequest } from '@/lib/api/withAuth';
 import { withValidation } from '@/lib/api/withValidation';
 import { successResponse, errors } from '@/lib/api/response';
 import { container } from '@/lib/di';
-import { SERVICES } from '@/lib/di/types';
 
 /**
  * Schema for validating tree update requests.

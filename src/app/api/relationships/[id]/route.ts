@@ -11,7 +11,6 @@ import { withAuth, AuthenticatedRequest } from '@/lib/api/withAuth';
 import { withValidation } from '@/lib/api/withValidation';
 import { successResponse, errors } from '@/lib/api/response';
 import { container } from '@/lib/di';
-import { SERVICES } from '@/lib/di/types';
 
 const updateRelationshipSchema = z.object({
   type: z.enum(['parent', 'child', 'spouse', 'sibling'] as const).optional(),
@@ -28,11 +27,9 @@ const updateRelationshipSchema = z.object({
  * Retrieves a specific relationship by ID.
  */
 export const GET = withAuth(async (request: AuthenticatedRequest, context) => {
-  const params = await context.params;
-
   // Note: RelationshipService doesn't have getRelationshipById method
   // We'll need to get it through the repository
-  const relationshipRepo = container.treeService; // Use treeService as a placeholder - need to use actual repo
+  // TODO: Implement using relationship repository
 
   try {
     // This is a placeholder - the actual implementation would use the relationship repository

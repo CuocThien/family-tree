@@ -40,7 +40,7 @@ export function MediaTab({ media, documents, isLoading, onAddMedia }: MediaTabPr
             No Media Yet
           </h3>
           <p className="text-[#4c8d9a] text-sm max-w-md mx-auto mb-6">
-            Add photos and documents to preserve memories and tell this person's story.
+            Add photos and documents to preserve memories and tell this person&apos;s story.
           </p>
           <Button leftIcon={<Upload size={16} />} onClick={onAddMedia}>
             Add Media

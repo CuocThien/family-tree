@@ -17,6 +17,19 @@ interface TreesContentProps {
   userName?: string | null;
 }
 
+interface TreeWithStats {
+  id: string;
+  name: string;
+  memberCount: number;
+  relationshipCount: number;
+  mediaCount: number;
+  generations: number;
+  coverImage?: string;
+  isMain?: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
 export function TreesContent({ userId, userName }: TreesContentProps) {
   const router = useRouter();
 
@@ -54,7 +67,7 @@ export function TreesContent({ userId, userName }: TreesContentProps) {
   }
 
   const totalMembers = trees.reduce(
-    (sum: number, tree: any) => sum + (tree.memberCount || 0),
+    (sum: number, tree: TreeWithStats) => sum + (tree.memberCount || 0),
     0
   );
 
@@ -128,7 +141,7 @@ export function TreesContent({ userId, userName }: TreesContentProps) {
               </div>
               <div>
                 <p className="text-2xl font-bold text-[#0d191b] dark:text-white">
-                  {trees.filter((t: any) => t.isMain).length}
+                  {trees.filter((t: TreeWithStats) => t.isMain).length}
                 </p>
                 <p className="text-sm text-[#4c8d9a]">Main Trees</p>
               </div>
@@ -159,7 +172,7 @@ export function TreesContent({ userId, userName }: TreesContentProps) {
           </div>
         ) : (
           <TreeGrid
-            trees={trees.map((tree: any) => ({
+            trees={trees.map((tree: TreeWithStats) => ({
               ...tree,
               lastUpdated: new Date(tree.updatedAt),
             }))}

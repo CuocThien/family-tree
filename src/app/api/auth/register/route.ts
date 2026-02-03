@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { container, getContainer } from '@/lib/di';
+import { container } from '@/lib/di';
 import { CreateUserData } from '@/types/user';
 import { ValidationError, ConflictError } from '@/services/errors/ServiceErrors';
 

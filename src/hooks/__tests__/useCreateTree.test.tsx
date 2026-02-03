@@ -1,17 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useCreateTree } from '../useCreateTree';
-import { container } from '@/lib/di';
 import type { ITree } from '@/types/tree';
 
-// Mock the DI container
-jest.mock('@/lib/di', () => ({
-  container: {
-    treeService: {
-      createTree: jest.fn(),
-    },
-  },
-}));
+// Mock fetch globally
+global.fetch = jest.fn();
 
 // Mock next-auth session
 jest.mock('next-auth/react', () => ({
@@ -21,7 +14,7 @@ jest.mock('next-auth/react', () => ({
   })),
 }));
 
-const mockTreeService = container.treeService as jest.Mocked<typeof container.treeService>;
+const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 const mockUseSession = require('next-auth/react').useSession as jest.Mock;
 
 const createWrapper = () => {
@@ -41,6 +34,7 @@ const createWrapper = () => {
 describe('useCreateTree', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFetch.mockClear();
     mockUseSession.mockReturnValue({
       data: { user: { id: 'test-user-id', name: 'Test User' } },
       status: 'authenticated',
@@ -64,7 +58,10 @@ describe('useCreateTree', () => {
       updatedAt: new Date(),
     };
 
-    mockTreeService.createTree.mockResolvedValue(mockTree);
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: mockTree }),
+    } as Response);
 
     const { result } = renderHook(() => useCreateTree(), {
       wrapper: createWrapper(),
@@ -84,13 +81,12 @@ describe('useCreateTree', () => {
       });
     });
 
-    expect(mockTreeService.createTree).toHaveBeenCalledWith(
-      'test-user-id',
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/trees',
       expect.objectContaining({
-        name: 'Smith Family Tree',
-        settings: expect.objectContaining({
-          isPublic: false,
-        }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: expect.stringContaining('Smith Family Tree'),
       })
     );
   });
@@ -119,12 +115,14 @@ describe('useCreateTree', () => {
       });
     });
 
-    expect(mockTreeService.createTree).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it('should handle service errors', async () => {
-    const mockError = new Error('Validation failed');
-    mockTreeService.createTree.mockRejectedValue(mockError);
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Validation failed' }),
+    } as Response);
 
     const { result } = renderHook(() => useCreateTree(), {
       wrapper: createWrapper(),

@@ -37,10 +37,10 @@ export async function POST(request: NextRequest) {
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
     // Update user with reset token
-    await (container.userRepository as any).update(user._id, {
+    await container.userRepository.update(user._id, {
       resetPasswordToken: resetTokenHash,
       resetPasswordExpiry: resetTokenExpiry,
-    });
+    } as Record<string, unknown>);
 
     // Send reset email
     await container.emailService.sendPasswordResetEmail(email, resetToken);

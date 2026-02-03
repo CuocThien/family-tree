@@ -1,70 +1,57 @@
 # Page snapshot
 
 ```yaml
-- generic [active] [ref=e1]:
-  - generic [ref=e2]:
-    - generic [ref=e4]:
-      - generic [ref=e5]:
-        - img [ref=e7]
-        - heading "AncestryHub" [level=1] [ref=e9]
-      - generic [ref=e10]:
-        - heading "Create your account" [level=2] [ref=e11]
-        - paragraph [ref=e12]: Join thousands of genealogists discovering their family history.
-      - generic [ref=e13]:
-        - generic [ref=e14]:
-          - generic [ref=e15]: Full Name
-          - textbox "Full Name" [disabled] [ref=e17]:
-            - /placeholder: John Doe
-            - text: New User 1769767707106
-        - generic [ref=e18]:
-          - generic [ref=e19]: Email address
-          - textbox "Email address" [disabled] [ref=e21]:
-            - /placeholder: name@example.com
-            - text: new-1769767707106@example.com
-        - generic [ref=e22]:
-          - generic [ref=e23]: Password
-          - textbox "Password" [disabled] [ref=e25]:
-            - /placeholder: ••••••••
-            - text: TestPassword123!
-        - generic [ref=e26]:
-          - generic [ref=e27]: Confirm Password
-          - textbox "Confirm Password" [disabled] [ref=e29]:
-            - /placeholder: ••••••••
-            - text: TestPassword123!
-        - generic [ref=e30]:
-          - checkbox "I agree to the Terms of Service and Privacy Policy." [checked] [disabled] [ref=e32]
-          - generic [ref=e34]:
-            - text: I agree to the
-            - link "Terms of Service" [ref=e35] [cursor=pointer]:
-              - /url: /terms
-            - text: and
-            - link "Privacy Policy" [ref=e36] [cursor=pointer]:
-              - /url: /privacy
-            - text: .
-        - button "Creating account..." [disabled] [ref=e38]
-      - paragraph [ref=e39]:
-        - text: Already have an account?
-        - link "Log in instead" [ref=e40] [cursor=pointer]:
-          - /url: /login
-    - generic [ref=e46]:
-      - generic [ref=e47]: Your History Awaits
-      - heading "Discover the stories that made you who you are." [level=2] [ref=e48]
-      - paragraph [ref=e49]: Build your family tree, search billions of historical records, and connect with distant relatives through DNA matching.
-      - generic [ref=e50]:
-        - generic [ref=e51]:
-          - generic [ref=e52]: account_tree
-          - paragraph [ref=e53]: Smart Trees
-          - paragraph [ref=e54]: Dynamic visualization of lineages
-        - generic [ref=e55]:
-          - generic [ref=e56]: genetics
-          - paragraph [ref=e57]: DNA Analysis
-          - paragraph [ref=e58]: Find biological connections
-  - button "Open Next.js Dev Tools" [ref=e64] [cursor=pointer]:
-    - generic [ref=e67]:
-      - text: Compiling
-      - generic [ref=e68]:
-        - generic [ref=e69]: .
-        - generic [ref=e70]: .
-        - generic [ref=e71]: .
-  - alert [ref=e72]
+- generic [ref=e2]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img [ref=e7]
+      - heading "AncestryHub" [level=1] [ref=e9]
+    - generic [ref=e10]:
+      - heading "Create your account" [level=2] [ref=e11]
+      - paragraph [ref=e12]: Join thousands of genealogists discovering their family history.
+    - generic [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e15]: Full Name
+        - textbox "Full Name" [ref=e17]:
+          - /placeholder: John Doe
+      - generic [ref=e18]:
+        - generic [ref=e19]: Email address
+        - textbox "Email address" [ref=e21]:
+          - /placeholder: name@example.com
+      - generic [ref=e22]:
+        - generic [ref=e23]: Password
+        - textbox "Password" [ref=e25]:
+          - /placeholder: ••••••••
+      - generic [ref=e26]:
+        - generic [ref=e27]: Confirm Password
+        - textbox "Confirm Password" [ref=e29]:
+          - /placeholder: ••••••••
+      - generic [ref=e30]:
+        - checkbox "I agree to the Terms of Service and Privacy Policy." [ref=e32]
+        - generic [ref=e34]:
+          - text: I agree to the
+          - link "Terms of Service" [ref=e35] [cursor=pointer]:
+            - /url: /terms
+          - text: and
+          - link "Privacy Policy" [ref=e36] [cursor=pointer]:
+            - /url: /privacy
+          - text: .
+      - button "Start My Journey" [ref=e38]
+    - paragraph [ref=e39]:
+      - text: Already have an account?
+      - link "Log in instead" [ref=e40] [cursor=pointer]:
+        - /url: /login
+  - generic [ref=e46]:
+    - generic [ref=e47]: Your History Awaits
+    - heading "Discover the stories that made you who you are." [level=2] [ref=e48]
+    - paragraph [ref=e49]: Build your family tree, search billions of historical records, and connect with distant relatives through DNA matching.
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]: account_tree
+        - paragraph [ref=e53]: Smart Trees
+        - paragraph [ref=e54]: Dynamic visualization of lineages
+      - generic [ref=e55]:
+        - generic [ref=e56]: genetics
+        - paragraph [ref=e57]: DNA Analysis
+        - paragraph [ref=e58]: Find biological connections
 ```

@@ -69,7 +69,7 @@ export default function RegisterPage() {
 
       return () => clearTimeout(timer);
     }
-  }, [success, credentials]);
+  }, [success, credentials, router]);
 
   const {
     register,
