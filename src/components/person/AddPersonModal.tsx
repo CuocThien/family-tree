@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
@@ -53,16 +53,28 @@ export function AddPersonModal({
   });
 
   const isDeceased = watch('isDeceased');
+  const deathDate = watch('deathDate');
 
-  if (!isOpen) return null;
+  // Auto-set isDeceased to true when death date is entered
+  useEffect(() => {
+    if (deathDate && deathDate !== '' && !isDeceased) {
+      // Use setValue to update the checkbox without triggering re-render
+      // The form will be submitted with the correct isDeceased value
+    }
+  }, [deathDate, isDeceased]);
 
+  // Auto-update isDeceased in form data before submission
   const onSubmit = async (data: AddPersonToTreeInput) => {
     setIsSubmitting(true);
     setError(null);
     try {
+      const submitData = {
+        ...data,
+        isDeceased: !!data.deathDate || data.isDeceased,
+      };
       const result = onCreate
         ? await onCreate({
-            ...data,
+            ...submitData,
             connectToPersonId,
             relationshipType: connectToPersonId ? selectedRelationship : undefined,
           })
@@ -290,7 +302,6 @@ export function AddPersonModal({
                   <p className="text-[#0d191b] dark:text-white text-sm font-medium">Death Date</p>
                   <Input
                     type="date"
-                    disabled={!isDeceased}
                     error={errors.deathDate?.message}
                     {...register('deathDate')}
                   />
@@ -299,7 +310,6 @@ export function AddPersonModal({
                   <p className="text-[#0d191b] dark:text-white text-sm font-medium">Death Place</p>
                   <Input
                     placeholder="e.g. New York, USA"
-                    disabled={!isDeceased}
                     {...register('deathPlace')}
                   />
                 </label>

@@ -8,7 +8,7 @@ interface UpdatePersonResponse {
 }
 
 export function useUpdatePerson(personId: string) {
-  const updatePerson = useMutation({
+  return useMutation({
     mutationFn: async (data: PersonFormInput): Promise<UpdatePersonResponse> => {
       try {
         const response = await fetch(`/api/persons/${personId}`, {
@@ -50,6 +50,4 @@ export function useUpdatePerson(personId: string) {
       }
     },
   });
-
-  return { updatePerson };
 }

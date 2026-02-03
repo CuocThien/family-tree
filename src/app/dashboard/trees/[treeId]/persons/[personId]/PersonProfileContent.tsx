@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { IPerson, ITree } from '@/types';
-import { useFamily, usePerson, useTree } from '@/hooks';
+import { useFamily, usePerson, useTree, useUpdatePerson } from '@/hooks';
 import { ProfileHeader } from './components/ProfileHeader';
 import { ProfileTabs } from './components/ProfileTabs';
 import { OverviewTab } from './components/OverviewTab';
 import { RelationshipsTab } from './components/RelationshipsTab';
 import { MediaTab } from './components/MediaTab';
 import { LifeEventsTab } from './components/LifeEventsTab';
+import { EditPersonModal } from '@/components/person/EditPersonModal';
 import { Spinner } from '@/components/ui';
 
 type TabId = 'overview' | 'relationships' | 'media' | 'life-events';
@@ -23,10 +24,12 @@ interface PersonProfileContentProps {
 export function PersonProfileContent({ treeId, personId, userId }: PersonProfileContentProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data: person, isLoading: personLoading, error: personError } = usePerson(personId);
   const { data: tree, isLoading: treeLoading } = useTree(treeId);
   const { data: family, isLoading: familyLoading } = useFamily(personId);
+  const updatePersonMutation = useUpdatePerson();
 
   if (personLoading || treeLoading) {
     return (
@@ -90,7 +93,7 @@ export function PersonProfileContent({ treeId, personId, userId }: PersonProfile
         <ProfileHeader
           person={person}
           stats={stats}
-          onEdit={() => console.log('Edit profile')}
+          onEdit={() => setIsEditModalOpen(true)}
           onAddMedia={() => console.log('Add media')}
         />
 
@@ -122,6 +125,39 @@ export function PersonProfileContent({ treeId, personId, userId }: PersonProfile
           )}
         </div>
       </div>
+
+      {/* Edit Person Modal */}
+      {person && (
+        <EditPersonModal
+          isOpen={isEditModalOpen}
+          person={person}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={async (data) => {
+            try {
+              await updatePersonMutation.mutateAsync({
+                id: personId,
+                data: {
+                  firstName: data.firstName,
+                  lastName: data.lastName,
+                  middleName: data.middleName,
+                  gender: data.gender,
+                  dateOfBirth: data.birthDate ? new Date(data.birthDate) : undefined,
+                  dateOfDeath: data.deathDate ? new Date(data.deathDate) : undefined,
+                  biography: data.biography,
+                },
+              });
+              // Refresh the router to show updated data
+              router.refresh();
+              return { success: true };
+            } catch (error) {
+              return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Failed to update person',
+              };
+            }
+          }}
+        />
+      )}
     </main>
   );
 }

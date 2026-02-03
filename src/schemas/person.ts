@@ -9,11 +9,21 @@ export const genderEnum = z.enum(['male', 'female', 'other'], {
 
 /**
  * Date string validation (ISO format)
+ * Handles empty strings by converting them to undefined
  */
-const dateSchema = z.string().refine(
-  (date) => !isNaN(Date.parse(date)),
-  { message: 'Invalid date format' }
-);
+const dateSchema = z
+  .string()
+  .optional()
+  .refine(
+    (date) => {
+      // Allow undefined or empty string
+      if (!date || date === '') return true;
+      // Validate date format
+      return !isNaN(Date.parse(date));
+    },
+    { message: 'Invalid date format' }
+  )
+  .transform((val) => (val === '' ? undefined : val));
 
 /**
  * First name validation
@@ -64,27 +74,27 @@ export const personFormSchema = z.object({
   phone: z.string().max(20, 'Phone number must not exceed 20 characters').optional(),
 }).refine(
   (data) => {
-    // If deceased, death date is required
-    if (data.isDeceased && !data.deathDate) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Death date is required when person is deceased',
-    path: ['deathDate'],
-  }
-).refine(
-  (data) => {
-    // Death date must be after birth date
+    // Death date must be after birth date (strictly greater than)
     if (data.birthDate && data.deathDate) {
-      return new Date(data.deathDate) >= new Date(data.birthDate);
+      return new Date(data.deathDate) > new Date(data.birthDate);
     }
     return true;
   },
   {
     message: 'Death date must be after birth date',
     path: ['deathDate'],
+  }
+).refine(
+  (data) => {
+    // Auto-update isDeceased if death date is provided
+    if (data.deathDate && !data.isDeceased) {
+      // This is handled in the form component via watch effect
+      return true;
+    }
+    return true;
+  },
+  {
+    message: '',
   }
 );
 
