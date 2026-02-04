@@ -112,6 +112,9 @@ export function AddPersonModal({
     { value: 'sibling', label: 'Sibling', icon: 'group' },
   ];
 
+  // Don't render modal if not open
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end">
       {/* Backdrop */}
