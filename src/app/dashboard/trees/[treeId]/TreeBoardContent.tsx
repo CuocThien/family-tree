@@ -13,7 +13,6 @@ import { TreeBoardSkeleton } from '@/components/tree/TreeBoardSkeleton';
 import { AddPersonModal } from '@/components/person/AddPersonModal';
 import { useTreeData } from '@/hooks/useTreeData';
 import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
-import { useRouter } from 'next/navigation';
 import { calculatePedigreeLayout } from '@/lib/tree-layout/pedigree';
 import { Node, NodeMouseHandler } from 'reactflow';
 import { Plus } from 'lucide-react';
@@ -27,7 +26,6 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
   const { setTreeData, setRootPerson, reset } = useTreeBoardStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { addPerson } = useAddPersonToTree();
-  const router = useRouter();
 
   const { data, isLoading, error } = useTreeData(treeId, userId);
 
@@ -104,9 +102,6 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
           treeId={treeId}
           onCreate={async (newData) => {
             const result = await addPerson.mutateAsync({ ...newData, treeId });
-            if (result.success) {
-              router.refresh();
-            }
             return result;
           }}
         />

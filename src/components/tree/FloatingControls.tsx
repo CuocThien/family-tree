@@ -7,7 +7,6 @@ import { AddPersonModal } from '@/components/person/AddPersonModal';
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
-import { useRouter } from 'next/navigation';
 
 const VIEW_MODES: { label: string; value: ViewMode }[] = [
   { label: 'Pedigree View', value: 'pedigree' },
@@ -30,7 +29,6 @@ export function FloatingControls({ treeId }: FloatingControlsProps) {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const { addPerson } = useAddPersonToTree();
-  const router = useRouter();
 
   const handleZoomIn = useCallback(() => {
     zoomIn();
@@ -134,10 +132,6 @@ export function FloatingControls({ treeId }: FloatingControlsProps) {
         treeId={treeId}
         onCreate={async (data) => {
           const result = await addPerson.mutateAsync({ ...data, treeId });
-          if (result.success) {
-            // Refresh the page to show the new person
-            router.refresh();
-          }
           return result;
         }}
       />

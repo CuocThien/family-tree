@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AddPersonToTreeInput } from '@/schemas/person';
 
 interface AddPersonResponse {
@@ -12,6 +12,8 @@ interface AddPersonVariables extends AddPersonToTreeInput {
 }
 
 export function useAddPersonToTree() {
+  const queryClient = useQueryClient();
+
   const addPerson = useMutation({
     mutationFn: async (variables: AddPersonVariables): Promise<AddPersonResponse> => {
       try {
@@ -74,6 +76,13 @@ export function useAddPersonToTree() {
           success: false,
           error: error instanceof Error ? error.message : 'Failed to add person',
         };
+      }
+    },
+    onSuccess: (data, variables) => {
+      if (data.success && data.data) {
+        queryClient.invalidateQueries({
+          queryKey: ['tree-data', variables.treeId],
+        });
       }
     },
   });
