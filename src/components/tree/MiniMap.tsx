@@ -7,7 +7,7 @@ export const MiniMap = memo(function MiniMap() {
   const filteredPersons = useTreeBoardStore((state) => state.getFilteredPersons());
 
   return (
-    <div className="absolute top-6 right-6 z-10 w-48 h-32 bg-white/80 dark:bg-background-dark/80 backdrop-blur rounded-xl border border-[#e7f1f3] dark:border-[#1e2f32] shadow-lg overflow-hidden">
+    <div className="absolute top-6 right-6 z-10 w-48 h-32 bg-surface/80 backdrop-blur rounded-xl border border-border shadow-lg overflow-hidden">
       {/* Grid Background */}
       <div className="absolute inset-0 opacity-30" style={{
         backgroundImage: `
@@ -33,7 +33,7 @@ export const MiniMap = memo(function MiniMap() {
       ))}
 
       {/* Label */}
-      <p className="absolute bottom-2 left-2 text-[8px] font-bold uppercase tracking-widest text-[#4c8d9a]">
+      <p className="absolute bottom-2 left-2 text-[8px] font-bold uppercase tracking-widest text-secondary">
         Navigator
       </p>
     </div>

@@ -34,7 +34,7 @@ export const PersonNode = memo(function PersonNode({
       <Handle
         type="target"
         position={Position.Left}
-        className="!bg-[#13c8ec] !border-2 !border-white dark:!border-[#101f22] !w-3 !h-3"
+        className="!bg-primary !border-2 !border-white dark:!border-surface-elevated !w-3 !h-3"
       />
 
       {/* Avatar */}
@@ -43,11 +43,11 @@ export const PersonNode = memo(function PersonNode({
           sizeClass,
           'rounded-full p-1 shadow-lg transition-all duration-200',
           isRoot
-            ? 'border-4 border-[#13c8ec]'
+            ? 'border-4 border-primary'
             : selected
-            ? 'border-2 border-[#13c8ec]'
-            : 'border-2 border-[#cbd5e1] dark:border-[#2d3a3c]',
-          'bg-white dark:bg-[#1e2f32]'
+            ? 'border-2 border-primary'
+            : 'border-2 border-[#cbd5e1] dark:border-border',
+          'bg-surface'
         )}
       >
         <Avatar
@@ -58,11 +58,11 @@ export const PersonNode = memo(function PersonNode({
       </div>
 
       {/* Name label */}
-      <div className="mt-2 text-center bg-white/95 dark:bg-[#1e2f32]/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm border border-[#e7f1f3] dark:border-white/10 min-w-[100px]">
-        <p className={cn('font-bold text-[#0d191b] dark:text-white truncate', textSizeClass)}>
+      <div className="mt-2 text-center bg-surface/95 backdrop-blur px-3 py-1.5 rounded-lg shadow-sm border border-border min-w-[100px]">
+        <p className={cn('font-bold text-foreground truncate', textSizeClass)}>
           {person.firstName} {person.lastName}
         </p>
-        <p className="text-[9px] text-[#4c8d9a] tabular-nums">
+        <p className="text-[9px] text-secondary tabular-nums">
           {formatLifespan(person.dateOfBirth, person.dateOfDeath)}
         </p>
       </div>
@@ -71,7 +71,7 @@ export const PersonNode = memo(function PersonNode({
       <Handle
         type="source"
         position={Position.Right}
-        className="!bg-[#13c8ec] !border-2 !border-white dark:!border-[#101f22] !w-3 !h-3"
+        className="!bg-primary !border-2 !border-white dark:!border-surface-elevated !w-3 !h-3"
       />
     </div>
   );

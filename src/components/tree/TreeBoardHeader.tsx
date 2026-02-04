@@ -15,16 +15,16 @@ export function TreeBoardHeader({ tree }: TreeBoardHeaderProps) {
   const { data: session } = useSession();
 
   return (
-    <header className="z-30 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e7f1f3] dark:border-[#1e2f32] bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-3">
+    <header className="z-30 flex items-center justify-between whitespace-nowrap border-b border-border bg-surface/80 dark:bg-surface/80 backdrop-blur-md px-6 py-3">
       <div className="flex items-center gap-8">
         {/* Tree Info */}
-        <div className="flex items-center gap-3 text-[#0d191b] dark:text-white">
+        <div className="flex items-center gap-3 text-foreground">
           <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
             <MaterialSymbol icon="account_tree" />
           </div>
           <div>
             <h2 className="text-base font-bold leading-tight tracking-tight">{tree.name}</h2>
-            <p className="text-xs text-[#4c8d9a] font-medium">
+            <p className="text-xs text-secondary font-medium">
               Last updated {formatDateDistance(tree.updatedAt)}
             </p>
           </div>
@@ -39,7 +39,7 @@ export function TreeBoardHeader({ tree }: TreeBoardHeaderProps) {
         {/* View Mode Toggle */}
         {/* <ViewModeToggle /> - Will add in next task */}
 
-        <div className="h-8 w-px bg-[#e7f1f3] dark:border-[#1e2f32]" />
+        <div className="h-8 w-px bg-border dark:bg-border" />
 
         {/* Share Button */}
         <button

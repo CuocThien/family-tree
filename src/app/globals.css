@@ -3,11 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --surface: #ffffff;
+  --surface-elevated: #f8fafc;
+  --border: #e7f1f3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-primary: #13c8ec;
+  --color-secondary: #4c8d9a;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +24,9 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --surface: #1e2f32;
+    --surface-elevated: #101f22;
+    --border: #2d3a3c;
   }
 }
 

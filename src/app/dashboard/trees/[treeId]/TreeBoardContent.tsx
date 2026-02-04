@@ -80,17 +80,17 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="mb-6 flex justify-center">
-            <div className="size-20 rounded-full bg-[#13c8ec]/10 flex items-center justify-center">
-              <Plus className="h-10 w-10 text-[#13c8ec]" />
+            <div className="size-20 rounded-full bg-primary/10 flex items-center justify-center">
+              <Plus className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-[#0d191b] dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-foreground mb-2">
             No People in Tree
           </h2>
-          <p className="text-[#4c8d9a] mb-6">Add your first person to get started.</p>
+          <p className="text-secondary mb-6">Add your first person to get started.</p>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#13c8ec] text-white rounded-xl font-bold shadow-lg shadow-[#13c8ec]/25 hover:brightness-110 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/25 hover:brightness-110 transition-all"
           >
             <Plus size={20} />
             <span>Add First Person</span>
@@ -119,7 +119,7 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
         <FilterPanel treeId={treeId} />
 
         {/* Main Canvas Area */}
-        <div className="relative flex-1 bg-background-light dark:bg-background-dark canvas-grid overflow-hidden">
+        <div className="relative flex-1 bg-surface-elevated overflow-hidden">
           <ReactFlowProvider>
             <TreeCanvas
               initialNodes={nodes}

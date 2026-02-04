@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -17,6 +17,7 @@ import {
 import 'reactflow/dist/style.css';
 import { PersonNode } from './PersonNode.flow';
 import { useTreeBoardStore } from '@/store/treeBoardStore';
+import { usePreferencesStore } from '@/store/preferencesStore';
 
 const nodeTypes: NodeTypes = {
   person: PersonNode,
@@ -38,6 +39,19 @@ export function TreeCanvas({
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const { viewport, setViewport, showMinimap } = useTreeBoardStore();
+  const theme = usePreferencesStore((state) => state.theme);
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      setResolvedTheme(systemTheme);
+    } else {
+      setResolvedTheme(theme as 'light' | 'dark');
+    }
+  }, [theme]);
 
   const onMoveEnd = useCallback(
     (event: unknown, viewport: Viewport) => {
@@ -47,12 +61,22 @@ export function TreeCanvas({
   );
 
   const minimapClassName = useMemo(
-    () => '!bg-white/90 !rounded-xl !border !border-[#e7f1f3]',
+    () => '!bg-surface/90 !rounded-xl !border !border-border',
     []
   );
 
+  const controlsClassName = useMemo(
+    () => '!bg-surface/90 !rounded-xl !border !border-border',
+    []
+  );
+
+  const backgroundColor = useMemo(
+    () => (resolvedTheme === 'dark' ? '#2d3a3c' : '#d1d5db'),
+    [resolvedTheme]
+  );
+
   return (
-    <div className="w-full h-full bg-[#f8fafc] dark:bg-[#0f172a]">
+    <div className="w-full h-full bg-surface-elevated">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -68,8 +92,8 @@ export function TreeCanvas({
         onMoveEnd={onMoveEnd}
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={40} color="#d1d5db" />
-        <Controls className="!bg-white/90 !rounded-xl !border !border-[#e7f1f3]" />
+        <Background gap={40} color={backgroundColor} />
+        <Controls className={controlsClassName} />
         {showMinimap && (
           <MiniMap
             nodeColor={(n) => (n.selected ? '#13c8ec' : '#cbd5e1')}

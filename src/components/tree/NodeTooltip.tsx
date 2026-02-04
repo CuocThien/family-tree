@@ -47,8 +47,8 @@ export function NodeTooltip() {
     <div
       ref={tooltipRef}
       className={cn(
-        'absolute z-50 w-72 bg-white dark:bg-[#101f22] rounded-xl shadow-2xl',
-        'border border-[#e7f1f3] dark:border-white/10 overflow-hidden',
+        'absolute z-50 w-72 bg-surface-elevated rounded-xl shadow-2xl',
+        'border border-border overflow-hidden',
         'transition-opacity duration-150',
         tooltip.visible ? 'opacity-100' : 'opacity-0'
       )}
@@ -58,13 +58,13 @@ export function NodeTooltip() {
       }}
     >
       {/* Header with avatar and close button */}
-      <div className="relative p-4 bg-gradient-to-br from-[#13c8ec]/5 to-[#4c8d9a]/5 dark:from-[#13c8ec]/10 dark:to-[#4c8d9a]/10">
+      <div className="relative p-4 bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-primary/10 dark:to-secondary/10">
         <button
           onClick={hideTooltip}
           className="absolute top-2 right-2 p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
           aria-label="Close tooltip"
         >
-          <X size={16} className="text-[#4c8d9a]" />
+          <X size={16} className="text-secondary" />
         </button>
 
         <div className="flex items-start gap-3 pr-6">
@@ -72,13 +72,13 @@ export function NodeTooltip() {
             src={photoUrl}
             fullName={fullName}
             size="lg"
-            className="ring-2 ring-[#13c8ec]/20"
+            className="ring-2 ring-primary/20"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-bold text-[#0d191b] dark:text-white truncate">
+            <h3 className="text-base font-bold text-foreground truncate">
               {fullName}
             </h3>
-            <p className="text-sm text-[#4c8d9a]">
+            <p className="text-sm text-secondary">
               {formatLifespan(person.dateOfBirth, person.dateOfDeath)}
             </p>
           </div>
@@ -89,11 +89,11 @@ export function NodeTooltip() {
       <div className="p-4 space-y-3">
         {/* Biography preview */}
         {person.biography ? (
-          <p className="text-sm text-[#4c8d9a] line-clamp-3">
+          <p className="text-sm text-secondary line-clamp-3">
             {person.biography}
           </p>
         ) : (
-          <p className="text-sm text-[#4c8d9a]/60 italic">
+          <p className="text-sm text-secondary/60 italic">
             No biography available.
           </p>
         )}
@@ -102,8 +102,8 @@ export function NodeTooltip() {
         <div className="space-y-1 text-xs">
           {person.gender && (
             <div className="flex justify-between">
-              <span className="text-[#4c8d9a]">Gender</span>
-              <span className="text-[#0d191b] dark:text-white font-medium capitalize">
+              <span className="text-secondary">Gender</span>
+              <span className="text-foreground font-medium capitalize">
                 {person.gender}
               </span>
             </div>
@@ -139,7 +139,7 @@ export function NodeTooltip() {
 
       {/* Arrow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full">
-        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white dark:border-t-[#101f22]" />
+        <div className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-surface-elevated" />
       </div>
     </div>
   );
