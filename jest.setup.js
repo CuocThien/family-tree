@@ -1,12 +1,12 @@
 // Enable Immer plugins for Map/Set support
-import { enableMapSet } from 'immer';
+const { enableMapSet } = require('immer');
 enableMapSet();
 
 // Import jest-dom matchers
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
 // Mock localStorage for zustand persist middleware
-const localStorageMock = {
+const localStorageMock ={
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),

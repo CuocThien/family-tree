@@ -29,5 +29,5 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(lucide-react|@testing-library.*|@jest.*))',
   ],
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.mjs'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };

@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { TreeGrid } from '@/components/dashboard';
 import { InvitationsWidget } from '@/components/dashboard';
-import { ActivityTimeline } from '@/components/dashboard';
+import { ActivityTimeline, type Activity } from '@/components/dashboard';
+import { type Invitation } from '@/components/dashboard/InvitationsWidget';
 import { DNAInsightsBanner } from '@/components/dashboard';
 import { DashboardSkeleton } from '@/components/dashboard';
 import { DashboardNavbar, MobileBottomNav } from '@/components/dashboard';
@@ -36,7 +37,22 @@ interface TreeWithStats {
   updatedAt: Date | string;
 }
 
-interface Invitation {
+interface ApiActivity {
+  _id: string;
+  treeId: string;
+  userId: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  changes: Array<{
+    field: string;
+    oldValue?: unknown;
+    newValue?: unknown;
+  }>;
+  timestamp: Date | string;
+}
+
+interface ApiInvitation {
   id: string;
   treeId: string;
   treeName: string;
@@ -45,10 +61,57 @@ interface Invitation {
   expiresAt?: Date | string;
 }
 
-interface Activity {
-  id: string;
-  action: string;
-  timestamp: Date | string;
+// Helper functions for data mapping
+function safeDate(dateValue: Date | string | undefined | null): Date {
+  if (!dateValue) return new Date();
+  const date = new Date(dateValue);
+  return isNaN(date.getTime()) ? new Date() : date;
+}
+
+function formatActivityTitle(entityType: string, action: string): string {
+  const key = `${entityType.toLowerCase()}.${action}` as string;
+  const titles: Record<string, string> = {
+    'person.create': 'Person Added',
+    'person.update': 'Person Updated',
+    'person.delete': 'Person Deleted',
+    'familytree.create': 'Tree Created',
+    'familytree.update': 'Tree Updated',
+    'familytree.delete': 'Tree Deleted',
+    'media.create': 'Media Added',
+    'media.delete': 'Media Deleted',
+    'relationship.create': 'Relationship Added',
+    'relationship.update': 'Relationship Updated',
+    'relationship.delete': 'Relationship Deleted',
+  };
+  return titles[key] || 'Activity';
+}
+
+function formatActivityDescription(entityType: string, action: string): string {
+  const key = `${entityType.toLowerCase()}.${action}` as string;
+  const descriptions: Record<string, string> = {
+    'person.create': 'A new person was added to the family tree.',
+    'person.update': 'Person details were updated.',
+    'person.delete': 'A person was removed from the family tree.',
+    'familytree.create': 'A new family tree was created.',
+    'familytree.update': 'Family tree details were updated.',
+    'familytree.delete': 'A family tree was deleted.',
+    'media.create': 'A new media was added.',
+    'media.delete': 'A media was removed.',
+    'relationship.create': 'A new relationship was added.',
+    'relationship.update': 'Relationship details were updated.',
+    'relationship.delete': 'A relationship was removed.',
+  };
+  return descriptions[key] || '';
+}
+
+function getActivityType(entityType: string): Activity['type'] {
+  const typeMap: Record<string, 'photo' | 'person' | 'document' | 'edit'> = {
+    'Person': 'person',
+    'FamilyTree': 'edit',
+    'Media': 'photo',
+    'Relationship': 'edit',
+  };
+  return typeMap[entityType] || 'edit';
 }
 
 export function DashboardContent({ userId, userName }: DashboardContentProps) {
@@ -59,12 +122,15 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   const { data: dashboard, isLoading, isError, error } = useQuery({
     queryKey: ['dashboard', userId],
-    queryFn: () => fetch('/api/dashboard').then((res) => {
+    queryFn: async () => {
+      const res = await fetch('/api/dashboard');
       if (!res.ok) {
         throw new Error('Failed to fetch dashboard data');
       }
-      return res.json();
-    }),
+      const json = await res.json();
+      // Unwrap the data field from API response
+      return json.data || json;
+    },
   });
 
   if (isLoading) {
@@ -104,6 +170,51 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
     (sum: number, tree: TreeWithStats) => sum + (tree.memberCount || 0),
     0
   );
+
+  // Map trees to ITree interface for TreeGrid component
+  const displayTrees = trees.map((tree: TreeWithStats) => ({
+    _id: tree.id,
+    name: tree.name,
+    description: '',
+    ownerId: userId,
+    rootPersonId: undefined,
+    collaborators: [],
+    settings: {
+      isPublic: false,
+      allowComments: true,
+      defaultPhotoQuality: 'medium' as const,
+      language: 'en',
+    },
+    privacy: 'private' as const,
+    coverImage: tree.coverImage,
+    isMain: tree.isMain,
+    createdAt: new Date(tree.createdAt),
+    updatedAt: new Date(tree.updatedAt),
+    memberCount: tree.memberCount,
+    lastUpdated: new Date(tree.updatedAt),
+  }));
+
+  // Map activities to ActivityTimeline interface
+  const mappedActivities = (dashboard.recentActivity || []).map((activity: ApiActivity) => ({
+    id: activity._id,
+    type: getActivityType(activity.entityType),
+    title: formatActivityTitle(activity.entityType, activity.action),
+    description: formatActivityDescription(activity.entityType, activity.action),
+    timestamp: safeDate(activity.timestamp),
+  }));
+
+  // Map invitations to InvitationsWidget interface
+  const mappedInvitations = (dashboard.invitations || []).map((inv: ApiInvitation) => ({
+    id: inv.id,
+    treeName: inv.treeName,
+    inviterName: inv.invitedBy || 'Someone',
+    inviterAvatar: undefined,
+    inviteEmail: '',
+    permission: 'editor' as const,
+    status: 'pending' as const,
+    createdAt: safeDate(inv.createdAt),
+    expiresAt: inv.expiresAt ? safeDate(inv.expiresAt) : undefined,
+  }));
 
   const firstName = userName?.split(' ')[0] || 'there';
 
@@ -158,10 +269,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
                 )}
               </div>
               <TreeGrid
-                trees={trees.map((tree: TreeWithStats) => ({
-                  ...tree,
-                  lastUpdated: new Date(tree.updatedAt),
-                }))}
+                trees={displayTrees}
                 limit={3}
               />
             </section>
@@ -174,19 +282,8 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
           {/* Sidebar */}
           <aside className="lg:col-span-4 flex flex-col gap-6">
-            <InvitationsWidget
-              invitations={(dashboard.invitations || []).map((inv: Invitation) => ({
-                ...inv,
-                createdAt: new Date(inv.createdAt),
-                expiresAt: inv.expiresAt ? new Date(inv.expiresAt) : undefined,
-              }))}
-            />
-            <ActivityTimeline
-              activities={(dashboard.recentActivity || []).map((activity: Activity) => ({
-                ...activity,
-                timestamp: new Date(activity.timestamp),
-              }))}
-            />
+            <InvitationsWidget invitations={mappedInvitations} />
+            <ActivityTimeline activities={mappedActivities} />
           </aside>
         </div>
       </main>

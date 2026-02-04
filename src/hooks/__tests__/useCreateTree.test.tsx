@@ -28,10 +28,12 @@ const createWrapper = () => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
   Wrapper.displayName = 'QueryClientWrapper';
-  return Wrapper;
+  return { wrapper: Wrapper, queryClient };
 };
 
 describe('useCreateTree', () => {
+  let invalidateQueriesSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockFetch.mockClear();
@@ -39,6 +41,12 @@ describe('useCreateTree', () => {
       data: { user: { id: 'test-user-id', name: 'Test User' } },
       status: 'authenticated',
     });
+  });
+
+  afterEach(() => {
+    if (invalidateQueriesSpy) {
+      invalidateQueriesSpy.mockRestore();
+    }
   });
 
   it('should create tree successfully', async () => {
@@ -63,8 +71,11 @@ describe('useCreateTree', () => {
       json: async () => ({ data: mockTree }),
     } as Response);
 
+    const { wrapper, queryClient } = createWrapper();
+    invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
     const { result } = renderHook(() => useCreateTree(), {
-      wrapper: createWrapper(),
+      wrapper,
     });
 
     await act(async () => {
@@ -89,6 +100,104 @@ describe('useCreateTree', () => {
         body: expect.stringContaining('Smith Family Tree'),
       })
     );
+
+    // Verify dashboard query was invalidated
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['dashboard', 'test-user-id'],
+    });
+  });
+
+  it('should invalidate dashboard query on successful tree creation', async () => {
+    const mockTree: ITree = {
+      _id: 'tree-2',
+      ownerId: 'test-user-id',
+      name: 'Johnson Family Tree',
+      description: 'The Johnson lineage',
+      settings: {
+        isPublic: false,
+        allowComments: true,
+        defaultPhotoQuality: 'medium',
+        language: 'en',
+      },
+      collaborators: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: mockTree }),
+    } as Response);
+
+    const { wrapper, queryClient } = createWrapper();
+    invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(() => useCreateTree(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.createTree.mutateAsync({
+        name: 'Johnson Family Tree',
+        description: 'The Johnson lineage',
+        visibility: 'private',
+        allowCollaborators: false,
+      });
+    });
+
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['dashboard', 'test-user-id'],
+    });
+  });
+
+  it('should not invalidate dashboard query on failed tree creation', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: 'Validation failed' }),
+    } as Response);
+
+    const { wrapper, queryClient } = createWrapper();
+    invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(() => useCreateTree(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.createTree.mutateAsync({
+        name: 'AB',
+        description: '',
+        visibility: 'private',
+        allowCollaborators: false,
+      });
+    });
+
+    expect(invalidateQueriesSpy).not.toHaveBeenCalled();
+  });
+
+  it('should not invalidate dashboard query when not logged in', async () => {
+    mockUseSession.mockReturnValue({
+      data: null,
+      status: 'unauthenticated',
+    });
+
+    const { wrapper, queryClient } = createWrapper();
+    invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    const { result } = renderHook(() => useCreateTree(), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.createTree.mutateAsync({
+        name: 'Test Tree',
+        description: 'Test',
+        visibility: 'private',
+        allowCollaborators: false,
+      });
+    });
+
+    expect(invalidateQueriesSpy).not.toHaveBeenCalled();
   });
 
   it('should return error when not logged in', async () => {
@@ -97,8 +206,10 @@ describe('useCreateTree', () => {
       status: 'unauthenticated',
     });
 
+    const { wrapper } = createWrapper();
+
     const { result } = renderHook(() => useCreateTree(), {
-      wrapper: createWrapper(),
+      wrapper,
     });
 
     await act(async () => {
@@ -124,8 +235,10 @@ describe('useCreateTree', () => {
       json: async () => ({ error: 'Validation failed' }),
     } as Response);
 
+    const { wrapper } = createWrapper();
+
     const { result } = renderHook(() => useCreateTree(), {
-      wrapper: createWrapper(),
+      wrapper,
     });
 
     await act(async () => {

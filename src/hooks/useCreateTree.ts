@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import type { TreeFormInput } from '@/schemas/tree';
 import type { ITree } from '@/types/tree';
@@ -11,6 +11,7 @@ interface CreateTreeResponse {
 
 export function useCreateTree() {
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
 
   const createTree = useMutation({
     mutationFn: async (data: TreeFormInput): Promise<CreateTreeResponse> => {
@@ -49,6 +50,13 @@ export function useCreateTree() {
           success: false,
           error: error instanceof Error ? error.message : 'Failed to create tree',
         };
+      }
+    },
+    onSuccess: (data) => {
+      if (data.success && session?.user?.id) {
+        queryClient.invalidateQueries({
+          queryKey: ['dashboard', session.user.id],
+        });
       }
     },
   });
