@@ -11,13 +11,25 @@ import { successResponse, errors } from '@/lib/api/response';
 import { container } from '@/lib/di';
 
 // Schema matching the DTO from the types folder
+const relationshipTypeEnum = z.enum([
+  'parent',
+  'child',
+  'spouse',
+  'sibling',
+  'step-parent',
+  'step-child',
+  'adoptive-parent',
+  'adoptive-child',
+  'partner',
+] as const, {
+  errorMap: () => ({ message: 'Invalid relationship type' }),
+});
+
 const createRelationshipSchema = z.object({
   treeId: z.string().min(1, 'Tree ID is required'),
   fromPersonId: z.string().min(1, 'From person ID is required'),
   toPersonId: z.string().min(1, 'To person ID is required'),
-  type: z.enum(['parent', 'child', 'spouse', 'sibling'] as const, {
-    errorMap: () => ({ message: 'Invalid relationship type' }),
-  }),
+  type: relationshipTypeEnum,
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   notes: z.string().max(2000).optional(),

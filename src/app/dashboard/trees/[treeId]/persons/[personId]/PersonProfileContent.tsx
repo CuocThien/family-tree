@@ -131,6 +131,7 @@ export function PersonProfileContent({ treeId, personId, userId }: PersonProfile
         <EditPersonModal
           isOpen={isEditModalOpen}
           person={person}
+          treeId={treeId}
           onClose={() => setIsEditModalOpen(false)}
           onUpdate={async (data) => {
             try {

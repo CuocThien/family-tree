@@ -17,7 +17,19 @@ export function useAddPersonToTree() {
   const addPerson = useMutation({
     mutationFn: async (variables: AddPersonVariables): Promise<AddPersonResponse> => {
       try {
-        const { treeId, connectToPersonId, relationshipType, ...personData } = variables;
+        const { treeId, relationships, connectToPersonId, relationshipType, ...personData } = variables;
+
+        // Prepare relationships array
+        const relationshipsToCreate = relationships || [];
+
+        // For backward compatibility, if connectToPersonId and relationshipType are provided
+        // but no relationships array, add them to the array
+        if (connectToPersonId && relationshipType && relationshipsToCreate.length === 0) {
+          relationshipsToCreate.push({
+            relatedPersonId: connectToPersonId,
+            relationshipType,
+          });
+        }
 
         // Create the person
         const personResponse = await fetch('/api/persons', {
@@ -45,26 +57,30 @@ export function useAddPersonToTree() {
 
         const { data: newPerson } = await personResponse.json();
 
-        // If connecting to existing person, create relationship
-        if (connectToPersonId && relationshipType) {
-          const relationshipResponse = await fetch('/api/relationships', {
+        // Create relationships
+        const relationshipPromises = relationshipsToCreate.map((rel) =>
+          fetch('/api/relationships', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               treeId,
-              fromPersonId: connectToPersonId,
+              fromPersonId: rel.relatedPersonId,
               toPersonId: newPerson._id,
-              type: relationshipType,
+              type: rel.relationshipType,
             }),
-          });
+          })
+        );
 
-          if (!relationshipResponse.ok) {
-            const error = await relationshipResponse.json();
-            return {
-              success: false,
-              error: error.error?.message || 'Failed to create relationship',
-            };
-          }
+        const relationshipResponses = await Promise.all(relationshipPromises);
+
+        // Check if any relationship creation failed
+        const failedRelationship = relationshipResponses.find((res) => !res.ok);
+        if (failedRelationship) {
+          const error = await failedRelationship.json();
+          return {
+            success: false,
+            error: error.error?.message || 'Failed to create relationship',
+          };
         }
 
         return {

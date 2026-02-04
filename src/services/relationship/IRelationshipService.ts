@@ -24,6 +24,14 @@ export interface IRelationshipService {
   updateRelationship(relationshipId: string, userId: string, data: UpdateRelationshipDto): Promise<IRelationship>;
   deleteRelationship(relationshipId: string, userId: string): Promise<void>;
 
+  // Batch Operations
+  createRelationshipsForPerson(
+    treeId: string,
+    userId: string,
+    personId: string,
+    relationships: Array<{ relatedPersonId: string; relationshipType: RelationshipType }>
+  ): Promise<IRelationship[]>;
+
   // Family Queries
   getFamilyMembers(personId: string, userId: string): Promise<FamilyMembers>;
   getAncestors(personId: string, userId: string, generations?: number): Promise<AncestryPath>;
