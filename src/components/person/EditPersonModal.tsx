@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Spinner } from '@/components/ui/Spinner';
+import { RelationshipEntry } from '@/components/person/RelationshipEntry';
+import { PersonSearchSelector } from '@/components/person/PersonSearchSelector';
+import { RelationshipTypeSelector } from '@/components/person/RelationshipTypeSelector';
+import { useManageRelationships } from '@/hooks/useManageRelationships';
 import { personFormSchema, type PersonFormInput, type GenderType } from '@/schemas/person';
 import { cn } from '@/lib/utils';
 import type { IPerson } from '@/types/person';
@@ -15,16 +19,30 @@ import type { IPerson } from '@/types/person';
 interface EditPersonModalProps {
   isOpen: boolean;
   person: IPerson;
+  treeId: string;
   onClose: () => void;
-  onUpdate?: (data: PersonFormInput) => Promise<{ success: boolean; error?: string }>;
+  onUpdate?: (data: PersonFormInput & { relationships?: any[] }) => Promise<{ success: boolean; error?: string }>;
+  existingRelationships?: Array<{ _id: string; relatedPersonId: string; relationshipType: string; relatedPersonName?: string }>;
 }
 
-export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPersonModalProps) {
+export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, existingRelationships = [] }: EditPersonModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<GenderType>(
     (person.gender as GenderType) || 'male'
   );
+  const [showRelationshipsSection, setShowRelationshipsSection] = useState(false);
+
+  // Initialize useManageRelationships with existing relationships
+  const initialRelationships = existingRelationships.map((rel) => ({
+    relatedPersonId: rel.relatedPersonId,
+    relationshipType: rel.relationshipType as any,
+  }));
+
+  const relationshipsManager = useManageRelationships({
+    initialRelationships,
+    maxRelationships: 10,
+  });
 
   const {
     register,
@@ -56,7 +74,11 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
     setIsSubmitting(true);
     setError(null);
     try {
-      const result = onUpdate ? await onUpdate(data) : { success: true };
+      const submitData = {
+        ...data,
+        relationships: relationshipsManager.getRelationshipsForSubmit(),
+      };
+      const result = onUpdate ? await onUpdate(submitData) : { success: true };
       if (result.success) {
         reset();
         onClose();
@@ -155,6 +177,56 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
             <input type="hidden" {...register('gender')} value={selectedGender} />
           </div>
 
+          {/* Relationships Section */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Relationships</label>
+              {!showRelationshipsSection && (
+                <button
+                  type="button"
+                  onClick={() => setShowRelationshipsSection(true)}
+                  className="text-primary text-sm font-bold"
+                >
+                  Manage
+                </button>
+              )}
+            </div>
+
+            {showRelationshipsSection && (
+              <>
+                {/* Existing Relationships List */}
+                {relationshipsManager.relationships.length > 0 ? (
+                  <div className="space-y-2">
+                    {relationshipsManager.relationships.map((rel, index) => (
+                      <RelationshipEntry
+                        key={rel.tempId}
+                        index={index}
+                        relatedPersonName={rel.relatedPersonName || 'Unknown'}
+                        relationshipType={rel.relationshipType}
+                        onRemove={() => relationshipsManager.removeRelationship(rel.tempId)}
+                        onEdit={() => relationshipsManager.editRelationship(rel.tempId)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-[#4c8d9a]">No relationships yet.</p>
+                )}
+
+                {/* Add Relationship Button */}
+                {relationshipsManager.canAddMore && (
+                  <button
+                    type="button"
+                    onClick={relationshipsManager.startAddRelationship}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed border-[#cfe3e7] dark:border-[#2a3a3d] hover:border-primary hover:bg-primary/5 transition-colors"
+                  >
+                    <MaterialSymbol icon="add" className="text-[#4c8d9a]" />
+                    <span className="text-sm font-medium text-[#4c8d9a]">Add Relationship</span>
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+
           {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -205,6 +277,24 @@ export function EditPersonModal({ isOpen, person, onClose, onUpdate }: EditPerso
             </Button>
           </div>
         </form>
+
+        {/* Person Search Selector */}
+        {relationshipsManager.showPersonSelector && (
+          <PersonSearchSelector
+            treeId={treeId}
+            excludePersonIds={[person._id]}
+            onSelect={relationshipsManager.selectPerson}
+            onClose={relationshipsManager.closePersonSelector}
+          />
+        )}
+
+        {/* Relationship Type Selector */}
+        {relationshipsManager.showTypeSelector && (
+          <RelationshipTypeSelector
+            onSelect={relationshipsManager.selectRelationshipType}
+            onClose={relationshipsManager.closeTypeSelector}
+          />
+        )}
       </div>
     </div>
   );

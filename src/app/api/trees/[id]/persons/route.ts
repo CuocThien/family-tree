@@ -18,11 +18,13 @@ export const GET = withAuth(async (request: AuthenticatedRequest, context) => {
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const limit = parseInt(url.searchParams.get('limit') || '50', 10);
+  const search = url.searchParams.get('search') || undefined;
 
   try {
     const result = await container.personService.getPersonsByTreeId(params.id, request.user.id, {
       page,
       limit,
+      query: search,
     });
 
     return successResponse(result.persons, {

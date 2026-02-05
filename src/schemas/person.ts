@@ -124,12 +124,18 @@ export const personRelationshipSchema = z.object({
 });
 
 /**
- * Add person to tree schema (person + relationship)
+ * Multiple relationships schema for person form
+ */
+export const personRelationshipsSchema = z.array(personRelationshipSchema).min(0).default([]);
+
+/**
+ * Add person to tree schema (person + single relationship for backward compatibility)
  */
 export const addPersonToTreeSchema = personFormSchema.and(
   z.object({
     relationshipType: relationshipTypeEnum.optional(),
     connectToPersonId: z.string().optional(),
+    relationships: personRelationshipsSchema.optional(),
   })
 );
 
@@ -138,6 +144,7 @@ export const addPersonToTreeSchema = personFormSchema.and(
  */
 export type PersonFormInput = z.infer<typeof personFormSchema>;
 export type PersonRelationshipInput = z.infer<typeof personRelationshipSchema>;
+export type PersonRelationshipsInput = z.infer<typeof personRelationshipsSchema>;
 export type AddPersonToTreeInput = z.infer<typeof addPersonToTreeSchema>;
 export type GenderType = z.infer<typeof genderEnum>;
 export type RelationshipType = z.infer<typeof relationshipTypeEnum>;

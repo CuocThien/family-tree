@@ -8,6 +8,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Spinner } from '@/components/ui/Spinner';
+import { RelationshipEntry } from '@/components/person/RelationshipEntry';
+import { PersonSearchSelector } from '@/components/person/PersonSearchSelector';
+import { RelationshipTypeSelector } from '@/components/person/RelationshipTypeSelector';
+import { useManageRelationships } from '@/hooks/useManageRelationships';
 import { addPersonToTreeSchema, type AddPersonToTreeInput, type GenderType, type RelationshipType } from '@/schemas/person';
 import { cn } from '@/lib/utils';
 
@@ -37,6 +41,22 @@ export function AddPersonModal({
   const [selectedRelationship, setSelectedRelationship] = useState<RelationshipType>(
     defaultRelationship || 'child'
   );
+  const [showRelationshipsSection, setShowRelationshipsSection] = useState(!!connectToPersonId);
+
+  // Initialize useManageRelationships with initial relationship if provided
+  // Include the name for display purposes
+  const initialRelationships = connectToPersonId && connectToName
+    ? [{
+        relatedPersonId: connectToPersonId,
+        relationshipType: defaultRelationship || 'child',
+        relatedPersonName: connectToName,
+      }]
+    : [];
+
+  const relationshipsManager = useManageRelationships({
+    initialRelationships,
+    maxRelationships: 10,
+  });
 
   const {
     register,
@@ -71,13 +91,11 @@ export function AddPersonModal({
       const submitData = {
         ...data,
         isDeceased: !!data.deathDate || data.isDeceased,
+        relationships: relationshipsManager.getRelationshipsForSubmit(),
       };
+
       const result = onCreate
-        ? await onCreate({
-            ...submitData,
-            connectToPersonId,
-            relationshipType: connectToPersonId ? selectedRelationship : undefined,
-          })
+        ? await onCreate(submitData)
         : { success: true };
 
       if (result.success) {
@@ -96,6 +114,7 @@ export function AddPersonModal({
   const handleClose = () => {
     setError(null);
     reset();
+    setShowRelationshipsSection(!!connectToPersonId);
     onClose();
   };
 
@@ -216,56 +235,68 @@ export function AddPersonModal({
             </div>
           </div>
 
-          {/* Relationship Selection */}
-          {connectToPersonId && (
-            <div className="flex flex-col gap-4">
+          {/* Relationships Section */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
               <p className="text-[#0d191b] dark:text-white text-sm font-medium">
-                Relationship to {connectToName}
+                Relationships {relationshipsManager.relationships.length > 0 && `(${relationshipsManager.relationships.length})`}
               </p>
-              <div className="grid grid-cols-2 gap-2">
-                {relationships.map((rel) => (
-                  <button
-                    key={rel.value}
-                    type="button"
-                    onClick={() => setSelectedRelationship(rel.value)}
-                    className={cn(
-                      'flex items-center gap-3 px-4 py-3 rounded-lg border transition-all',
-                      selectedRelationship === rel.value
-                        ? 'border-primary bg-primary/5'
-                        : 'border-[#cfe3e7] dark:border-[#2a3a3d] hover:border-primary'
-                    )
-                  }
-                  >
-                    <div
-                      className={cn(
-                        'size-8 rounded-full flex items-center justify-center',
-                        selectedRelationship === rel.value
-                          ? 'bg-primary'
-                          : 'bg-[#f0f5f6] dark:bg-[#2a3a3d]'
-                      )
-                    }
-                    >
-                      <MaterialSymbol
-                        icon={rel.icon as any}
-                        className={cn(
-                          'text-sm',
-                          selectedRelationship === rel.value ? 'text-white' : 'text-[#4c8d9a]'
-                        )}
+              {!showRelationshipsSection && (
+                <button
+                  type="button"
+                  onClick={() => setShowRelationshipsSection(true)}
+                  className="text-primary text-sm font-bold"
+                >
+                  Add Relationships
+                </button>
+              )}
+            </div>
+
+            {showRelationshipsSection && (
+              <>
+                {/* Existing Relationships List */}
+                {relationshipsManager.relationships.length > 0 && (
+                  <div className="space-y-2">
+                    {relationshipsManager.relationships.map((rel, index) => (
+                      <RelationshipEntry
+                        key={rel.tempId}
+                        index={index}
+                        relatedPersonName={rel.relatedPersonName || 'Unknown'}
+                        relationshipType={rel.relationshipType}
+                        onRemove={() => relationshipsManager.removeRelationship(rel.tempId)}
+                        onEdit={() => relationshipsManager.editRelationship(rel.tempId)}
                       />
-                    </div>
-                    <span
-                      className={cn(
-                        'text-sm font-medium',
-                        selectedRelationship === rel.value ? 'font-bold' : ''
-                      )}
-                    >
-                      {rel.label}
+                    ))}
+                  </div>
+                )}
+
+                {/* Add Relationship Button */}
+                {relationshipsManager.canAddMore && (
+                  <button
+                    type="button"
+                    onClick={relationshipsManager.startAddRelationship}
+                    className={cn(
+                      'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed',
+                      'border-[#cfe3e7] dark:border-[#2a3a3d]',
+                      'hover:border-primary hover:bg-primary/5',
+                      'transition-colors'
+                    )}
+                  >
+                    <MaterialSymbol icon="add" className="text-[#4c8d9a]" />
+                    <span className="text-sm font-medium text-[#4c8d9a]">
+                      Add Relationship
                     </span>
                   </button>
-                ))}
-              </div>
-            </div>
-          )}
+                )}
+
+                {relationshipsManager.relationships.length === 0 && (
+                  <p className="text-xs text-[#4c8d9a] text-center">
+                    No relationships added yet. This person will be added to the tree without connections.
+                  </p>
+                )}
+              </>
+            )}
+          </div>
 
           {/* Advanced Details Toggle */}
           <div className="border-t border-[#e7f1f3] dark:border-[#2a3a3d] pt-6">
@@ -348,37 +379,54 @@ export function AddPersonModal({
               Person is deceased
             </span>
           </label>
-        </form>
 
-        {/* Footer Actions */}
-        <div className="mt-auto p-6 border-t border-[#e7f1f3] dark:border-[#2a3a3d] flex flex-col gap-3">
-          <Button
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            variant="primary"
-            className="w-full"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Spinner size="sm" className="mr-2" />
-                Adding...
-              </>
-            ) : (
-              'Add to Family Tree'
-            )}
-          </Button>
-          <Button
-            type="button"
-            onClick={handleClose}
-            variant="secondary"
-            className="w-full"
-            disabled={isSubmitting}
-          >
-            Cancel and Go Back
-          </Button>
-        </div>
+          {/* Footer Actions */}
+          <div className="mt-auto p-6 border-t border-[#e7f1f3] dark:border-[#2a3a3d] flex flex-col gap-3">
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Spinner size="sm" className="mr-2" />
+                  Adding...
+                </>
+              ) : (
+                'Add to Family Tree'
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleClose}
+              variant="secondary"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              Cancel and Go Back
+            </Button>
+          </div>
+        </form>
       </aside>
+
+      {/* Person Search Selector */}
+      {relationshipsManager.showPersonSelector && (
+        <PersonSearchSelector
+          treeId={treeId}
+          excludePersonIds={[]}
+          onSelect={relationshipsManager.selectPerson}
+          onClose={relationshipsManager.closePersonSelector}
+        />
+      )}
+
+      {/* Relationship Type Selector */}
+      {relationshipsManager.showTypeSelector && (
+        <RelationshipTypeSelector
+          onSelect={relationshipsManager.selectRelationshipType}
+          onClose={relationshipsManager.closeTypeSelector}
+        />
+      )}
     </div>
   );
 }

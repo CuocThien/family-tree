@@ -138,6 +138,56 @@ export class RelationshipService implements IRelationshipService {
     });
   }
 
+  async createRelationshipsForPerson(
+    treeId: string,
+    userId: string,
+    personId: string,
+    relationships: Array<{ relatedPersonId: string; relationshipType: RelationshipType }>
+  ): Promise<IRelationship[]> {
+    // 1. Permission check
+    const canAdd = await this.permissionService.canAccess(userId, treeId, Permission.ADD_RELATIONSHIP);
+    if (!canAdd) {
+      throw new PermissionError('Permission denied');
+    }
+
+    // 2. Verify person exists and belongs to tree
+    const person = await this.personRepository.findById(personId);
+    if (!person || person.treeId !== treeId) {
+      throw new NotFoundError('Person', personId);
+    }
+
+    // 3. Create all relationships
+    const createdRelationships: IRelationship[] = [];
+    const errors: string[] = [];
+
+    for (const rel of relationships) {
+      try {
+        const relationship = await this.createRelationship(
+          treeId,
+          userId,
+          {
+            treeId,
+            fromPersonId: rel.relatedPersonId,
+            toPersonId: personId,
+            type: rel.relationshipType,
+          }
+        );
+        createdRelationships.push(relationship);
+      } catch (error) {
+        if (error instanceof Error) {
+          errors.push(`Failed to create relationship with ${rel.relatedPersonId}: ${error.message}`);
+        }
+      }
+    }
+
+    // 4. If any relationships failed, log the errors but don't fail the entire operation
+    if (errors.length > 0) {
+      console.warn('Some relationships failed to create:', errors);
+    }
+
+    return createdRelationships;
+  }
+
   async getFamilyMembers(personId: string, userId: string): Promise<FamilyMembers> {
     const person = await this.personRepository.findById(personId);
     if (!person) {

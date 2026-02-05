@@ -1,13 +1,25 @@
 import { z } from 'zod';
 import { RelationshipType } from '../relationship';
 
+const relationshipTypeEnum = z.enum([
+  'parent',
+  'child',
+  'spouse',
+  'sibling',
+  'step-parent',
+  'step-child',
+  'adoptive-parent',
+  'adoptive-child',
+  'partner',
+] as const, {
+  errorMap: () => ({ message: 'Invalid relationship type' }),
+});
+
 export const CreateRelationshipDtoSchema = z.object({
   treeId: z.string().min(1, 'Tree ID is required'),
   fromPersonId: z.string().min(1, 'From person ID is required'),
   toPersonId: z.string().min(1, 'To person ID is required'),
-  type: z.enum(['parent', 'child', 'spouse', 'sibling'] as const, {
-    errorMap: () => ({ message: 'Invalid relationship type' }),
-  }),
+  type: relationshipTypeEnum,
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   notes: z.string().max(2000).optional(),
@@ -22,7 +34,7 @@ export const CreateRelationshipDtoSchema = z.object({
 export type CreateRelationshipDto = z.infer<typeof CreateRelationshipDtoSchema>;
 
 export const UpdateRelationshipDtoSchema = z.object({
-  type: z.enum(['parent', 'child', 'spouse', 'sibling'] as const).optional(),
+  type: relationshipTypeEnum.optional(),
   startDate: z.coerce.date().optional(),
   endDate: z.coerce.date().optional(),
   notes: z.string().max(2000).optional(),
