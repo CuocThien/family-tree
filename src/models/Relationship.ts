@@ -2,8 +2,8 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 
 export interface IRelationshipDocument extends Document {
   treeId: mongoose.Types.ObjectId;
-  person1Id: mongoose.Types.ObjectId;
-  person2Id: mongoose.Types.ObjectId;
+  fromPersonId: mongoose.Types.ObjectId;
+  toPersonId: mongoose.Types.ObjectId;
   type: 'parent' | 'child' | 'spouse' | 'sibling';
   startDate?: Date;
   endDate?: Date;
@@ -14,19 +14,19 @@ export interface IRelationshipDocument extends Document {
 
 const RelationshipSchema = new Schema<IRelationshipDocument>({
   treeId: { type: Schema.Types.ObjectId, ref: 'FamilyTree', required: true },
-  person1Id: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
-  person2Id: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
+  fromPersonId: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
+  toPersonId: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
   type: { type: String, enum: ['parent', 'child', 'spouse', 'sibling'], required: true },
   startDate: { type: Date },
   endDate: { type: Date },
   notes: { type: String },
 }, { timestamps: true });
 
-RelationshipSchema.index({ treeId: 1, person1Id: 1, person2Id: 1 });
+RelationshipSchema.index({ treeId: 1, fromPersonId: 1, toPersonId: 1 });
 RelationshipSchema.index({ treeId: 1, type: 1 });
 // Individual person indexes for findByPersonId queries
-RelationshipSchema.index({ person1Id: 1 });
-RelationshipSchema.index({ person2Id: 1 });
+RelationshipSchema.index({ fromPersonId: 1 });
+RelationshipSchema.index({ toPersonId: 1 });
 
 export const RelationshipModel: Model<IRelationshipDocument> =
   mongoose.models.Relationship || mongoose.model<IRelationshipDocument>('Relationship', RelationshipSchema);

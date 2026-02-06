@@ -31,12 +31,13 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
   const [selectedGender, setSelectedGender] = useState<GenderType>(
     (person.gender as GenderType) || 'male'
   );
-  const [showRelationshipsSection, setShowRelationshipsSection] = useState(false);
+  const [showRelationshipsSection, setShowRelationshipsSection] = useState(existingRelationships.length > 0);
 
   // Initialize useManageRelationships with existing relationships
   const initialRelationships = existingRelationships.map((rel) => ({
     relatedPersonId: rel.relatedPersonId,
     relationshipType: rel.relationshipType as any,
+    relatedPersonName: rel.relatedPersonName,
   }));
 
   const relationshipsManager = useManageRelationships({

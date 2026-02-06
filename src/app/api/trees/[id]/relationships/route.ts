@@ -6,31 +6,38 @@
 
 import { withAuth, AuthenticatedRequest } from '@/lib/api/withAuth';
 import { successResponse, errors } from '@/lib/api/response';
-import { container } from '@/lib/di';
+import { container, getContainer, SERVICES } from '@/lib/di';
+import type { IRelationshipRepository } from '@/repositories/interfaces/IRelationshipRepository';
 
 /**
  * GET /api/trees/[id]/relationships
  * Retrieves all relationships belonging to a specific tree.
+ *
+ * Returns an array of IRelationship objects containing:
+ * - _id: Relationship ID
+ * - treeId: Tree ID
+ * - fromPersonId: Source person ID (e.g., parent)
+ * - toPersonId: Target person ID (e.g., child)
+ * - type: Relationship type ('parent' | 'child' | 'spouse' | 'sibling')
+ * - startDate: Optional start date
+ * - endDate: Optional end date
+ * - notes: Optional notes
+ * - createdAt: Creation timestamp
+ * - updatedAt: Last update timestamp
  */
 export const GET = withAuth(async (request: AuthenticatedRequest, context) => {
   const params = await context.params;
 
+  // Verify tree exists and user has access
   const tree = await container.treeService.getTreeById(params.id, request.user.id);
 
   if (!tree) {
     return errors.notFound('Tree');
   }
 
-  // Get relationships by querying through persons in the tree
-  const personsResult = await container.personService.getPersonsByTreeId(params.id, request.user.id);
-
-  // Collect relationships for all persons
-  const relationships: unknown[] = [];
-  for (const person of personsResult.persons) {
-    const family = await container.relationshipService.getFamilyMembers(person._id.toString(), request.user.id);
-    // Add relationships to the result
-    relationships.push(family);
-  }
+  // Get all relationships for the tree directly
+  const relationshipRepository = getContainer().resolve<IRelationshipRepository>(SERVICES.RelationshipRepository);
+  const relationships = await relationshipRepository.findByTreeId(params.id);
 
   return successResponse(relationships, {
     total: relationships.length,

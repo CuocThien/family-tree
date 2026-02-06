@@ -116,6 +116,8 @@ export function useUpdatePerson() {
       if (person) {
         queryClient.invalidateQueries({ queryKey: personKeys.detail(person._id) });
         queryClient.invalidateQueries({ queryKey: personKeys.byTree(person.treeId) });
+        // Invalidate tree board data query to trigger refetch
+        queryClient.invalidateQueries({ queryKey: ['tree-data', person.treeId] });
       }
     },
   });

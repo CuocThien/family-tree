@@ -50,3 +50,4 @@ playwright-report
 # test
 tests
 test-results
+.qc-reports

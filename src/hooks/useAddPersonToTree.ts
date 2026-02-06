@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AddPersonToTreeInput } from '@/schemas/person';
+import { normalizeRelationshipType, type NormalizedRelationship } from '@/utils/relationshipNormalization';
 
 interface AddPersonResponse {
   success: boolean;
@@ -58,18 +59,25 @@ export function useAddPersonToTree() {
         const { data: newPerson } = await personResponse.json();
 
         // Create relationships
-        const relationshipPromises = relationshipsToCreate.map((rel) =>
-          fetch('/api/relationships', {
+        const relationshipPromises = relationshipsToCreate.map((rel) => {
+          // Normalize the relationship type to be stored from the parent's perspective
+          const normalized = normalizeRelationshipType(
+            rel.relationshipType,
+            rel.relatedPersonId,
+            newPerson._id
+          );
+
+          return fetch('/api/relationships', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               treeId,
-              fromPersonId: rel.relatedPersonId,
-              toPersonId: newPerson._id,
-              type: rel.relationshipType,
+              fromPersonId: normalized.fromPersonId,
+              toPersonId: normalized.toPersonId,
+              type: normalized.type,
             }),
-          })
-        );
+          });
+        });
 
         const relationshipResponses = await Promise.all(relationshipPromises);
 
@@ -105,3 +113,6 @@ export function useAddPersonToTree() {
 
   return { addPerson };
 }
+
+// Re-export utility function for testing convenience
+export { normalizeRelationshipType, type NormalizedRelationship } from '@/utils/relationshipNormalization';

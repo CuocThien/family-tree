@@ -129,11 +129,12 @@ export class RelationshipRepository extends BaseRepository implements IRelations
   async findChildren(personId: string): Promise<IRelationship[]> {
     const oid = new mongoose.Types.ObjectId(personId);
 
-    // Find relationships where personId is fromPersonId and type is 'child'
+    // Find relationships where personId is fromPersonId (the parent)
+    // and type is 'parent' (relationships are stored from the parent's perspective)
     const docs = await this.model
       .find({
         fromPersonId: oid,
-        type: 'child',
+        type: 'parent',
       })
       .lean()
       .exec();

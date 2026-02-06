@@ -11,9 +11,13 @@ import { MiniMap } from '@/components/tree/MiniMap';
 import { NodeTooltip } from '@/components/tree/NodeTooltip';
 import { TreeBoardSkeleton } from '@/components/tree/TreeBoardSkeleton';
 import { AddPersonModal } from '@/components/person/AddPersonModal';
+import { EditPersonModal } from '@/components/person/EditPersonModal';
 import { useTreeData } from '@/hooks/useTreeData';
 import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
+import { useUpdatePerson } from '@/hooks/usePerson';
+import { usePersonRelationships } from '@/hooks/usePersonRelationships';
 import { calculatePedigreeLayout } from '@/lib/tree-layout/pedigree';
+import { normalizeRelationshipType } from '@/utils/relationshipNormalization';
 import { Node, NodeMouseHandler } from 'reactflow';
 import { Plus } from 'lucide-react';
 
@@ -23,11 +27,24 @@ interface TreeBoardContentProps {
 }
 
 export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
-  const { setTreeData, setRootPerson, reset } = useTreeBoardStore();
+  const { setTreeData, setRootPerson, reset, selectPerson } = useTreeBoardStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { addPerson } = useAddPersonToTree();
+  const updatePerson = useUpdatePerson();
 
   const { data, isLoading, error } = useTreeData(treeId, userId);
+
+  // Selector for the currently selected person from the Zustand store
+  const selectedPerson = useTreeBoardStore((state) =>
+    state.selectedPersonId ? state.persons.get(state.selectedPersonId) : null
+  );
+
+  // Fetch relationships for the selected person
+  const { data: personRelationships = [], isLoading: isFetchingRelationships } = usePersonRelationships({
+    personId: selectedPerson?._id || '',
+    enabled: isEditModalOpen && !!selectedPerson?._id,
+  });
 
   useEffect(() => {
     if (data) {
@@ -52,8 +69,9 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
   }, [data]);
 
   const handleNodeClick: NodeMouseHandler = useCallback((event, node: Node) => {
-    useTreeBoardStore.getState().selectPerson(node.id);
-  }, []);
+    selectPerson(node.id);
+    setIsEditModalOpen(true);
+  }, [selectPerson]);
 
   const handleNodeDoubleClick: NodeMouseHandler = useCallback((event, node: Node) => {
     // Navigate to person profile page
@@ -135,6 +153,95 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
 
       {/* Floating Controls */}
       <FloatingControls treeId={treeId} />
+
+      {/* Edit Person Modal */}
+      {selectedPerson && (
+        <EditPersonModal
+          key={selectedPerson._id}
+          isOpen={isEditModalOpen}
+          person={selectedPerson}
+          treeId={treeId}
+          existingRelationships={personRelationships}
+          onClose={() => setIsEditModalOpen(false)}
+          onUpdate={async (data) => {
+            try {
+              // Update person details
+              await updatePerson.mutateAsync({
+                id: selectedPerson._id,
+                data: {
+                  firstName: data.firstName,
+                  lastName: data.lastName,
+                  middleName: data.middleName,
+                  suffix: data.suffix,
+                  gender: data.gender,
+                  dateOfBirth: data.birthDate ? new Date(data.birthDate) : undefined,
+                  dateOfDeath: data.deathDate ? new Date(data.deathDate) : undefined,
+                  birthPlace: data.birthPlace,
+                  deathPlace: data.deathPlace,
+                  biography: data.biography,
+                  occupation: data.occupation,
+                  nationality: data.nationality,
+                },
+              });
+
+              // Handle relationship updates if provided
+              if (data.relationships && Array.isArray(data.relationships)) {
+                const submittedRelationships = data.relationships;
+                const existingRelationshipsMap = new Map(
+                  personRelationships.map((rel) => [rel.relatedPersonId, rel])
+                );
+
+                // Create new relationships
+                for (const rel of submittedRelationships) {
+                  if (!existingRelationshipsMap.has(rel.relatedPersonId)) {
+                    // This is a new relationship
+                    const normalized = normalizeRelationshipType(
+                      rel.relationshipType,
+                      rel.relatedPersonId,
+                      selectedPerson._id
+                    );
+
+                    await fetch('/api/relationships', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        treeId,
+                        fromPersonId: normalized.fromPersonId,
+                        toPersonId: normalized.toPersonId,
+                        type: normalized.type,
+                      }),
+                    });
+                  }
+                  // If relationship exists, we could handle type changes here
+                  // For now, we assume the user removes and re-adds to change type
+                }
+
+                // Delete removed relationships
+                for (const existingRel of personRelationships) {
+                  const stillExists = submittedRelationships.some(
+                    (rel) => rel.relatedPersonId === existingRel.relatedPersonId
+                  );
+
+                  if (!stillExists) {
+                    // This relationship was removed
+                    await fetch(`/api/relationships/${existingRel._id}`, {
+                      method: 'DELETE',
+                    });
+                  }
+                }
+              }
+
+              setIsEditModalOpen(false);
+              return { success: true };
+            } catch (error) {
+              return {
+                success: false,
+                error: error instanceof Error ? error.message : 'Failed to update person',
+              };
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
