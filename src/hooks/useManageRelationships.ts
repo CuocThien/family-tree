@@ -31,6 +31,7 @@ interface UseManageRelationshipsReturn {
   closeTypeSelector: () => void;
   getRelationshipsForSubmit: () => PersonRelationshipInput[];
   canAddMore: boolean;
+  syncRelationships: (newRelationships: PersonRelationshipInput[]) => void;
 }
 
 export function useManageRelationships({
@@ -139,6 +140,14 @@ export function useManageRelationships({
     }));
   }, [relationships]);
 
+  const syncRelationships = useCallback((newRelationships: PersonRelationshipInput[]) => {
+    setRelationships(newRelationships.map((rel, index) => ({
+      ...rel,
+      tempId: `rel-${Date.now()}-${index}`,
+      relatedPersonName: (rel as any).relatedPersonName || '',
+    })));
+  }, []);
+
   return {
     relationships,
     isAddingRelationship,
@@ -158,5 +167,6 @@ export function useManageRelationships({
     closeTypeSelector,
     getRelationshipsForSubmit,
     canAddMore,
+    syncRelationships,
   };
 }

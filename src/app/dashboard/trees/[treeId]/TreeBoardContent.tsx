@@ -162,6 +162,7 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
           person={selectedPerson}
           treeId={treeId}
           existingRelationships={personRelationships}
+          isFetchingRelationships={isFetchingRelationships}
           onClose={() => setIsEditModalOpen(false)}
           onUpdate={async (data) => {
             try {
