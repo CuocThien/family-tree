@@ -8,13 +8,13 @@ import { z } from 'zod';
  */
 const treeNameSchema = z
   .string({
-    required_error: 'Tree name is required',
+    required_error: 'Ten cay gia pha la bat buoc',
   })
-  .min(3, 'Tree name must be at least 3 characters')
-  .max(100, 'Tree name must not exceed 100 characters')
+  .min(3, 'Ten cay gia pha phai co it nhat 3 ky tu')
+  .max(100, 'Ten cay gia pha khong duoc vuot qua 100 ky tu')
   .regex(
     /^[a-zA-Z0-9\s\-'\u00C0-\u00FF]+$/,
-    'Tree name can only contain letters, numbers, spaces, hyphens, and apostrophes'
+    'Ten cay gia pha chi duoc chua chu cai, so, khoang trang, gach noi va dau nhay don'
   );
 
 /**
@@ -24,7 +24,7 @@ const treeNameSchema = z
  */
 const treeDescriptionSchema = z
   .string()
-  .max(500, 'Description must not exceed 500 characters')
+  .max(500, 'Mo ta khong duoc vuot qua 500 ky tu')
   .optional()
   .or(z.literal(''));
 
@@ -32,7 +32,7 @@ const treeDescriptionSchema = z
  * Tree visibility setting
  */
 const treeVisibilitySchema = z.enum(['private', 'family', 'public'], {
-  errorMap: () => ({ message: 'Invalid visibility setting' }),
+  errorMap: () => ({ message: 'Cai dat hien thi khong hop le' }),
 });
 
 /**

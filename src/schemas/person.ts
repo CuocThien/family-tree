@@ -4,7 +4,7 @@ import { z } from 'zod';
  * Gender enum
  */
 export const genderEnum = z.enum(['male', 'female', 'other'], {
-  errorMap: () => ({ message: 'Please select a gender' }),
+  errorMap: () => ({ message: 'Vui long chon gioi tinh' }),
 });
 
 /**
@@ -21,7 +21,7 @@ const dateSchema = z
       // Validate date format
       return !isNaN(Date.parse(date));
     },
-    { message: 'Invalid date format' }
+    { message: 'Dinh dang ngay khong hop le' }
   )
   .transform((val) => (val === '' ? undefined : val));
 
@@ -29,19 +29,19 @@ const dateSchema = z
  * First name validation
  */
 const firstNameSchema = z
-  .string({ required_error: 'First name is required' })
-  .min(1, 'First name is required')
-  .max(50, 'First name must not exceed 50 characters')
-  .regex(/^[a-zA-Z\u00C0-\u00FF\s\-']+$/, 'First name contains invalid characters');
+  .string({ required_error: 'Ho la bat buoc' })
+  .min(1, 'Ho la bat buoc')
+  .max(50, 'Ho khong duoc vuot qua 50 ky tu')
+  .regex(/^[a-zA-Z\u00C0-\u00FF\s\-']+$/, 'Ho chua ky tu khong hop le');
 
 /**
  * Last name validation
  */
 const lastNameSchema = z
-  .string({ required_error: 'Last name is required' })
-  .min(1, 'Last name is required')
-  .max(50, 'Last name must not exceed 50 characters')
-  .regex(/^[a-zA-Z\u00C0-\u00FF\s\-']+$/, 'Last name contains invalid characters');
+  .string({ required_error: 'Ten la bat buoc' })
+  .min(1, 'Ten la bat buoc')
+  .max(50, 'Ten khong duoc vuot qua 50 ky tu')
+  .regex(/^[a-zA-Z\u00C0-\u00FF\s\-']+$/, 'Ten chua ky tu khong hop le');
 
 /**
  * Person form schema for UI
@@ -49,8 +49,8 @@ const lastNameSchema = z
 export const personFormSchema = z.object({
   firstName: firstNameSchema,
   lastName: lastNameSchema,
-  middleName: z.string().max(50, 'Middle name must not exceed 50 characters').optional(),
-  suffix: z.string().max(20, 'Suffix must not exceed 20 characters').optional(),
+  middleName: z.string().max(50, 'Ten dem khong duoc vuot qua 50 ky tu').optional(),
+  suffix: z.string().max(20, 'Hau to khong duoc vuot qua 20 ky tu').optional(),
   gender: genderEnum,
 
   // Dates
@@ -58,20 +58,20 @@ export const personFormSchema = z.object({
   deathDate: dateSchema.optional(),
 
   // Locations
-  birthPlace: z.string().max(200, 'Birth place must not exceed 200 characters').optional(),
-  deathPlace: z.string().max(200, 'Death place must not exceed 200 characters').optional(),
+  birthPlace: z.string().max(200, 'Noi sinh khong duoc vuot qua 200 ky tu').optional(),
+  deathPlace: z.string().max(200, 'Noi mat khong duoc vuot qua 200 ky tu').optional(),
 
   // Life status
   isDeceased: z.boolean().default(false),
 
   // Additional info
-  biography: z.string().max(5000, 'Biography must not exceed 5000 characters').optional(),
-  occupation: z.string().max(100, 'Occupation must not exceed 100 characters').optional(),
-  nationality: z.string().max(50, 'Nationality must not exceed 50 characters').optional(),
+  biography: z.string().max(5000, 'Tieu su khong duoc vuot qua 5000 ky tu').optional(),
+  occupation: z.string().max(100, 'Nghe nghiep khong duoc vuot qua 100 ky tu').optional(),
+  nationality: z.string().max(50, 'Quoc tich khong duoc vuot qua 50 ky tu').optional(),
 
   // Contact (for living persons)
-  email: z.string().email('Invalid email address').optional().or(z.literal('')),
-  phone: z.string().max(20, 'Phone number must not exceed 20 characters').optional(),
+  email: z.string().email('Dia chi email khong hop le').optional().or(z.literal('')),
+  phone: z.string().max(20, 'So dien thoai khong duoc vuot qua 20 ky tu').optional(),
 }).refine(
   (data) => {
     // Death date must be after birth date (strictly greater than)
@@ -81,7 +81,7 @@ export const personFormSchema = z.object({
     return true;
   },
   {
-    message: 'Death date must be after birth date',
+    message: 'Ngay mat phai sau ngay sinh',
     path: ['deathDate'],
   }
 ).refine(
@@ -112,7 +112,7 @@ export const relationshipTypeEnum = z.enum([
   'adoptive-child',
   'partner',
 ], {
-  errorMap: () => ({ message: 'Invalid relationship type' }),
+  errorMap: () => ({ message: 'Loai moi quan he khong hop le' }),
 });
 
 /**
@@ -120,7 +120,7 @@ export const relationshipTypeEnum = z.enum([
  */
 export const personRelationshipSchema = z.object({
   relationshipType: relationshipTypeEnum,
-  relatedPersonId: z.string().min(1, 'Related person is required'),
+  relatedPersonId: z.string().min(1, 'Nguoi lien quan la bat buoc'),
 });
 
 /**
