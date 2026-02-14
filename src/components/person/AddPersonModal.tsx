@@ -83,6 +83,23 @@ export function AddPersonModal({
     }
   }, [deathDate, isDeceased]);
 
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Auto-update isDeceased in form data before submission
   const onSubmit = async (data: AddPersonToTreeInput) => {
     setIsSubmitting(true);
@@ -135,15 +152,15 @@ export function AddPersonModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-background-dark/30 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={handleClose}
       />
 
-      {/* Side Panel */}
-      <aside className="relative right-0 top-0 h-full w-full max-w-md bg-white dark:bg-[#152528] shadow-2xl flex flex-col z-20 overflow-y-auto border-l border-[#e7f1f3] dark:border-[#2a3a3d]">
+      {/* Modal */}
+      <div className="relative w-full max-w-2xl bg-white dark:bg-[#152528] rounded-2xl shadow-2xl border border-[#e7f1f3] dark:border-[#2a3a3d] max-h-[90vh] overflow-y-auto z-20">
         {/* Header */}
         <div className="flex flex-wrap justify-between gap-3 p-6 border-b border-[#e7f1f3] dark:border-[#2a3a3d]">
           <div className="flex flex-col gap-1">
@@ -408,7 +425,7 @@ export function AddPersonModal({
             </Button>
           </div>
         </form>
-      </aside>
+      </div>
 
       {/* Person Search Selector */}
       {relationshipsManager.showPersonSelector && (
