@@ -1,20 +1,32 @@
 import { z } from 'zod';
 
 /**
+ * Vietnamese-aware name regex pattern
+ * Supports:
+ * - Basic Latin letters (a-z, A-Z)
+ * - Numbers (0-9)
+ * - Latin-1 Supplement (À-ÿ) - includes àáâãèéêìíòóôõùúý
+ * - Latin Extended-A (Ā-ſ) - includes ă, đ
+ * - Latin Extended-B (ƀ-ɏ) - includes ơ, ư
+ * - Spaces, hyphens, apostrophes
+ */
+const vietnameseNameRegex = /^[a-zA-Z0-9\s\-'\u00C0-\u00FF\u0100-\u017F\u0180-\u024F]+$/;
+
+/**
  * Tree name validation
  * - Required
  * - 3-100 characters
- * - Alphanumeric with spaces, hyphens, apostrophes
+ * - Alphanumeric with spaces, hyphens, apostrophes, Vietnamese characters
  */
 const treeNameSchema = z
   .string({
-    required_error: 'Ten cay gia pha la bat buoc',
+    required_error: 'Tree name is required',
   })
-  .min(3, 'Ten cay gia pha phai co it nhat 3 ky tu')
-  .max(100, 'Ten cay gia pha khong duoc vuot qua 100 ky tu')
+  .min(3, 'Tree name must be at least 3 characters')
+  .max(100, 'Tree name must not exceed 100 characters')
   .regex(
-    /^[a-zA-Z0-9\s\-'\u00C0-\u00FF]+$/,
-    'Ten cay gia pha chi duoc chua chu cai, so, khoang trang, gach noi va dau nhay don'
+    vietnameseNameRegex,
+    'Tree name can only contain letters, numbers, spaces, hyphens, and apostrophes'
   );
 
 /**
@@ -24,7 +36,7 @@ const treeNameSchema = z
  */
 const treeDescriptionSchema = z
   .string()
-  .max(500, 'Mo ta khong duoc vuot qua 500 ky tu')
+  .max(500, 'Description must not exceed 500 characters')
   .optional()
   .or(z.literal(''));
 
@@ -32,7 +44,7 @@ const treeDescriptionSchema = z
  * Tree visibility setting
  */
 const treeVisibilitySchema = z.enum(['private', 'family', 'public'], {
-  errorMap: () => ({ message: 'Cai dat hien thi khong hop le' }),
+  errorMap: () => ({ message: 'Invalid visibility setting' }),
 });
 
 /**

@@ -1,12 +1,13 @@
-# Feature Specification: Popup Forms and Vietnamese Validation Messages
+# Feature Specification: Popup Forms and Vietnamese Input Support
 
 ## Overview
 
 This specification outlines the changes needed to:
 1. Change the "Add First Person" form from a sidebar panel to a popup/modal for empty trees
-2. Update validation messages to support Vietnamese language for:
-   - Add/Edit Person forms
-   - Create/Edit Tree forms
+2. Update validation regex patterns to support Vietnamese characters in input fields:
+   - Add/Edit Person forms (names, places, etc.)
+   - Create/Edit Tree forms (tree name, description)
+3. Keep validation messages in English
 
 ## Current State Analysis
 
