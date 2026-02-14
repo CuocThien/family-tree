@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
@@ -23,9 +23,10 @@ interface EditPersonModalProps {
   onClose: () => void;
   onUpdate?: (data: PersonFormInput & { relationships?: any[] }) => Promise<{ success: boolean; error?: string }>;
   existingRelationships?: Array<{ _id: string; relatedPersonId: string; relationshipType: string; relatedPersonName?: string }>;
+  isFetchingRelationships?: boolean;
 }
 
-export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, existingRelationships = [] }: EditPersonModalProps) {
+export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, existingRelationships = [], isFetchingRelationships = false }: EditPersonModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedGender, setSelectedGender] = useState<GenderType>(
@@ -44,6 +45,19 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
     initialRelationships,
     maxRelationships: 10,
   });
+
+  // Sync relationships when existingRelationships changes (e.g., after API fetch completes)
+  useEffect(() => {
+    if (existingRelationships.length > 0 && !isFetchingRelationships) {
+      const mappedRelationships = existingRelationships.map((rel) => ({
+        relatedPersonId: rel.relatedPersonId,
+        relationshipType: rel.relationshipType as any,
+        relatedPersonName: rel.relatedPersonName,
+      }));
+      relationshipsManager.syncRelationships(mappedRelationships);
+      setShowRelationshipsSection(true);
+    }
+  }, [existingRelationships, isFetchingRelationships, relationshipsManager]);
 
   const {
     register,
@@ -182,7 +196,7 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium">Relationships</label>
-              {!showRelationshipsSection && (
+              {!showRelationshipsSection && !isFetchingRelationships && (
                 <button
                   type="button"
                   onClick={() => setShowRelationshipsSection(true)}
@@ -193,7 +207,15 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
               )}
             </div>
 
-            {showRelationshipsSection && (
+            {/* Loading State */}
+            {isFetchingRelationships && (
+              <div className="flex items-center justify-center py-4">
+                <Spinner size="sm" />
+                <span className="ml-2 text-sm text-[#4c8d9a]">Loading relationships...</span>
+              </div>
+            )}
+
+            {!isFetchingRelationships && showRelationshipsSection && (
               <>
                 {/* Existing Relationships List */}
                 {relationshipsManager.relationships.length > 0 ? (

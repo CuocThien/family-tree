@@ -190,4 +190,102 @@ describe('useManageRelationships', () => {
       expect(result.current.canAddMore).toBe(false);
     });
   });
+
+  describe('syncRelationships', () => {
+    it('should replace existing relationships with new ones', () => {
+      const initialRelationships = [
+        {
+          relatedPersonId: 'person-1',
+          relationshipType: 'spouse' as const,
+          relatedPersonName: 'Jane Doe',
+        },
+      ];
+
+      const { result } = renderHook(() =>
+        useManageRelationships({
+          initialRelationships,
+          maxRelationships: 10,
+        })
+      );
+
+      // Verify initial state
+      expect(result.current.relationships).toHaveLength(1);
+      expect(result.current.relationships[0].relatedPersonId).toBe('person-1');
+
+      // Sync new relationships
+      act(() => {
+        result.current.syncRelationships([
+          {
+            relatedPersonId: 'person-2',
+            relationshipType: 'parent' as const,
+            relatedPersonName: 'John Doe',
+          },
+          {
+            relatedPersonId: 'person-3',
+            relationshipType: 'child' as const,
+            relatedPersonName: 'Baby Doe',
+          },
+        ]);
+      });
+
+      // Verify relationships were replaced
+      expect(result.current.relationships).toHaveLength(2);
+      expect(result.current.relationships[0].relatedPersonId).toBe('person-2');
+      expect(result.current.relationships[0].relationshipType).toBe('parent');
+      expect(result.current.relationships[0].relatedPersonName).toBe('John Doe');
+      expect(result.current.relationships[1].relatedPersonId).toBe('person-3');
+      expect(result.current.relationships[1].relationshipType).toBe('child');
+      expect(result.current.relationships[1].relatedPersonName).toBe('Baby Doe');
+    });
+
+    it('should assign unique tempIds to synced relationships', () => {
+      const { result } = renderHook(() =>
+        useManageRelationships({
+          initialRelationships: [],
+          maxRelationships: 10,
+        })
+      );
+
+      act(() => {
+        result.current.syncRelationships([
+          {
+            relatedPersonId: 'person-1',
+            relationshipType: 'spouse' as const,
+            relatedPersonName: 'Jane Doe',
+          },
+          {
+            relatedPersonId: 'person-2',
+            relationshipType: 'child' as const,
+            relatedPersonName: 'Baby Doe',
+          },
+        ]);
+      });
+
+      const tempIds = result.current.relationships.map((rel) => rel.tempId);
+      expect(new Set(tempIds).size).toBe(2);
+    });
+
+    it('should handle empty sync array', () => {
+      const initialRelationships = [
+        {
+          relatedPersonId: 'person-1',
+          relationshipType: 'spouse' as const,
+          relatedPersonName: 'Jane Doe',
+        },
+      ];
+
+      const { result } = renderHook(() =>
+        useManageRelationships({
+          initialRelationships,
+          maxRelationships: 10,
+        })
+      );
+
+      act(() => {
+        result.current.syncRelationships([]);
+      });
+
+      expect(result.current.relationships).toHaveLength(0);
+    });
+  });
 });
