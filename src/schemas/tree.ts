@@ -8,9 +8,10 @@ import { z } from 'zod';
  * - Latin-1 Supplement (À-ÿ) - includes àáâãèéêìíòóôõùúý
  * - Latin Extended-A (Ā-ſ) - includes ă, đ
  * - Latin Extended-B (ƀ-ɏ) - includes ơ, ư
+ * - Latin Extended Additional (Ḁ-ỿ) - includes ộ, ễ, ấ, ầ, etc.
  * - Spaces, hyphens, apostrophes
  */
-const vietnameseNameRegex = /^[a-zA-Z0-9\s\-'\u00C0-\u00FF\u0100-\u017F\u0180-\u024F]+$/;
+const vietnameseNameRegex = /^[a-zA-Z0-9\s\-'\u00C0-\u00FF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]+$/;
 
 /**
  * Tree name validation
