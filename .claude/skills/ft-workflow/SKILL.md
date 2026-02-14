@@ -31,7 +31,7 @@ User Requirement
        ↓
     [PM] Analyze & Document
        ↓
-    [SE] Implement
+    [SE] Implement (on feature branch)
        ↓
     [QC] Test
        ↓
@@ -41,6 +41,16 @@ User Requirement
        ↓
  Issues Found? → Yes → [SE] Fix → [QC] Re-test → [PM] Re-validate
        ↓ No
+    [Commit & Create PR]
+       ↓
+    [PR Validation]
+       ↓
+ PR Issues? → Yes → [SE] Fix → [QC] Re-test → [PM] Re-validate
+       ↓ No
+    [Merge PR]
+       ↓
+    [Cleanup]
+       ↓
    [COMPLETE]
 ```
 
@@ -59,13 +69,18 @@ Invoke PM agent to:
 ### Step 2: SE Implements Feature
 
 Invoke SE agent with the specification to:
-1. Read and understand the specification
-2. Create implementation plan
-3. Implement following SOLID principles
-4. Write unit and integration tests
-5. Run build and tests
+1. Create feature branch with appropriate naming:
+   ```bash
+   git checkout -b <type>/<short-description>
+   ```
+   Branch types: `feature/`, `fix/`, `refactor/`, `test/`, `docs/`
+2. Read and understand the specification
+3. Create implementation plan
+4. Implement following SOLID principles
+5. Write unit and integration tests
+6. Run build and tests
 
-**Output:** Implemented feature with tests
+**Output:** Implemented feature with tests on feature branch
 
 ### Step 3: QC Tests Feature
 
@@ -94,11 +109,87 @@ Invoke PM agent to review:
 - Return to Step 4 (PM re-validates)
 - Loop until PM approves
 
-### Step 5: Completion
+### Step 5: Commit and Create PR
 
-When PM and QC both approve:
-1. Verify application builds and runs
-2. Confirm feature works as specified
+After PM and QC approve:
+1. Commit all changes with conventional commits format:
+   ```bash
+   git add <specific-files>
+   git commit -m "feat: descriptive message"
+   ```
+   Note: Do not include AI-generated author lines or co-authored-by lines.
+
+2. Push and create Pull Request:
+   ```bash
+   git push -u origin <branch-name>
+   gh pr create --title "Task XX: <short-description>" --body "<pr-body>"
+   ```
+
+**PR Body Template:**
+```markdown
+## Summary
+- Brief description of changes
+
+## Test plan
+- [ ] Tests added and passing
+- [ ] Manual testing completed
+
+## Checklist
+- [ ] Code follows project standards
+- [ ] SOLID principles verified
+- [ ] Security review passed
+```
+
+**Branch Naming Conventions:**
+- `feature/` - New features
+- `fix/` - Bug fixes
+- `refactor/` - Code refactoring
+- `test/` - Test additions
+- `docs/` - Documentation updates
+
+### Step 6: PR Validation
+
+Review the PR for final validation:
+1. Ensure all CI checks pass
+2. Verify all acceptance criteria in PR description
+3. Confirm no merge conflicts
+4. Check code diff one final time
+
+**If PR Issues Found:**
+- Return to Step 2 (SE fixes issues)
+- Go to Step 3 (QC re-tests)
+- Return to Step 4 (PM re-validates)
+- Return to Step 6 (PR re-validation)
+- Loop until PR is approved
+
+### Step 7: Merge PR
+
+When PR is validated and approved:
+```bash
+gh pr merge --merge
+```
+
+This merges the feature branch into main.
+
+### Step 8: Cleanup
+
+After merge:
+```bash
+git checkout main
+git pull
+git branch -d <branch-name>
+```
+
+Delete the remote branch if not automatically deleted:
+```bash
+git push origin --delete <branch-name>  # if needed
+```
+
+### Step 9: Completion
+
+When workflow fully completes:
+1. Verify application builds and runs on main
+2. Confirm feature works as specified in production
 3. Confirm no regressions
 4. Mark workflow complete
 
@@ -143,6 +234,9 @@ Workflow is COMPLETE when:
 - [ ] Architecture review passes (verified by PM)
 - [ ] Code quality approved (verified by PM)
 - [ ] Feature works as specified (verified by all)
+- [ ] PR created and validated (verified by PM)
+- [ ] PR merged to main (verified by SE)
+- [ ] Branch cleaned up (verified by SE)
 
 ## Running the Workflow
 
@@ -158,6 +252,7 @@ When user invokes `/ft-workflow`:
 ```
 - PM: Analyze requirements
 - PM: Create specification document
+- SE: Create feature branch
 - SE: Implement feature
 - SE: Write tests
 - QC: Run automated tests
@@ -165,6 +260,11 @@ When user invokes `/ft-workflow`:
 - QC: Regression testing
 - PM: Architecture validation
 - PM: Code quality validation
+- SE: Commit changes
+- SE: Create pull request
+- PM: PR validation
+- SE: Merge PR
+- SE: Cleanup branch
 - Final verification
 ```
 
@@ -202,6 +302,25 @@ Each iteration:
 4. Invoke PM to re-validate
 5. Repeat until PM approves
 
+### PR Fix Loop (PR → SE → QC → PM → PR)
+
+```
+while (PR validation finds issues) {
+  SE fixes issues
+  QC re-tests
+  PM re-validates
+  PR re-validation
+}
+```
+
+Each iteration:
+1. Update TodoWrite with "Fixing PR issue: [description]"
+2. Invoke SE to fix specific issue
+3. Invoke QC to re-test
+4. Invoke PM to re-validate
+5. Re-validate PR
+6. Repeat until PR is approved
+
 ## File Structure
 
 ```
@@ -237,10 +356,11 @@ tests/
 
 Keep track of workflow state:
 
-1. **Current Phase**: PM / SE / QC / COMPLETE
+1. **Current Phase**: PM / SE / QC / PR / MERGE / COMPLETE
 2. **Iteration Count**: How many fix cycles
 3. **Pending Issues**: List of bugs/issues to fix
-4. **Approval Status**: PM (pending/approved), QC (pending/approved)
+4. **Approval Status**: PM (pending/approved), QC (pending/approved), PR (pending/approved)
+5. **Branch Name**: Current feature branch name
 
 ## Final Output
 
@@ -254,12 +374,15 @@ When workflow completes, provide:
 - Specification: docs/specifications/[name].md
 - Total iterations: [count]
 - Duration: [start] to [end]
+- Branch: [branch-name]
+- PR: #[pr-number]
 
 ### Deliverables
 - Technical specification
 - Implemented feature
 - Test coverage: [X]%
 - QC report: .qc-reports/[name]-qc.md
+- Merged PR: #[pr-number]
 
 ### Verification
 - [x] All acceptance criteria met
@@ -268,11 +391,14 @@ When workflow completes, provide:
 - [x] No regressions
 - [x] Architecture approved
 - [x] Code quality approved
+- [x] PR created and validated
+- [x] PR merged to main
+- [x] Branch cleaned up
 
 ### Files Changed
 - Created: [count] files
 - Modified: [count] files
 
 ### Ready for Deployment
-YES - Feature is complete and tested
+YES - Feature is complete, tested, and merged to main
 ```
