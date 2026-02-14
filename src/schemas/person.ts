@@ -32,9 +32,10 @@ const dateSchema = z
  * - Latin-1 Supplement (À-ÿ) - includes àáâãèéêìíòóôõùúý
  * - Latin Extended-A (Ā-ſ) - includes ă, đ
  * - Latin Extended-B (ƀ-ɏ) - includes ơ, ư
+ * - Latin Extended Additional (Ḁ-ỿ) - includes ộ, ễ, ấ, ầ, etc.
  * - Spaces, hyphens, apostrophes
  */
-const vietnameseNameRegex = /^[a-zA-Z\u00C0-\u00FF\u0100-\u017F\u0180-\u024F\s\-']+$/;
+const vietnameseNameRegex = /^[a-zA-Z\u00C0-\u00FF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF\s\-']+$/;
 
 /**
  * First name validation
