@@ -12,6 +12,8 @@ import { container } from '@/lib/di';
 
 // Schema matching the DTO from the types folder
 const relationshipTypeEnum = z.enum([
+  'father',
+  'mother',
   'parent',
   'child',
   'spouse',
