@@ -42,6 +42,16 @@ export function TreeCanvas({
   const theme = usePreferencesStore((state) => state.theme);
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
 
+  // Sync nodes when initialNodes prop changes
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+
+  // Sync edges when initialEdges prop changes
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
+
   useEffect(() => {
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
