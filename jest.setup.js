@@ -5,6 +5,9 @@ enableMapSet();
 // Import jest-dom matchers
 require('@testing-library/jest-dom');
 
+// Mock CSS modules for reactflow
+jest.mock('reactflow/dist/style.css', () => ({}), { virtual: true });
+
 // Mock localStorage for zustand persist middleware
 const localStorageMock ={
   getItem: jest.fn(),
