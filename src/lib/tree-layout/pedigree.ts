@@ -369,7 +369,8 @@ function positionHalfSiblings(
 }
 
 /**
- * Create edges with merged children connections
+ * Create edges with proper parent-child connections
+ * Uses 'family' edge type which renders with FamilyEdge component
  */
 function createEdges(
   nodes: Node[],
@@ -380,7 +381,7 @@ function createEdges(
 ): Edge[] {
   const edges: Edge[] = [];
   const processedSpouses = new Set<string>();
-  const processedChildren = new Set<string>();
+  const processedParentChild = new Set<string>();
 
   for (const unit of familyUnits) {
     // 1. Create spouse edge (horizontal dashed line)
@@ -406,87 +407,45 @@ function createEdges(
       }
     }
 
-    // 2. Create merged children edges
+    // 2. Create parent-to-child edges using 'family' edge type
     if (unit.children.length > 0) {
-      const parent1Pos = positionMap.get(unit.spouse1._id);
-      if (!parent1Pos) continue;
-
-      // Calculate parent midpoint
-      const parentMidX = unit.spouse2
-        ? (parent1Pos.x + (positionMap.get(unit.spouse2._id)?.x ?? parent1Pos.x)) / 2
-        : parent1Pos.x;
-
-      const parentY = parent1Pos.y;
-
-      // Create junction node position (between parents and children)
-      const junctionX = parentMidX;
-      const junctionY = parentY + VERTICAL_SPACING / 3;
-
-      // Create junction node ID (used for edge routing)
-      const junctionId = `junction-${unit.id}`;
-
-      // Add junction node to edges as source/target
-      // Edge from parent(s) to junction
-      if (unit.spouse2) {
-        // Both parents - create two edges meeting at junction
-        edges.push({
-          id: `${unit.spouse1._id}-to-junction-${unit.id}`,
-          source: unit.spouse1._id,
-          target: unit.spouse2._id,
-          type: 'smoothstep',
-          animated: false,
-          style: { stroke: '#cbd5e1', strokeWidth: 2 },
-          data: {
-            isParentToChild: true,
-            junctionX,
-            junctionY,
-          },
-        });
-      }
-
-      // Edge from junction to each child
       for (const child of unit.children) {
         const childPos = positionMap.get(child._id);
         if (!childPos) continue;
 
-        const childKey = `${unit.id}-${child._id}`;
-        if (!processedChildren.has(childKey)) {
+        // Create edge from parent1 to child
+        const parent1ChildKey = `${unit.spouse1._id}-${child._id}`;
+        if (!processedParentChild.has(parent1ChildKey)) {
           edges.push({
-            id: `parent-to-child-${childKey}`,
-            source: unit.spouse2 ? unit.spouse2._id : unit.spouse1._id,
+            id: `family-${parent1ChildKey}`,
+            source: unit.spouse1._id,
             target: child._id,
-            type: 'smoothstep',
+            type: 'family',
             animated: false,
             style: { stroke: '#cbd5e1', strokeWidth: 2 },
             data: {
               isParentToChild: true,
-              parentMidX,
             },
           });
-          processedChildren.add(childKey);
+          processedParentChild.add(parent1ChildKey);
         }
-      }
 
-      // Also create edge from spouse1 to children if no spouse2
-      if (!unit.spouse2) {
-        for (const child of unit.children) {
-          const childPos = positionMap.get(child._id);
-          if (!childPos) continue;
-
-          const childKey = `single-${unit.id}-${child._id}`;
-          if (!processedChildren.has(childKey)) {
+        // Create edge from parent2 to child (if exists)
+        if (unit.spouse2) {
+          const parent2ChildKey = `${unit.spouse2._id}-${child._id}`;
+          if (!processedParentChild.has(parent2ChildKey)) {
             edges.push({
-              id: `parent-to-child-${childKey}`,
-              source: unit.spouse1._id,
+              id: `family-${parent2ChildKey}`,
+              source: unit.spouse2._id,
               target: child._id,
-              type: 'smoothstep',
+              type: 'family',
               animated: false,
               style: { stroke: '#cbd5e1', strokeWidth: 2 },
               data: {
                 isParentToChild: true,
               },
             });
-            processedChildren.add(childKey);
+            processedParentChild.add(parent2ChildKey);
           }
         }
       }
