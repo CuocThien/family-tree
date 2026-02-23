@@ -1,7 +1,9 @@
 import type { IPerson } from './person';
 
 export type RelationshipType =
-  | 'parent'
+  | 'father'      // Male parent
+  | 'mother'      // Female parent
+  | 'parent'      // Keep for backward compatibility
   | 'child'
   | 'spouse'
   | 'sibling'
@@ -10,6 +12,11 @@ export type RelationshipType =
   | 'adoptive-parent'
   | 'adoptive-child'
   | 'partner';
+
+/**
+ * Parent relationship types (for type guards and filtering)
+ */
+export const PARENT_RELATIONSHIP_TYPES: readonly RelationshipType[] = ['father', 'mother', 'parent'] as const;
 
 /**
  * Domain type for Relationship entity
@@ -52,4 +59,28 @@ export interface UpdateRelationshipData {
   startDate?: Date;
   endDate?: Date;
   notes?: string;
+}
+
+/**
+ * Family Unit type for layout calculations
+ * A family unit consists of a spouse pair (or single parent) and their shared children
+ */
+export interface FamilyUnit {
+  id: string;
+  spouse1: IPerson;
+  spouse2: IPerson | null;  // null for single parent families
+  children: IPerson[];
+  generationLevel: number;
+}
+
+/**
+ * Node position with generation info for tree layout
+ */
+export interface LayoutNode {
+  id: string;
+  person: IPerson;
+  generation: number;
+  x: number;
+  y: number;
+  familyUnitId?: string;
 }

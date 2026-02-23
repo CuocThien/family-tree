@@ -2,10 +2,11 @@
  * Tests for RelationshipRepository.findChildren()
  *
  * Tests the findChildren() method to ensure it queries correctly
- * with type: 'parent' (not 'child').
+ * with type: { $in: ['father', 'mother', 'parent'] } to support
+ * all parent relationship types (not 'child').
  */
 
-import { IRelationship, RelationshipType } from '@/types/relationship';
+import { IRelationship, RelationshipType, PARENT_RELATIONSHIP_TYPES } from '@/types/relationship';
 
 // Mock mongoose before any imports
 jest.mock('mongoose', () => ({
@@ -65,7 +66,7 @@ describe('RelationshipRepository.findChildren()', () => {
     const childId = 'child-456';
     const treeId = 'tree-abc';
 
-    it('should query with type: parent (not child)', async () => {
+    it('should query with type $in operator for parent types (father, mother, parent)', async () => {
       // Arrange
       const mockRelationships = [
         {
@@ -88,10 +89,10 @@ describe('RelationshipRepository.findChildren()', () => {
       const repository = new RelationshipRepository();
       await repository.findChildren(personId);
 
-      // Assert
+      // Assert - should use $in operator to support all parent types
       expect(mockFind).toHaveBeenCalledWith(
         expect.objectContaining({
-          type: 'parent',
+          type: { $in: PARENT_RELATIONSHIP_TYPES },
         })
       );
 
@@ -100,7 +101,7 @@ describe('RelationshipRepository.findChildren()', () => {
       expect(calls.length).toBeGreaterThan(0);
 
       const firstCall = calls[0][0];
-      expect(firstCall.type).toBe('parent');
+      expect(firstCall.type).toEqual({ $in: expect.arrayContaining(['father', 'mother', 'parent']) });
       expect(firstCall.type).not.toBe('child');
     });
 
@@ -241,9 +242,9 @@ describe('RelationshipRepository.findChildren()', () => {
       expect(result[0].toPersonId).toBe(childId1);
       expect(result[1].toPersonId).toBe(childId2);
 
-      // Verify type is 'parent' (from parent's perspective)
-      expect(result[0].type).toBe('parent');
-      expect(result[1].type).toBe('parent');
+      // Verify type is a parent type (from parent's perspective)
+      expect(PARENT_RELATIONSHIP_TYPES).toContain(result[0].type);
+      expect(PARENT_RELATIONSHIP_TYPES).toContain(result[1].type);
 
       // Verify fromPersonId is the parent
       expect(result[0].fromPersonId).toBe(personId);

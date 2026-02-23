@@ -2,17 +2,27 @@ import { IPersonService, PersonSearchParams, PersonListResult } from './IPersonS
 import { IPersonRepository } from '@/repositories/interfaces/IPersonRepository';
 import { IPermissionService, Permission } from '@/services/permission/IPermissionService';
 import { IAuditRepository } from '@/repositories/interfaces/IAuditRepository';
+import { IRelationshipService } from '@/services/relationship/IRelationshipService';
 import { CreatePersonDto, UpdatePersonDto, CreatePersonDtoSchema, UpdatePersonDtoSchema } from '@/types/dtos/person';
 import { IPerson, UpdatePersonData } from '@/types/person';
 import { ValidationError, PermissionError, NotFoundError, BusinessRuleError } from '@/services/errors/ServiceErrors';
 import { sanitizePersonData as sanitizeDataUtil, sanitizeHTML } from '@/lib/utils/sanitization';
 
 export class PersonService implements IPersonService {
+  private relationshipService: IRelationshipService | null = null;
+
   constructor(
     private readonly personRepository: IPersonRepository,
     private readonly permissionService: IPermissionService,
     private readonly auditLogRepository: IAuditRepository
   ) {}
+
+  /**
+   * Set the relationship service (for late binding to avoid circular dependency)
+   */
+  setRelationshipService(service: IRelationshipService): void {
+    this.relationshipService = service;
+  }
 
   async createPerson(treeId: string, userId: string, data: CreatePersonDto): Promise<IPerson> {
     // 1. Check permission
@@ -79,13 +89,30 @@ export class PersonService implements IPersonService {
       throw new ValidationError(errors);
     }
 
-    // 4. Sanitize inputs
+    // 4. Track gender change for relationship updates
+    const genderChanged = data.gender !== undefined && data.gender !== existingPerson.gender;
+
+    // 5. Sanitize inputs
     const sanitizedData = this.sanitizeUpdateData(data);
 
-    // 5. Update person
+    // 6. Update person
     const updatedPerson = await this.personRepository.update(personId, sanitizedData);
 
-    // 6. Audit log
+    // 7. Update parent relationships if gender changed
+    if (genderChanged && data.gender && this.relationshipService) {
+      try {
+        await this.relationshipService.updateParentRelationshipsOnGenderChange(
+          personId,
+          data.gender,
+          userId
+        );
+      } catch (error) {
+        // Log the error but don't fail the person update
+        console.error('Failed to update parent relationships on gender change:', error);
+      }
+    }
+
+    // 8. Audit log
     await this.auditLogRepository.create({
       treeId: existingPerson.treeId,
       userId,

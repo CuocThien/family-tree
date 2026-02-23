@@ -179,11 +179,16 @@ export function configureContainer(): Container {
   // ==================
   container.register({
     identifier: SERVICES.PersonService,
-    factory: (c) => new PersonService(
-      c.resolve(SERVICES.PersonRepository),
-      c.resolve(SERVICES.PermissionService),
-      c.resolve(SERVICES.AuditLogRepository)
-    ),
+    factory: (c) => {
+      const personService = new PersonService(
+        c.resolve(SERVICES.PersonRepository),
+        c.resolve(SERVICES.PermissionService),
+        c.resolve(SERVICES.AuditLogRepository)
+      );
+      // Late-bind relationship service to avoid circular dependency
+      // This is resolved after RelationshipService is registered
+      return personService;
+    },
     lifecycle: 'singleton',
   });
 
@@ -236,6 +241,12 @@ export function configureContainer(): Container {
     factory: () => new CollaborationService(),
     lifecycle: 'singleton',
   });
+
+  // Wire up the PersonService with RelationshipService for gender change handling
+  // This must be done after both services are registered
+  const personService = container.resolve(SERVICES.PersonService) as PersonService;
+  const relationshipService = container.resolve(SERVICES.RelationshipService) as RelationshipService;
+  personService.setRelationshipService(relationshipService);
 
   return container;
 }
