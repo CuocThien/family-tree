@@ -9,6 +9,7 @@ import {
   Node,
   Edge,
   NodeTypes,
+  EdgeTypes,
   useNodesState,
   useEdgesState,
   NodeMouseHandler,
@@ -16,11 +17,18 @@ import {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PersonNode } from './PersonNode.flow';
+import { SpouseEdge, HalfSiblingEdge, FamilyEdge } from './FamilyEdge';
 import { useTreeBoardStore } from '@/store/treeBoardStore';
 import { usePreferencesStore } from '@/store/preferencesStore';
 
 const nodeTypes: NodeTypes = {
   person: PersonNode,
+};
+
+const edgeTypes: EdgeTypes = {
+  spouse: SpouseEdge,
+  'half-sibling': HalfSiblingEdge,
+  family: FamilyEdge,
 };
 
 interface TreeCanvasProps {
@@ -95,6 +103,7 @@ export function TreeCanvas({
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         minZoom={0.1}
         maxZoom={2}

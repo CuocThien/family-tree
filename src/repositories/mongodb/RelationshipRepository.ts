@@ -3,7 +3,7 @@ import { RelationshipModel, IRelationshipDocument } from '@/models/Relationship'
 import {
   IRelationshipRepository,
 } from '@/repositories/interfaces/IRelationshipRepository';
-import { IRelationship, CreateRelationshipData, UpdateRelationshipData, RelationshipType } from '@/types/relationship';
+import { IRelationship, CreateRelationshipData, UpdateRelationshipData, RelationshipType, PARENT_RELATIONSHIP_TYPES } from '@/types/relationship';
 import { BaseRepository } from './BaseRepository';
 import mongoose from 'mongoose';
 
@@ -114,11 +114,12 @@ export class RelationshipRepository extends BaseRepository implements IRelations
   async findParents(personId: string): Promise<IRelationship[]> {
     const oid = new mongoose.Types.ObjectId(personId);
 
-    // Find relationships where personId is toPersonId and type is 'parent'
+    // Find relationships where personId is toPersonId and type is a parent type
+    // Supports 'parent', 'father', and 'mother' types for backward compatibility
     const docs = await this.model
       .find({
         toPersonId: oid,
-        type: 'parent',
+        type: { $in: PARENT_RELATIONSHIP_TYPES },
       })
       .lean()
       .exec();
@@ -130,11 +131,11 @@ export class RelationshipRepository extends BaseRepository implements IRelations
     const oid = new mongoose.Types.ObjectId(personId);
 
     // Find relationships where personId is fromPersonId (the parent)
-    // and type is 'parent' (relationships are stored from the parent's perspective)
+    // Supports 'parent', 'father', and 'mother' types for backward compatibility
     const docs = await this.model
       .find({
         fromPersonId: oid,
-        type: 'parent',
+        type: { $in: PARENT_RELATIONSHIP_TYPES },
       })
       .lean()
       .exec();

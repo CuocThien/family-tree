@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { RelationshipType } from '../relationship';
 
 const relationshipTypeEnum = z.enum([
+  'father',
+  'mother',
   'parent',
   'child',
   'spouse',
