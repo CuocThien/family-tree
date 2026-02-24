@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { AuthPageSkeleton } from '@/components/ui/AuthPageSkeleton';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -204,9 +205,10 @@ function LoginForm() {
 
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label htmlFor="rememberMe" className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
+                  id="rememberMe"
                   {...register('rememberMe')}
                   className="w-4 h-4 rounded border-gray-300 text-[#13c8ec] focus:ring-[#13c8ec] focus:ring-offset-0"
                 />
@@ -328,7 +330,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<AuthPageSkeleton />}>
       <LoginForm />
     </Suspense>
   );

@@ -21,8 +21,8 @@ export function DashboardNavbar({ userName }: DashboardNavbarProps) {
   ], []);
 
   return (
-    <header className="sticky top-0 z-40 bg-background-dark border-b border-white/10">
-      <div className="px-4 md:px-10 py-3">
+    <header className="sticky top-4 z-40 mx-4 md:mx-10 lg:mx-40 rounded-xl bg-background-dark/90 backdrop-blur-lg border border-white/10 shadow-lg">
+      <div className="px-4 md:px-6 py-3">
         <div className="flex items-center justify-between">
           {/* Logo and Desktop Nav */}
           <div className="flex items-center gap-4 md:gap-8">

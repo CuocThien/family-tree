@@ -23,7 +23,11 @@ export function TreeCard({
 }: TreeCardProps) {
   return (
     <div
-      className={cn('flex flex-col gap-3 group cursor-pointer', className)}
+      className={cn(
+        'flex flex-col gap-3 group cursor-pointer',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl',
+        className
+      )}
       onClick={onClick}
       role="button"
       tabIndex={0}

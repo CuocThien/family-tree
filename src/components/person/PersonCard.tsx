@@ -46,12 +46,19 @@ export function PersonCard({
         className={cn(
           'flex items-center gap-3 p-3 rounded-xl border border-[#e7f1f3] dark:border-white/10',
           'bg-white dark:bg-[#101f22] hover:shadow-md transition-all cursor-pointer',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
           className
         )}
         onClick={onClick}
         role="button"
         tabIndex={0}
         aria-label={`View ${fullName}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick?.();
+          }
+        }}
       >
         <Avatar
           src={photoUrl}
@@ -80,6 +87,7 @@ export function PersonCard({
     <Card
       className={cn(
         'transition-all cursor-pointer hover:shadow-md',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
         onClick && 'group',
         className
       )}
@@ -87,6 +95,12 @@ export function PersonCard({
       role="button"
       tabIndex={0}
       aria-label={`View ${fullName}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
     >
       <CardContent className="p-6">
         <div className="flex items-start gap-4">

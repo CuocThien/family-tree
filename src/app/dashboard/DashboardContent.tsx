@@ -135,7 +135,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark">
+      <div className="min-h-screen bg-background-light dark:bg-background-dark pt-4">
         <DashboardNavbar userName={userName || undefined} />
         <DashboardSkeleton />
       </div>
@@ -144,9 +144,9 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark">
+      <div className="min-h-screen bg-background-light dark:bg-background-dark pt-4">
         <DashboardNavbar userName={userName || undefined} />
-        <main className="flex-1 px-4 md:px-10 lg:px-40 py-8">
+        <main className="flex-1 px-4 md:px-10 lg:px-40 py-8 pt-12">
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <p className="text-red-500 mb-4">{error?.message || 'Failed to load dashboard'}</p>
             <Button onClick={() => window.location.reload()}>Retry</Button>
@@ -158,7 +158,7 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
 
   if (!dashboard) {
     return (
-      <div className="min-h-screen bg-background-light dark:bg-background-dark">
+      <div className="min-h-screen bg-background-light dark:bg-background-dark pt-4">
         <DashboardNavbar userName={userName || undefined} />
         <DashboardSkeleton />
       </div>
@@ -227,10 +227,10 @@ export function DashboardContent({ userId, userName }: DashboardContentProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark pt-4">
       <DashboardNavbar userName={userName || undefined} />
 
-      <main className="px-4 md:px-10 lg:px-40 py-8">
+      <main className="px-4 md:px-10 lg:px-40 py-8 pt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8 flex flex-col gap-8">

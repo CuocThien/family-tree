@@ -42,13 +42,17 @@ describe('Button', () => {
 
   it('applies correct size classes', () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
-    expect(screen.getByRole('button')).toHaveClass('h-9');
+    // sm size now uses h-11 with min-h-[44px] for touch accessibility
+    expect(screen.getByRole('button')).toHaveClass('h-11');
+    expect(screen.getByRole('button')).toHaveClass('min-h-[44px]');
 
     rerender(<Button size="md">Medium</Button>);
     expect(screen.getByRole('button')).toHaveClass('h-11');
+    expect(screen.getByRole('button')).toHaveClass('min-h-[44px]');
 
     rerender(<Button size="lg">Large</Button>);
     expect(screen.getByRole('button')).toHaveClass('h-12');
+    expect(screen.getByRole('button')).toHaveClass('min-h-[48px]');
   });
 
   it('renders with left icon', () => {
