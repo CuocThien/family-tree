@@ -22,7 +22,7 @@ interface EditPersonModalProps {
   treeId: string;
   onClose: () => void;
   onUpdate?: (data: PersonFormInput & { relationships?: any[] }) => Promise<{ success: boolean; error?: string }>;
-  existingRelationships?: Array<{ _id: string; relatedPersonId: string; relationshipType: string; relatedPersonName?: string }>;
+  existingRelationships?: Array<{ _id: string; relatedPersonId: string; relationshipType: string; relatedPersonName?: string; relatedPersonGender?: string }>;
   isFetchingRelationships?: boolean;
 }
 
@@ -39,6 +39,7 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
     relatedPersonId: rel.relatedPersonId,
     relationshipType: rel.relationshipType as any,
     relatedPersonName: rel.relatedPersonName,
+    relatedPersonGender: rel.relatedPersonGender as any,
   }));
 
   const relationshipsManager = useManageRelationships({
@@ -53,6 +54,7 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
         relatedPersonId: rel.relatedPersonId,
         relationshipType: rel.relationshipType as any,
         relatedPersonName: rel.relatedPersonName,
+        relatedPersonGender: rel.relatedPersonGender as any,
       }));
       relationshipsManager.syncRelationships(mappedRelationships);
       setShowRelationshipsSection(true);
@@ -226,6 +228,7 @@ export function EditPersonModal({ isOpen, person, treeId, onClose, onUpdate, exi
                         index={index}
                         relatedPersonName={rel.relatedPersonName || 'Unknown'}
                         relationshipType={rel.relationshipType}
+                        relatedPersonGender={rel.relatedPersonGender}
                         onRemove={() => relationshipsManager.removeRelationship(rel.tempId)}
                         onEdit={() => relationshipsManager.editRelationship(rel.tempId)}
                       />

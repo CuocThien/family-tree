@@ -1,10 +1,11 @@
 import { useState, useCallback } from 'react';
 import { RelationshipType, PersonRelationshipInput } from '@/schemas/person';
-import type { IPerson } from '@/types/person';
+import type { IPerson, Gender } from '@/types/person';
 
 interface RelationshipState extends PersonRelationshipInput {
   tempId: string;
   relatedPersonName?: string;
+  relatedPersonGender?: Gender;
 }
 
 interface UseManageRelationshipsOptions {
@@ -43,6 +44,7 @@ export function useManageRelationships({
       ...rel,
       tempId: `rel-${Date.now()}-${index}`,
       relatedPersonName: (rel as any).relatedPersonName || '',
+      relatedPersonGender: (rel as any).relatedPersonGender,
     }))
   );
 
@@ -110,6 +112,7 @@ export function useManageRelationships({
         relatedPersonId: pendingPerson._id,
         relationshipType: type,
         relatedPersonName: `${pendingPerson.firstName} ${pendingPerson.lastName}`,
+        relatedPersonGender: pendingPerson.gender,
       };
 
       setRelationships((prev) => [...prev, newRelationship]);
@@ -145,6 +148,7 @@ export function useManageRelationships({
       ...rel,
       tempId: `rel-${Date.now()}-${index}`,
       relatedPersonName: (rel as any).relatedPersonName || '',
+      relatedPersonGender: (rel as any).relatedPersonGender,
     })));
   }, []);
 
