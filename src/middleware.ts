@@ -35,13 +35,16 @@ export function middleware(request: NextRequest) {
   // Static files don't need auth
   const isStaticFile = pathname.startsWith('/_next') || pathname.startsWith('/favicon') || pathname.startsWith('/public');
 
+  // API routes handle their own authentication via withAuth wrapper
+  const isApiRoute = pathname.startsWith('/api');
+
   // Redirect authenticated users away from auth pages
   if (isLoggedIn && (pathname === '/login' || pathname === '/register')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  // Protect non-public routes
-  if (!isPublicPath && !isStaticFile && !isLoggedIn) {
+  // Protect non-public routes (API routes handle their own auth)
+  if (!isPublicPath && !isStaticFile && !isApiRoute && !isLoggedIn) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', encodeURI(pathname));
     return NextResponse.redirect(loginUrl);
