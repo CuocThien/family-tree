@@ -17,6 +17,7 @@ import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
 import { useUpdatePerson } from '@/hooks/usePerson';
 import { usePersonRelationships } from '@/hooks/usePersonRelationships';
 import { calculatePedigreeLayout } from '@/lib/tree-layout/pedigree';
+import { calculateOrthogonalPedigreeLayout } from '@/lib/tree-layout/pedigree-orthogonal';
 import { normalizeRelationshipType } from '@/utils/relationshipNormalization';
 import { Node, NodeMouseHandler } from 'reactflow';
 import { Plus } from 'lucide-react';
@@ -26,10 +27,13 @@ interface TreeBoardContentProps {
   userId: string;
 }
 
+type LayoutMode = 'modern' | 'traditional';
+
 export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
   const { setTreeData, setRootPerson, reset, selectPerson } = useTreeBoardStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('traditional');
   const { addPerson } = useAddPersonToTree();
   const updatePerson = useUpdatePerson();
 
@@ -59,14 +63,30 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
     };
   }, [data, treeId, setTreeData, setRootPerson, reset]);
 
-  // Calculate layout - must be called before any conditional returns to satisfy Rules of Hooks
-  const { nodes, edges } = useMemo(() => {
+  // Calculate layout based on selected mode
+  const { nodes, edges, generationRows } = useMemo(() => {
     if (!data || data.persons.length === 0) {
-      return { nodes: [], edges: [] };
+      return { nodes: [], edges: [], generationRows: [] };
     }
     const rootPersonId = data.tree.rootPersonId || data.persons[0]._id;
-    return calculatePedigreeLayout(rootPersonId, data.persons, data.relationships);
-  }, [data]);
+
+    if (layoutMode === 'traditional') {
+      const result = calculateOrthogonalPedigreeLayout(
+        rootPersonId,
+        data.persons,
+        data.relationships,
+        { showGenerationLabels: true }
+      );
+      return {
+        nodes: result.nodes,
+        edges: result.edges,
+        generationRows: result.generationRows,
+      };
+    } else {
+      const result = calculatePedigreeLayout(rootPersonId, data.persons, data.relationships);
+      return { nodes: result.nodes, edges: result.edges, generationRows: [] };
+    }
+  }, [data, layoutMode]);
 
   const handleNodeClick: NodeMouseHandler = useCallback((event, node: Node) => {
     selectPerson(node.id);
@@ -129,8 +149,12 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden">
-      {/* Header */}
-      <TreeBoardHeader tree={data.tree} />
+      {/* Header with Layout Toggle */}
+      <TreeBoardHeader
+        tree={data.tree}
+        layoutMode={layoutMode}
+        onLayoutModeChange={setLayoutMode}
+      />
 
       <main className="relative flex flex-1 overflow-hidden">
         {/* Left Filter Panel */}
@@ -144,6 +168,8 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
               initialEdges={edges}
               onNodeClick={handleNodeClick}
               onNodeDoubleClick={handleNodeDoubleClick}
+              layoutMode={layoutMode}
+              generationRows={generationRows}
             />
             <MiniMap />
             <NodeTooltip />
