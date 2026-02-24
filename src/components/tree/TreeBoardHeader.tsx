@@ -7,11 +7,19 @@ import { formatDateDistance } from '@/lib/date-utils';
 import type { ITree } from '@/types/tree';
 import { SearchBar } from './SearchBar';
 
+type LayoutMode = 'modern' | 'traditional';
+
 interface TreeBoardHeaderProps {
   tree: ITree;
+  layoutMode?: LayoutMode;
+  onLayoutModeChange?: (mode: LayoutMode) => void;
 }
 
-export function TreeBoardHeader({ tree }: TreeBoardHeaderProps) {
+export function TreeBoardHeader({
+  tree,
+  layoutMode = 'modern',
+  onLayoutModeChange
+}: TreeBoardHeaderProps) {
   const { data: session } = useSession();
 
   return (
@@ -32,13 +40,36 @@ export function TreeBoardHeader({ tree }: TreeBoardHeaderProps) {
 
         {/* Search Bar */}
         <SearchBar />
+
+        {/* Layout Mode Toggle */}
+        {onLayoutModeChange && (
+          <div className="flex items-center gap-2 bg-surface-elevated rounded-lg p-1 border border-border">
+            <button
+              onClick={() => onLayoutModeChange('modern')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                layoutMode === 'modern'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-secondary hover:text-foreground'
+              }`}
+            >
+              Modern
+            </button>
+            <button
+              onClick={() => onLayoutModeChange('traditional')}
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                layoutMode === 'traditional'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-secondary hover:text-foreground'
+              }`}
+            >
+              Traditional
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Right Side Actions */}
       <div className="flex items-center gap-4">
-        {/* View Mode Toggle */}
-        {/* <ViewModeToggle /> - Will add in next task */}
-
         <div className="h-8 w-px bg-border dark:bg-border" />
 
         {/* Share Button */}

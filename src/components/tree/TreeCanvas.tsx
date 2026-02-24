@@ -5,7 +5,6 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   Node,
   Edge,
   NodeTypes,
@@ -17,32 +16,46 @@ import {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { PersonNode } from './PersonNode.flow';
+import { TraditionalPersonNode } from './TraditionalPersonNode';
 import { SpouseEdge, HalfSiblingEdge, FamilyEdge } from './FamilyEdge';
+import {
+  OrthogonalParentChildEdge,
+  EnhancedSpouseEdge,
+} from './OrthogonalEdge';
+import { GenerationRow } from './GenerationRow';
 import { useTreeBoardStore } from '@/store/treeBoardStore';
 import { usePreferencesStore } from '@/store/preferencesStore';
-
-const nodeTypes: NodeTypes = {
-  person: PersonNode,
-};
-
-const edgeTypes: EdgeTypes = {
-  spouse: SpouseEdge,
-  'half-sibling': HalfSiblingEdge,
-  family: FamilyEdge,
-};
+import { GenerationRow as GenerationRowType } from '@/types/tree-layout';
 
 interface TreeCanvasProps {
   initialNodes: Node[];
   initialEdges: Edge[];
   onNodeClick: NodeMouseHandler;
   onNodeDoubleClick: NodeMouseHandler;
+  layoutMode?: 'modern' | 'traditional';
+  generationRows?: GenerationRowType[];
 }
+
+const nodeTypes: NodeTypes = {
+  person: PersonNode,
+  traditionalPerson: TraditionalPersonNode,
+};
+
+const edgeTypes: EdgeTypes = {
+  spouse: SpouseEdge,
+  'half-sibling': HalfSiblingEdge,
+  family: FamilyEdge,
+  orthogonal: OrthogonalParentChildEdge,
+  enhancedSpouse: EnhancedSpouseEdge,
+};
 
 export function TreeCanvas({
   initialNodes,
   initialEdges,
   onNodeClick,
   onNodeDoubleClick,
+  layoutMode = 'modern',
+  generationRows = [],
 }: TreeCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -94,7 +107,17 @@ export function TreeCanvas({
   );
 
   return (
-    <div className="w-full h-full bg-surface-elevated">
+    <div className="w-full h-full bg-surface-elevated relative">
+      {/* Generation Rows (for traditional layout) */}
+      {layoutMode === 'traditional' &&
+        generationRows.map((row) => (
+          <GenerationRow
+            key={`gen-row-${row.level}`}
+            row={row}
+            visible={row.labelVisible}
+          />
+        ))}
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -113,12 +136,6 @@ export function TreeCanvas({
       >
         <Background gap={40} color={backgroundColor} />
         <Controls className={controlsClassName} />
-        {showMinimap && (
-          <MiniMap
-            nodeColor={(n) => (n.selected ? '#13c8ec' : '#cbd5e1')}
-            className={minimapClassName}
-          />
-        )}
       </ReactFlow>
     </div>
   );
