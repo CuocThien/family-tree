@@ -3,47 +3,30 @@
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
 import { Button } from '@/components/ui/Button';
 import { RelationshipType } from '@/schemas/person';
+import { Gender } from '@/types/person';
+import { getGenderAwareLabel, getRelationshipIcon } from '@/utils/relationshipLabels';
 import { cn } from '@/lib/utils';
 
 interface RelationshipEntryProps {
   index: number;
   relatedPersonName: string;
   relationshipType: RelationshipType;
+  relatedPersonGender?: Gender;
   onRemove: () => void;
   onEdit: () => void;
 }
-
-const RELATIONSHIP_LABELS: Record<RelationshipType, string> = {
-  parent: 'Parent',
-  child: 'Child',
-  spouse: 'Spouse',
-  sibling: 'Sibling',
-  'step-parent': 'Step Parent',
-  'step-child': 'Step Child',
-  'adoptive-parent': 'Adoptive Parent',
-  'adoptive-child': 'Adoptive Child',
-  partner: 'Partner',
-};
-
-const RELATIONSHIP_ICONS: Record<RelationshipType, string> = {
-  parent: 'north',
-  child: 'south',
-  spouse: 'favorite',
-  sibling: 'group',
-  'step-parent': 'north',
-  'step-child': 'south',
-  'adoptive-parent': 'north',
-  'adoptive-child': 'south',
-  partner: 'favorite',
-};
 
 export function RelationshipEntry({
   index,
   relatedPersonName,
   relationshipType,
+  relatedPersonGender,
   onRemove,
   onEdit,
 }: RelationshipEntryProps) {
+  const displayLabel = getGenderAwareLabel(relationshipType, relatedPersonGender);
+  const iconName = getRelationshipIcon(relationshipType);
+
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg border border-[#e7f1f3] dark:border-[#2a3a3d] bg-[#f8fbfc] dark:bg-[#1a2e32]">
       {/* Index Badge */}
@@ -53,7 +36,7 @@ export function RelationshipEntry({
 
       {/* Relationship Icon */}
       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-        <MaterialSymbol icon={RELATIONSHIP_ICONS[relationshipType] as any} className="text-sm text-white" />
+        <MaterialSymbol icon={iconName as any} className="text-sm text-white" />
       </div>
 
       {/* Relationship Info */}
@@ -62,7 +45,7 @@ export function RelationshipEntry({
           {relatedPersonName}
         </p>
         <p className="text-xs text-[#4c8d9a]">
-          {RELATIONSHIP_LABELS[relationshipType]}
+          {displayLabel}
         </p>
       </div>
 

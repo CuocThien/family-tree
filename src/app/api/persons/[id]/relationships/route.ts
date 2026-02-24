@@ -22,31 +22,35 @@ export const GET = withAuth(async (request: AuthenticatedRequest, context) => {
     // Get all relationships for the person
     const familyMembers = await relationshipService.getFamilyMembers(personId, request.user.id);
 
-    // Transform the data into the expected format
+    // Transform the data into the expected format with gender-aware labels
     const relationships = [
       ...familyMembers.parents.map((p) => ({
         _id: `rel-${personId}-${p._id}-parent`,
         relatedPersonId: p._id,
         relationshipType: 'parent' as const,
         relatedPersonName: `${p.firstName} ${p.lastName}`,
+        relatedPersonGender: p.gender,
       })),
       ...familyMembers.children.map((p) => ({
         _id: `rel-${personId}-${p._id}-child`,
         relatedPersonId: p._id,
         relationshipType: 'child' as const,
         relatedPersonName: `${p.firstName} ${p.lastName}`,
+        relatedPersonGender: p.gender,
       })),
       ...familyMembers.spouses.map((p) => ({
         _id: `rel-${personId}-${p._id}-spouse`,
         relatedPersonId: p._id,
         relationshipType: 'spouse' as const,
         relatedPersonName: `${p.firstName} ${p.lastName}`,
+        relatedPersonGender: p.gender,
       })),
       ...familyMembers.siblings.map((p) => ({
         _id: `rel-${personId}-${p._id}-sibling`,
         relatedPersonId: p._id,
         relationshipType: 'sibling' as const,
         relatedPersonName: `${p.firstName} ${p.lastName}`,
+        relatedPersonGender: p.gender,
       })),
     ];
 
