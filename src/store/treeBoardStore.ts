@@ -4,7 +4,7 @@ import { immer } from 'zustand/middleware/immer';
 import { IPerson } from '@/types/person';
 import { IRelationship } from '@/types/relationship';
 
-export type ViewMode = 'pedigree' | 'fan' | 'timeline' | 'vertical';
+export type ViewMode = 'pedigree' | 'fan';
 
 interface Viewport {
   x: number;

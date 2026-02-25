@@ -5,8 +5,8 @@ export { PersonNode } from './PersonNode';
 export type { PersonNodeProps } from './PersonNode';
 
 // ReactFlow components
-export { PersonNode as PersonNodeFlow } from './PersonNode.flow';
-export type { PersonNodeData } from './PersonNode.flow';
+export { TraditionalPersonNode } from './TraditionalPersonNode';
+export type { PersonNodeData } from './TraditionalPersonNode';
 
 export { TreeCanvas } from './TreeCanvas';
 export { NodeTooltip } from './NodeTooltip';

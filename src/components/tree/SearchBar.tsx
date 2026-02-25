@@ -16,7 +16,7 @@ export function SearchBar() {
           <input
             type="text"
             className="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 text-[#0d191b] dark:text-white placeholder:text-[#4c8d9a] px-3 text-sm"
-            placeholder="Search ancestors..."
+            placeholder="Tim kiem thanh vien..."
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>

@@ -16,7 +16,6 @@ import { useTreeData } from '@/hooks/useTreeData';
 import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
 import { useUpdatePerson } from '@/hooks/usePerson';
 import { usePersonRelationships } from '@/hooks/usePersonRelationships';
-import { calculatePedigreeLayout } from '@/lib/tree-layout/pedigree';
 import { calculateOrthogonalPedigreeLayout } from '@/lib/tree-layout/pedigree-orthogonal';
 import { normalizeRelationshipType } from '@/utils/relationshipNormalization';
 import { Node, NodeMouseHandler } from 'reactflow';
@@ -27,13 +26,10 @@ interface TreeBoardContentProps {
   userId: string;
 }
 
-type LayoutMode = 'modern' | 'traditional';
-
 export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
   const { setTreeData, setRootPerson, reset, selectPerson } = useTreeBoardStore();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('traditional');
   const { addPerson } = useAddPersonToTree();
   const updatePerson = useUpdatePerson();
 
@@ -63,30 +59,25 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
     };
   }, [data, treeId, setTreeData, setRootPerson, reset]);
 
-  // Calculate layout based on selected mode
+  // Calculate layout using orthogonal pedigree layout
   const { nodes, edges, generationRows } = useMemo(() => {
     if (!data || data.persons.length === 0) {
       return { nodes: [], edges: [], generationRows: [] };
     }
     const rootPersonId = data.tree.rootPersonId || data.persons[0]._id;
 
-    if (layoutMode === 'traditional') {
-      const result = calculateOrthogonalPedigreeLayout(
-        rootPersonId,
-        data.persons,
-        data.relationships,
-        { showGenerationLabels: true }
-      );
-      return {
-        nodes: result.nodes,
-        edges: result.edges,
-        generationRows: result.generationRows,
-      };
-    } else {
-      const result = calculatePedigreeLayout(rootPersonId, data.persons, data.relationships);
-      return { nodes: result.nodes, edges: result.edges, generationRows: [] };
-    }
-  }, [data, layoutMode]);
+    const result = calculateOrthogonalPedigreeLayout(
+      rootPersonId,
+      data.persons,
+      data.relationships,
+      { showGenerationLabels: true }
+    );
+    return {
+      nodes: result.nodes,
+      edges: result.edges,
+      generationRows: result.generationRows,
+    };
+  }, [data]);
 
   const handleNodeClick: NodeMouseHandler = useCallback((event, node: Node) => {
     selectPerson(node.id);
@@ -149,26 +140,21 @@ export function TreeBoardContent({ treeId, userId }: TreeBoardContentProps) {
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden">
-      {/* Header with Layout Toggle */}
-      <TreeBoardHeader
-        tree={data.tree}
-        layoutMode={layoutMode}
-        onLayoutModeChange={setLayoutMode}
-      />
+      {/* Header with View Toggle */}
+      <TreeBoardHeader tree={data.tree} />
 
       <main className="relative flex flex-1 overflow-hidden">
         {/* Left Filter Panel */}
         <FilterPanel treeId={treeId} />
 
         {/* Main Canvas Area */}
-        <div className="relative flex-1 bg-surface-elevated overflow-hidden">
+        <div className="relative flex-1 bg-background-light dark:bg-background-dark overflow-hidden">
           <ReactFlowProvider>
             <TreeCanvas
               initialNodes={nodes}
               initialEdges={edges}
               onNodeClick={handleNodeClick}
               onNodeDoubleClick={handleNodeDoubleClick}
-              layoutMode={layoutMode}
               generationRows={generationRows}
             />
             <MiniMap />

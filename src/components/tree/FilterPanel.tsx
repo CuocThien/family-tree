@@ -2,28 +2,24 @@
 
 import { useTreeBoardStore } from '@/store/treeBoardStore';
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol';
-import type { GenerationFilter, GenderFilter, LifeStatusFilter } from './types';
 
 interface FilterPanelProps {
   treeId: string;
 }
 
+interface QuickAccessItem {
+  label: string;
+  name: string;
+}
+
 export function FilterPanel({ treeId }: FilterPanelProps) {
-  const filters = useTreeBoardStore((state) => state.filters);
-  const setFilter = useTreeBoardStore((state) => state.setFilter);
   const clearFilters = useTreeBoardStore((state) => state.clearFilters);
 
-  const generations: GenerationFilter[] = [1, 2, 3, 4, 5, 6, 7, 8];
-  const genders: GenderFilter[] = ['male', 'female', 'other'];
-  const lifeStatuses: LifeStatusFilter[] = ['all', 'living', 'deceased'];
-
-  const toggleGender = (gender: GenderFilter) => {
-    const current = filters.gender || [];
-    const updated = current.includes(gender)
-      ? current.filter((g) => g !== gender)
-      : [...current, gender];
-    setFilter({ gender: updated });
-  };
+  // Quick Access items - these would typically come from tree metadata
+  const quickAccessItems: QuickAccessItem[] = [
+    { label: 'Dong noi', name: 'Ho Nguyen' },
+    { label: 'Dong ngoai', name: 'Ho Le' },
+  ];
 
   return (
     <aside className="z-20 w-64 border-r border-border bg-surface p-4 flex flex-col justify-between overflow-y-auto">
@@ -46,68 +42,30 @@ export function FilterPanel({ treeId }: FilterPanelProps) {
               <MaterialSymbol icon="account_tree" />
               <p className="text-sm font-medium">Branches</p>
             </div>
+            <div className="flex items-center gap-3 px-3 py-2 text-secondary hover:bg-surface-elevated rounded-xl cursor-pointer">
+              <MaterialSymbol icon="settings" />
+              <p className="text-sm font-medium">Settings</p>
+            </div>
           </nav>
         </div>
 
-        {/* Generation Filter */}
+        {/* Quick Access Section */}
         <div className="border-t border-border pt-6">
-          <h2 className="text-foreground text-sm font-bold mb-4">
-            Generations to Show
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {generations.map((gen) => (
-              <button
-                key={gen}
-                onClick={() => setFilter({ generations: gen })}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  filters.generations === gen
-                    ? 'bg-primary text-white'
-                    : 'bg-border text-secondary'
-                }`}
+          <h1 className="text-foreground text-xs font-bold uppercase tracking-wider mb-4 opacity-60">
+            Quick Access
+          </h1>
+          <div className="space-y-3">
+            {quickAccessItems.map((item, index) => (
+              <div
+                key={index}
+                className="p-3 bg-surface-elevated rounded-xl border border-border cursor-pointer hover:bg-primary/5 transition-colors"
               >
-                {gen}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Gender Filter */}
-        <div className="border-t border-border pt-6">
-          <h2 className="text-foreground text-sm font-bold mb-4">
-            Gender
-          </h2>
-          <div className="space-y-2">
-            {genders.map((gender) => (
-              <label key={gender} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={(filters.gender || []).includes(gender)}
-                  onChange={() => toggleGender(gender)}
-                  className="form-checkbox rounded text-primary focus:ring-primary bg-surface dark:bg-surface-elevated border-border"
-                />
-                <span className="text-sm capitalize text-secondary">{gender}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Life Status Filter */}
-        <div className="border-t border-border pt-6">
-          <h2 className="text-foreground text-sm font-bold mb-4">
-            Life Status
-          </h2>
-          <div className="space-y-2">
-            {lifeStatuses.map((status) => (
-              <label key={status} className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="lifeStatus"
-                  checked={filters.lifeStatus === status}
-                  onChange={() => setFilter({ lifeStatus: status })}
-                  className="form-radio text-primary focus:ring-primary bg-surface dark:bg-surface-elevated border-border"
-                />
-                <span className="text-sm capitalize text-secondary">{status}</span>
-              </label>
+                <p className="text-xs text-secondary mb-1">{item.label}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold">{item.name}</span>
+                  <MaterialSymbol icon="chevron_right" className="text-sm text-primary" />
+                </div>
+              </div>
             ))}
           </div>
         </div>

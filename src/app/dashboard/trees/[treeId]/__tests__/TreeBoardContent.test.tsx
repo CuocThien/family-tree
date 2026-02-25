@@ -9,7 +9,7 @@ jest.mock('@/hooks/useTreeData');
 jest.mock('@/hooks/useAddPersonToTree');
 jest.mock('@/hooks/usePerson');
 jest.mock('@/hooks/usePersonRelationships');
-jest.mock('@/lib/tree-layout/pedigree');
+jest.mock('@/lib/tree-layout/pedigree-orthogonal');
 jest.mock('@/store/treeBoardStore', () => ({
   useTreeBoardStore: jest.fn(),
 }));
@@ -17,7 +17,7 @@ jest.mock('@/store/treeBoardStore', () => ({
 import { useTreeData } from '@/hooks/useTreeData';
 import { useAddPersonToTree } from '@/hooks/useAddPersonToTree';
 import { useUpdatePerson } from '@/hooks/usePerson';
-import { calculatePedigreeLayout } from '@/lib/tree-layout/pedigree';
+import { calculateOrthogonalPedigreeLayout } from '@/lib/tree-layout/pedigree-orthogonal';
 import { useTreeBoardStore } from '@/store/treeBoardStore';
 
 const mockUseTreeBoardStore = useTreeBoardStore as jest.MockedFunction<typeof useTreeBoardStore>;
@@ -25,7 +25,7 @@ const mockUseTreeData = useTreeData as jest.MockedFunction<typeof useTreeData>;
 const mockUseAddPersonToTree = useAddPersonToTree as jest.MockedFunction<typeof useAddPersonToTree>;
 const mockUseUpdatePerson = useUpdatePerson as jest.MockedFunction<typeof useUpdatePerson>;
 const mockUsePersonRelationships = usePersonRelationships as jest.MockedFunction<typeof usePersonRelationships>;
-const mockCalculatePedigreeLayout = calculatePedigreeLayout as jest.MockedFunction<typeof calculatePedigreeLayout>;
+const mockCalculateOrthogonalPedigreeLayout = calculateOrthogonalPedigreeLayout as jest.MockedFunction<typeof calculateOrthogonalPedigreeLayout>;
 
 describe('TreeBoardContent - Relationship Integration', () => {
   const mockTreeId = 'tree123';
@@ -77,9 +77,10 @@ describe('TreeBoardContent - Relationship Integration', () => {
       mutateAsync: jest.fn().mockResolvedValue(mockSelectedPerson),
     } as any);
 
-    mockCalculatePedigreeLayout.mockReturnValue({
+    mockCalculateOrthogonalPedigreeLayout.mockReturnValue({
       nodes: [{ id: 'person123', data: mockSelectedPerson, position: { x: 0, y: 0 } }],
       edges: [],
+      generationRows: [],
     });
 
     mockUsePersonRelationships.mockReturnValue({

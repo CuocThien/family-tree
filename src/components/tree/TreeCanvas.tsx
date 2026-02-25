@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ReactFlow,
-  Background,
   Controls,
   Node,
   Edge,
@@ -15,9 +14,7 @@ import {
   Viewport,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { PersonNode } from './PersonNode.flow';
 import { TraditionalPersonNode } from './TraditionalPersonNode';
-import { SpouseEdge, HalfSiblingEdge, FamilyEdge } from './FamilyEdge';
 import {
   OrthogonalParentChildEdge,
   EnhancedSpouseEdge,
@@ -32,20 +29,16 @@ interface TreeCanvasProps {
   initialEdges: Edge[];
   onNodeClick: NodeMouseHandler;
   onNodeDoubleClick: NodeMouseHandler;
-  layoutMode?: 'modern' | 'traditional';
   generationRows?: GenerationRowType[];
 }
 
 const nodeTypes: NodeTypes = {
-  person: PersonNode,
   traditionalPerson: TraditionalPersonNode,
 };
 
 const edgeTypes: EdgeTypes = {
-  spouse: SpouseEdge,
-  'half-sibling': HalfSiblingEdge,
-  family: FamilyEdge,
   orthogonal: OrthogonalParentChildEdge,
+  spouse: EnhancedSpouseEdge,
   enhancedSpouse: EnhancedSpouseEdge,
 };
 
@@ -54,7 +47,6 @@ export function TreeCanvas({
   initialEdges,
   onNodeClick,
   onNodeDoubleClick,
-  layoutMode = 'modern',
   generationRows = [],
 }: TreeCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -91,32 +83,40 @@ export function TreeCanvas({
     [setViewport]
   );
 
-  const minimapClassName = useMemo(
-    () => '!bg-surface/90 !rounded-xl !border !border-border',
-    []
-  );
-
   const controlsClassName = useMemo(
     () => '!bg-surface/90 !rounded-xl !border !border-border',
     []
   );
 
+  // Background color based on theme - matches design specification
+  // Light mode: #d1d5db (gray-300)
+  // Dark mode: #2d3a3c
   const backgroundColor = useMemo(
     () => (resolvedTheme === 'dark' ? '#2d3a3c' : '#d1d5db'),
     [resolvedTheme]
   );
 
   return (
-    <div className="w-full h-full bg-surface-elevated relative">
-      {/* Generation Rows (for traditional layout) */}
-      {layoutMode === 'traditional' &&
-        generationRows.map((row) => (
-          <GenerationRow
-            key={`gen-row-${row.level}`}
-            row={row}
-            visible={row.labelVisible}
-          />
-        ))}
+    <div className="w-full h-full bg-background-light dark:bg-background-dark relative overflow-hidden">
+      {/* Grid Background Pattern */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: resolvedTheme === 'dark'
+            ? 'radial-gradient(#2d3a3c 1px, transparent 1px)'
+            : 'radial-gradient(#d1d5db 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      {/* Generation Rows */}
+      {generationRows.map((row) => (
+        <GenerationRow
+          key={`gen-row-${row.level}`}
+          row={row}
+          visible={row.labelVisible}
+        />
+      ))}
 
       <ReactFlow
         nodes={nodes}
@@ -134,7 +134,6 @@ export function TreeCanvas({
         onMoveEnd={onMoveEnd}
         proOptions={{ hideAttribution: true }}
       >
-        <Background gap={40} color={backgroundColor} />
         <Controls className={controlsClassName} />
       </ReactFlow>
     </div>
