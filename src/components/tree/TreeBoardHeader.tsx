@@ -6,21 +6,21 @@ import { useSession } from 'next-auth/react';
 import { formatDateDistance } from '@/lib/date-utils';
 import type { ITree } from '@/types/tree';
 import { SearchBar } from './SearchBar';
+import { useTreeBoardStore, ViewMode } from '@/store/treeBoardStore';
+import { cn } from '@/lib/utils';
 
-type LayoutMode = 'modern' | 'traditional';
+const VIEW_MODES: { label: string; value: ViewMode }[] = [
+  { label: 'Pedigree View', value: 'pedigree' },
+  { label: 'Fan Chart', value: 'fan' },
+];
 
 interface TreeBoardHeaderProps {
   tree: ITree;
-  layoutMode?: LayoutMode;
-  onLayoutModeChange?: (mode: LayoutMode) => void;
 }
 
-export function TreeBoardHeader({
-  tree,
-  layoutMode = 'modern',
-  onLayoutModeChange
-}: TreeBoardHeaderProps) {
+export function TreeBoardHeader({ tree }: TreeBoardHeaderProps) {
   const { data: session } = useSession();
+  const { viewMode, setViewMode } = useTreeBoardStore();
 
   return (
     <header className="z-30 flex items-center justify-between whitespace-nowrap border-b border-border bg-surface/80 dark:bg-surface/80 backdrop-blur-md px-6 py-3">
@@ -40,36 +40,34 @@ export function TreeBoardHeader({
 
         {/* Search Bar */}
         <SearchBar />
-
-        {/* Layout Mode Toggle */}
-        {onLayoutModeChange && (
-          <div className="flex items-center gap-2 bg-surface-elevated rounded-lg p-1 border border-border">
-            <button
-              onClick={() => onLayoutModeChange('modern')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                layoutMode === 'modern'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-secondary hover:text-foreground'
-              }`}
-            >
-              Modern
-            </button>
-            <button
-              onClick={() => onLayoutModeChange('traditional')}
-              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                layoutMode === 'traditional'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-secondary hover:text-foreground'
-              }`}
-            >
-              Traditional
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Right Side Actions */}
       <div className="flex items-center gap-4">
+        {/* View Mode Toggle - Segmented Buttons */}
+        <div className="flex h-10 w-64 items-center justify-center rounded-xl bg-surface-elevated p-1">
+          {VIEW_MODES.map((mode) => (
+            <label
+              key={mode.value}
+              className={cn(
+                'flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 text-sm font-medium transition-all',
+                viewMode === mode.value
+                  ? 'bg-surface shadow-sm text-primary'
+                  : 'text-secondary hover:text-primary'
+              )}
+            >
+              <span className="truncate">{mode.label}</span>
+              <input
+                type="radio"
+                name="view-toggle-header"
+                checked={viewMode === mode.value}
+                onChange={() => setViewMode(mode.value)}
+                className="hidden"
+              />
+            </label>
+          ))}
+        </div>
+
         <div className="h-8 w-px bg-border dark:bg-border" />
 
         {/* Share Button */}
